@@ -1,2 +1,2 @@
-- [Fundamentals](00_Fundamentals.md)
-- [Storage](01_Storage.md)
+- [Fundamentals](sections/00_Fundamentals.md)
+- [Storage](sections/01_Storage.md)

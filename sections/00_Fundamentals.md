@@ -103,19 +103,19 @@ Let's review data warehouses and data lakes, focusing on how they differ and whe
 
 #### Data Warehouse
 
-![](/img/01/03.png)
+![](../img/01/03.png)
 
 Data warehouses are designed for complex queries and analysis. The data stored in them is cleaned, transformed, and loaded using the ETL (Extract, Transform, Load) process. Typically, data warehouses employ a star or snowflake schema, which we’ll discuss further in the context of data modeling. They are optimized for read-heavy operations, meaning they are designed to handle large amounts of data from multiple sources and organize it in a way that allows for efficient querying for different applications.
 
 For example, in AWS, Amazon Redshift is the primary data warehouse offering. While the exam won’t focus on other cloud providers, it's worth noting that similar technologies exist, such as Google BigQuery and Microsoft Azure SQL Data Warehouse. Back in the day, before Amazon Redshift was developed, Amazon relied on a massive Oracle database for this purpose, which was costly and difficult to maintain.
 
-![](/img/01/01.png)
+![](../img/01/01.png)
 
 To illustrate the concept of a data warehouse, imagine we’re at Amazon, and we have a large data warehouse that ingests data from various sources. We might have a repository of clickstream data from raw server logs, purchase data showing what customers are buying, and catalog data detailing the items being purchased. These data sources are interconnected; for example, both purchase data and clickstream data would need to reference catalog data to understand what customers are clicking on and buying. All of this data is consolidated into a massive data warehouse, where different views can be created for various types of queries or applications. Different departments or applications might require specific subsets of data, with tailored indices and views. For instance, the accounting department might have access to data that other teams don’t need, while those analyzing customer behavior may have a different view. There could even be a separate data mart for machine learning purposes, allowing data scientists to extract consumer behavior data to train models, such as a recommendation engine.
 
 #### Data Lake
 
-![](/img/01/02.png)
+![](../img/01/02.png)
 
 Now, let's contrast this with a data lake. Unlike a data warehouse, a data lake is a large storage repository that holds vast amounts of raw data in its native format. This can include structured, semi-structured, and unstructured data. The approach here is to store all the data in one place without predefining a schema, allowing for the flexibility to determine how to use it later.
 
@@ -200,7 +200,7 @@ Some examples:
 
 ### What is a "Data Mesh"?
 
-![](/img/01/04.png)
+![](../img/01/04.png)
 
 Let's touch on a more recent buzzword in the world of data engineering, and that's a data mesh. The exam might expect you to know what this term means, at least, if not in more depth. It's not really about technology so much. It's more about organization and the management and how you structure access and ownership of data within a larger organization. So it's more about governance and organization than actual technologies.
 
@@ -301,7 +301,7 @@ Also, you might have streams of data coming in. So there's a lot of stuff that y
 
 **CSV (Comma-Separated Values)**
 
-![](/img/01/05.png)
+![](../img/01/05.png)
 
 Some common data formats. This is important stuff, folks. CSV, you probably already know what that one is, a comma-separated value file. Basically, it's a text-based format. It's human-readable. That's the key here. Where data is in a tabular form, where every line of data corresponds to a row of data, and the values within are separated by commas. Now, it doesn't necessarily have to be a comma. Your delimiter can be pretty much anything. Using commas can get complicated if you have commas within the data itself, right? So then you have to figure out, oh, what are my rules for escaping this data and quoting it and whatnot? So you sometimes see CSV files where the delimiter is not a comma. It might be a pipe or a tab or something else, right? It's okay. You know, you might call it a TSV file if it's separated by a tab, but same idea.
 
@@ -310,7 +310,7 @@ When do you use this stuff? Mostly appropriate for small-to-medium-sized data se
 
 **JSON (JavaScript Object Notation)**
 
-![](/img/01/06.png)
+![](../img/01/06.png)
 
 There's also JSON, JavaScript Object Notation. You see this a lot. More often, you see this in the world of application development for passing data between back-end services and front-end websites. But more generally, it's a lightweight text-based and human-readable data interchange format that represents structured or semi-structured data based on key-value pairs. So the main difference here is that it can be semi-structured. It's still human-readable, just like a CSV file, but you can have different kinds of information on different rows, right? So because everything is tagged into key-value pairs, you can have different key-value pairs within each row, and that's okay with JSON.
 
@@ -355,7 +355,7 @@ Examples that use Parquet: Hadoop again, Apache Spark again, Apache Hive, Apache
 
 **A Very (intentionally) Incomplete Overview of Data Modeling**
 
-![](/img/01/07.png)
+![](../img/01/07.png)
 
 Data Modeling next. Let's do a very quick and very intentionally incomplete overview of Data Modeling. The exam guide says, well, you need to know what data modeling is, but it doesn't talk about specific data models, so it doesn't really get into star schemas and snowflake schemas and stuff in that regard. So, not going to go into a ton of depth here, but just a brief review.
 
@@ -369,7 +369,7 @@ The idea is that we have these primary and foreign keys tying these dimension ta
 
 **Data Lineage**
 
-![](/img/01/08.png)
+![](../img/01/08.png)
 
 Let's also talk about the concept of data lineage. That might also show up on the exam. So, what do we mean by data lineage? It is a visual representation that traces the flow and transformation of data through its lifecycle, from its source to its final destination.
 
@@ -377,7 +377,7 @@ As a data engineer, you're going to be extracting data, transforming it, loading
 
 It might also be required for compliance with regulations. If you're dealing with sensitive or secure data, laws might require you to keep detailed records of how it was transformed. More generally, data lineage provides a clear understanding of how data was moved, transformed, and consumed within systems. Documentation is a good thing, right? If someone new joins your team, this is an easy way for them to understand how your data is transformed and moved through your pipeline.
 
-![](/img/01/09.png)
+![](../img/01/09.png)
 
 Here's an example of data lineage in the context of AWS. This example is from a blog article on aws.amazon.com, and I mention it because the exams often include questions based on obscure blog articles. In this example, they illustrate the creation of data lineage using a tool called spline agent, which is an Apache Spark tool attached to AWS Glue.
 
@@ -388,7 +388,7 @@ Later on, we'll see another tool called SageMaker Lineage that does something si
 
 **Schema Evolution**
 
-![](/img/01/10.png)
+![](../img/01/10.png)
 
 What do we mean by that? It's a term mentioned in the exam guide. Schema evolution refers to the ability to adapt and change the schema of a dataset over time without disrupting existing processes or systems.
 
@@ -400,7 +400,7 @@ One example of this is the Glue Schema Registry. This tool handles schema discov
 
 ### Database Performance Optimization
 
-![](/img/01/11.png)
+![](../img/01/11.png)
 
 Let's also do a quick review of database performance optimization techniques, some basic tools for making your databases perform better.
 
@@ -420,7 +420,7 @@ So again, a quick review of database performance optimization: indexing, partiti
 
 ### Data Sampling Techniques
 
-![](/img/01/12.png)
+![](../img/01/12.png)
 
 This AM guide makes mention of data sampling, so let's do a quick review. There are two main types to know about. One is random sampling. The point of sampling, right, is to take a large dataset and create a smaller one from it. Maybe you just want to experiment or avoid the expense of dealing with a larger dataset and prefer a smaller, yet representative, sample dataset for analysis.
 
@@ -436,26 +436,26 @@ Other types of sampling techniques include systemic, cluster, convenience, and j
 
 Random sampling: Suppose we have a collection of purchase information represented by little wallets. To create our sample, we randomly pick three from this pile of data. These selected ones are colored red in our example. We chose them entirely at random, with no pattern or specific reasoning. That's random sampling.
 
-![](/img/01/13.png)
+![](../img/01/13.png)
 
 **Stratified Sampling**
 
 Stratified sampling: Now, imagine we want to focus on purchases of specific types of items. We have people who bought books, music (like CDs or digital downloads), home and garden items, and apparel. To ensure even representation of each category in our sample dataset, we might decide to select two from books, two from music, two from home and garden, and two from apparel. This selection doesn't necessarily represent the actual ratio of these categories in the full dataset, but it does ensure sufficient coverage of each category in our sample.
 
-![](/img/01/14.png)
+![](../img/01/14.png)
 
 **Systemic Sampling**
 
 Systemic sampling: The key difference with systemic sampling is that, instead of sampling randomly, you use a specific rule, such as picking every third item. In this example, we're selecting every third order: 1, 2, 3, then select; 1, 2, 3, then select; and so on. Every third item is picked, resulting in a systematic sample.
 
-![](/img/01/15.png)
+![](../img/01/15.png)
 
 So, that's data sampling in a nutshell. It's a straightforward concept, but important to review for the exam.
 
 
 ### Data Skew Mechanisms
 
-![](/img/01/16.png)
+![](../img/01/16.png)
 
 All right, all right, all right. I know you're itching to get into the AWS services. I'm trying to get you there as quickly as I can, but the exam guide does talk about data skew. You've got to know what that is, too, and that's not an AWS-specific thing.
 
@@ -485,7 +485,7 @@ How do you fix it? There are a few ways. Now, I wouldn't worry about memorizing 
 
 ### Data Validation and Profiling
 
-![](/img/01/17.png)
+![](../img/01/17.png)
 
 Let's also discuss some key concepts around data validation and data profiling to ensure that your data is good. This, again, is something that the exam guide calls out. There are a few different dimensions to consider for data validation.
 
