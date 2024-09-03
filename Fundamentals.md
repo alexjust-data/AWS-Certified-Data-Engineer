@@ -23,9 +23,6 @@
     - [Pivoting](#pivoting)
   - [JOIN´s](#joins)
   - [SQL Regular Expressions (a quick intro)](#sql-regular-expressions-a-quick-intro)
-- [Storage](#storage)
-  - [Set up an AWS Billing Alarm](#set-up-an-aws-billing-alarm)
-  - [Amazon S3](#amazon-s3)
 
 
 

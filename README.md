@@ -1,1 +1,2 @@
-- [Data Engineering Fundamentals](#data-engineering-fundamentals)
+- [Fundamentals](Fundamentals.md)
+- [Storage](Storage.md)
