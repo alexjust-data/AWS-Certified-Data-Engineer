@@ -1,4 +1,7 @@
-## Storage
+**Storage**
+
+- [Set up an AWS Billing Alarm](#set-up-an-aws-billing-alarm)
+- [Amazon S3](#amazon-s3)
 
 ### Set up an AWS Billing Alarm
 
