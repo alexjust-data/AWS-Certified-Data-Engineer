@@ -1,2 +1,2 @@
-- [Fundamentals](Fundamentals.md)
-- [Storage](Storage.md)
+- [Fundamentals](00_Fundamentals.md)
+- [Storage](01_Storage.md)
