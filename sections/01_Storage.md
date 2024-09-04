@@ -16,6 +16,7 @@
     - [S3 - Event Notifications – IAM Permissions](#s3---event-notifications--iam-permissions)
     - [S3 - Event Notifications with Amazon EventBridge](#s3---event-notifications-with-amazon-eventbridge)
   - [S3 - Event Notifications - Hands On](#s3---event-notifications---hands-on)
+  - [Amazon S3 - Performance](#amazon-s3---performance)
 
 ## Set up an AWS Billing Alarm
 
@@ -215,45 +216,176 @@ Okay, there’s a lot we haven’t covered in this lecture about the new service
 
 ### S3 - Event Notifications - Hands On
 
+So let's go ahead and demonstrate S3 event notifications. For this, I'm going to create a bucket. 
+
 ![](../img/02/18.png)
+
+I'll call it `demo-alexjust--event-notifications`. Once I'm ready, I will just go ahead and create my bucket.
 
 ![](../img/02/19.png)
 
-`Create bucket`
+click **`Create bucket`**
+
+Okay, so my bucket is created. I'm going to go into it. Now, I'm going to make sure that event notifications are set up. So I go to **`Properties`**, scroll down, and then here we have `event notifications`.
+
+As you can see, we have two options. Number one is to `create an event notification`, and I will show you this in a second. Number two is to enable the `Amazon EventBridge` integration to send all events from this S3 bucket to EventBridge. 
 
 ![](../img/02/21.png)
 
+To do this, you just turn it `on`, and you're good to go.
 
 ![](../img/02/22.png)
 
+If I wanted to, I could use Amazon EventBridge to capture the events happening in my S3 bucket.
+
+However, I'll show you the simpler way first, because it's a bit more straightforward, which is to just create an `event notification` and send it, for example, to SQS.
+
 ![](../img/02/23.png)
+
+I'll call this one demo-event-notification. Then, we can set up a prefix or a suffix, but I won't do that now. 
 
 ![](../img/02/24.png)
 
+Next, we need to choose event types. We want to react to all object create events. This means that any time an object is created, an event is going to be triggered. If you want, you could get more granular and select specific types of events, but to keep it simple, I'll leave it at that. You can also include, for example, object removals or object restores, and on the right-hand side, it shows you all the events you can catch. I'll keep it simple and just scroll down. As you can see, there are lots of different events you can react to in Amazon S3.
 
 ![](../img/02/25.png)
 
+Then, you need to publish to a destination. We have three options: Lambda functions, SNS topics, and SQS queues. I'm going to choose SQS queue, but first, we need to create a queue and authorize Amazon S3 to publish messages to that destination. 
+
 ![](../img/02/26.png)
 
+So, what I'm going to do now is go into Amazon SQS and create a queue. 
 
 ![](../img/02/27.png)
 
+I'll call this one `demo-S3-notification`. I'll go ahead and **`create queue`**.
+
 ![](../img/02/28.png)
 
-`Create queue`
+and it's created. 
 
 ![](../img/02/29.png)
 
+Now, I need to update the access policy to allow my S3 bucket to write to my SQS queue.
+
+To demonstrate the issue, if I go back here and refresh the page to see my queue appear, 
 
 
-> * `DemoS3Notifications`
-> * `All object create events`
+
+I refresh it, select `demo-S3-event`, choose `all object create events`, scroll down, and then choose the SQS queue. I can select the queue from the dropdown, demo-S3-notification. 
 
 ![](../img/02/30.png)
 
 
+However, if I try to save my changes, I get an unknown error saying that it can't validate the destination configuration 
+
+![](../img/02/31.png)
+
+because this SQS queue does not yet accept messages from my S3 bucket.
+
+![](../img/02/33.png)
+
+To resolve this, I need to change the access policy by clicking on "Edit." 
+
+Scroll down to where the access policy is, and we need to generate a new policy. 
+
+![](../img/02/34.png)
+
+So, I go to the policy generator. It will be an SQS queue policy, 
+* Princial : **`*`**
+* Actions : **`send messages`**
+* Amazon Resource Name (ARN) : ![](../img/02/35.png)
+
+I add a statement and then generate this policy. 
+
+
+![](../img/02/36.png)
+
+![](../img/02/37.png)
+
+Now, this is the policy I want to use, which allows anyone to write to my SQS queue. It's very permissive, but it will work. Click below to edit. To save the policy, copy the text below to a text editor. Changes made below will not be reflected in the policy generator tool.
+
+
+![](../img/02/38.png)
+
+Changes the policy generator tool.
+
+![](../img/02/42.png)
+
+
+Let's **`save`** this, and now my access policy has been updated.
 
 
 
+So, if I go back and try to save my changes again, 
 
+![](../img/02/31.png)
+
+
+**`save changes`** as you can see, the operation was successfully completed. 
+
+
+![](../img/02/43.png)
+
+What happened is that if I go into my SQS queue and click on "Send and receive messages," 
+
+![](../img/02/44.png)
+
+then click on "Poll for messages," 
+
+![](../img/02/45.png)
+
+you can see a message was sent by Amazon S3 to test the connectivity. 
+
+![](../img/02/46.png)
+
+I can take this message and delete it.
+
+![](../img/02/47.png)
+
+Now, we want to test whether the S3 event notification is working with SQS. So, we're going to upload an object. 
+
+![](../img/02/48.png)
+
+Click on "Add files" and choose our coffee.jpeg. I will upload this file. Now, the file has been uploaded, and if I go into my bucket, I can see that my coffee.jpeg has been created.
+
+![](../img/02/49.png)
+
+`uploaded`
+
+and if I go into my bucket, 
+
+![](../img/02/50.png)
+
+I can see that my coffee.jpeg has been created.
+
+![](../img/02/51.png)
+
+
+
+Imagine we want to automate this process and create a thumbnail from it. We would need to have a message in our SQS queue to process it and create a thumbnail.
+
+Therefore, I'm going to poll for messages again, and as you can see, a message was created here.
+
+![](../img/02/45.png)
+
+you can see a message was sent by Amazon S3 to test the connectivity. 
+
+So, the object was indeed created. If we look deeper, we'll see that the **`key`** of that message is **`coffee.jpeg`**. So, the coffee.jpeg was created, and it generated a whole event in my SQS queue. This demonstrates the power of S3 event notifications.
+
+![](../img/02/53.png)
+
+I can delete the message, and we're done.
+
+![](../img/02/47.png)
+
+Okay, that's it. We've seen S3 event notifications. Remember, you can send notifications to SQS, SNS, Lambda, and Amazon EventBridge for further processing and sending to more destinations.
+
+`Amazon S3` > `Buckets` > `demo-alexjust-event-notifications`
+
+![](../img/02/54.png)
+
+
+
+### Amazon S3 - Performance
 
