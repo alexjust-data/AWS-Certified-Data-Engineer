@@ -26,6 +26,7 @@
     - [S3 – Force Encryption in Transit aws:SecureTransport](#s3--force-encryption-in-transit-awssecuretransport)
     - [DSSE-KMS](#dsse-kms)
   - [S3 - Encryption - Hands On](#s3---encryption---hands-on)
+  - [S3 - Default Encryption vs. Bucket Policies](#s3---default-encryption-vs-bucket-policies)
 
 ## Set up an AWS Billing Alarm
 
@@ -426,6 +427,7 @@ So the first one is Amazon S3 for SSE S3 encryption. So in this case, the encryp
 
 ![](../img/02/59.png)
 
+
 #### S3 Encryption – SSE-KMS
 
 Then we have SSE KMS. So this time, instead of relying on the key that is owned by AWS and the S3 service, you want to manage your own keys yourself using the KMS service, the Key Management Service. So the advantage of using KMS is that you have user control over this key, so you can create keys yourself within KMS, and you can audit the key usage using Cloud Trail. So anytime someone uses a key in KMS, this is going to be logged in a service that logs everything that happens in AWS called Cloud Trail. So for this, we must have a header called the XAMZ server-side encryption AWS KMS, and then the object will be encrypted server-side. So anything SSE, of course, is server-side. So how does that work? Well, again, we upload the object, this time with a different header, and in the header we actually specify the KMS key we want to use. Then the object is appearing in Amazon S3, and this time the KMS key that's going to be used is coming out of the AWS KMS. So these two things together are going to be blended, and then you're going to get encryption, and that's the file that's going to end up in the S3 buckets. So now to read that file from the S3 buckets, not only do you need access to the object itself, but also to the underlying KMS key that was used to encrypt this object. So this is another level of security. 
@@ -437,6 +439,7 @@ Then we have SSE KMS. So this time, instead of relying on the key that is owned 
 So SSE KMS has some limitations, because, well, now that you upload and download files from Amazon S3, you need to leverage the KMS key. And the KMS key has its own APIs, for example, generateDataKey, and when you decrypt, you're going to use the decrypt API, and so therefore you're going to do API calls into the KMS service. And each of these API calls is going to count towards the KMS quotas of API calls per second. So based on the region, you have between 5,000 and 30,000 requests per second, although they can be increased using the service quotas console. And so if you have a very, very high throughput S3 bucket, and everything is encrypted using KMS keys, you may go into a throttling kind of use case. So this is something the exam may test you on.
 
 ![](../img/02/61.png)
+
 
 #### S3 Encryption – SSE-C
 
@@ -466,7 +469,6 @@ Now, how would you go about forcing encryption in transit? For this, we could us
 
 ![](../img/02/64.png)
 
-
 #### DSSE-KMS
 
 In the next lecture, when doing the hands-on you will realize a new encryption option is available, named DSSE-KMS and released in June 2023.
@@ -474,3 +476,67 @@ In the next lecture, when doing the hands-on you will realize a new encryption o
 DSSE-KMS is just "Dual-Layer Server Side Encryption based on KMS".
 
 ### S3 - Encryption - Hands On
+
+
+So let's practice encryption. And for this, I'm going to create a bucket called `demo-encryption-alexjust`. 
+
+![](../img/02/66.png)
+
+As we scroll down. We're going to **`enable bucket versioning`**. Then, under default encryption, as you can see, we have three different options. We must choose a default encryption for our bucket. I will go over SSE-S3 right now, and we'll look at SSE-KMS and DSSE-KMS later on. So let's click on Create Bucket.
+
+![](../img/02/67.png)
+
+ Now, we have created a bucket with default encryption turned on. Let's verify this by actually uploading an object. We need to add a file, and we'll add our coffee.jpg file. 
+ 
+![](../img/02/68.png)
+ 
+ Then we're just going to click on Upload. 
+ 
+![](../img/02/69.png)
+
+As you can see now,
+
+![](../img/02/70.png)
+ 
+I can click on this file, scroll down, and look for the **`server-side encryption settings`**. Indeed, the file was encrypted with `server-side encryption using Amazon S3 managed keys`, or **SSE-S3**. We can also edit the encryption mechanism for a file. I can just click on Edit, 
+
+![](../img/02/71.png)
+
+![](../img/02/72.png)
+
+and as you can see, if we do **`edit`** the server-side encryption, it will create a new version of the object with updated settings. Therefore, this is why I enabled versioning for my bucket: to show you that a new version of the file will be created. 
+
+Let's change the encryption. For this, we're going to **`override the bucket settings for default encryption`** for this one object. 
+
+We have a choice to use either **`SSE-KMS`** or **`DSSE-KMS`**. I won't spend a lot of time on DSSE-KMS; it's just two levels of encryption on KMS, so a stronger KMS. We're just going to use KMS right now. It is simpler, and it won't cost us any money. So, we're going to use SSE-KMS, as we learned, and then specify a KMS key. 
+
+We can either enter a KMS key ARN or choose from **`your own KMS keys`**. If we choose from the KMS keys right now, we should have one key available, the AWS/S3 key. It's called the default KMS key for the S3 service. If you click on it, we can use this key, and that's not going to cost us any money because it's the default key for the service. If you created your own KMS key, it would be available in this list, but creating your own KMS key will cost you some money every month. For this purpose, we're just going to use the default AWS/S3 KMS key. 
+
+![](../img/02/73.png)
+
+Okay, let's **`save the changes`**. We **`close`** this. 
+
+Now, if we go under versions, you can see we have two versions of our file available. The current version, 
+
+![](../img/02/74.png)
+
+in **`Properties`** if we `scroll down` and go under **`server-side encryption`**, is indeed encrypted with SSE-KMS with this encryption key, which corresponds to the default AWS/S3 KMS key. 
+
+![](../img/02/75.png)
+
+This is really good. 
+
+Next, we go under this part. We can do the same process by uploading a file, 
+
+![](../img/02/76.png)
+
+adding a file, for example, beach.jpeg. Under properties, we'll find server-side encryption. Here we can specify an encryption key to either use the default encryption mechanism or override it with SSE-S3, SSE-KMS, or DSSE-KMS. This is when we are doing it. Finally, let's look at the default encryption properties. Scroll down, and we'll find default encryption. Let's edit this, and here are the options. We can enable SSE-S3, SSE-KMS as the default encryption, or DSSE-KMS. In case we use SSE-KMS, we have the bucket key option available to us. This is to reduce the cost by making fewer API calls to AWS KMS, and so this is enabled by default. If we use SSE-S3, then this setting doesn't work. We've seen that we can change the default encryption here. You may ask me, well, SSE-C is missing. Indeed, it is missing because SSE-C can only be done from the CLI, not from the console. That means you cannot enable SSE-C right here. Finally, for client-side encryption, you have to encrypt everything client-side, then upload it to AWS, and decrypt it client-side, so you don't need to tell AWS that the data is client-side encrypted. Therefore, the only options you can deal with in the console are SSE-S3, SSE-KMS, and DSSE-KMS. That's it. We've seen all the encryption options in AWS. I hope you liked it, and I will see you in the next lecture. This was just a short lecture on default encryption versus bucket policies. By default, all the buckets now have default encryption.
+
+### S3 - Default Encryption vs. Bucket Policies
+
+* SSE-S3 encryption is automatically applied to new objects stored in S3 bucket
+* Optionally, you can “force encryption” using a bucket policy and refuse any 
+
+![](../img/02/65.png)
+
+* Note: Bucket Policies are evaluated before “Default Encryption”
