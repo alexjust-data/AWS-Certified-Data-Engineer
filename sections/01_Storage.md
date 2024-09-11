@@ -27,6 +27,10 @@
     - [DSSE-KMS](#dsse-kms)
   - [S3 - Encryption - Hands On](#s3---encryption---hands-on)
   - [S3 - Default Encryption vs. Bucket Policies](#s3---default-encryption-vs-bucket-policies)
+  - [S3 - Acces Points](#s3---acces-points)
+  - [S3 - Object Lambda](#s3---object-lambda)
+- [EC2 Instance Storage Section](#ec2-instance-storage-section)
+  - [EBS - Hands On](#ebs---hands-on)
 
 ## Set up an AWS Billing Alarm
 
@@ -530,9 +534,34 @@ Next, we go under this part. We can do the same process by uploading a file,
 
 ![](../img/02/76.png)
 
-adding a file, for example, beach.jpeg. Under properties, we'll find server-side encryption. Here we can specify an encryption key to either use the default encryption mechanism or override it with SSE-S3, SSE-KMS, or DSSE-KMS. This is when we are doing it. Finally, let's look at the default encryption properties. Scroll down, and we'll find default encryption. Let's edit this, and here are the options. We can enable SSE-S3, SSE-KMS as the default encryption, or DSSE-KMS. In case we use SSE-KMS, we have the bucket key option available to us. This is to reduce the cost by making fewer API calls to AWS KMS, and so this is enabled by default. If we use SSE-S3, then this setting doesn't work. We've seen that we can change the default encryption here. You may ask me, well, SSE-C is missing. Indeed, it is missing because SSE-C can only be done from the CLI, not from the console. That means you cannot enable SSE-C right here. Finally, for client-side encryption, you have to encrypt everything client-side, then upload it to AWS, and decrypt it client-side, so you don't need to tell AWS that the data is client-side encrypted. Therefore, the only options you can deal with in the console are SSE-S3, SSE-KMS, and DSSE-KMS. That's it. We've seen all the encryption options in AWS. I hope you liked it, and I will see you in the next lecture. This was just a short lecture on default encryption versus bucket policies. By default, all the buckets now have default encryption.
+adding a file, for example, **`upload`** -> `beach.jpeg`. 
+
+![](../img/02/78.png)
+
+Under **`properties`**, we'll find `server-side encryption`. Here we can specify an encryption key to either use the `default encryption` mechanism or `override it with SSE-S3, SSE-KMS, or DSSE-KMS`. This is when we are doing it. 
+
+![](../img/02/79.png)
+
+**`cancel`**
+
+![](../img/02/80.png)
+
+Finally, let's look at the default encryption **`properties`**. 
+Scroll down, and we'll find default encryption. Let's edit this, and here are the options. 
+
+![](../img/02/82.png)
+
+We can enable SSE-S3, SSE-KMS as the default encryption, or DSSE-KMS. In case we use SSE-KMS, we have the bucket key option available to us. This is to reduce the cost by making fewer API calls to AWS KMS, and so this is enabled by default. 
+
+![](../img/02/83.png)
+
+If we use SSE-S3, then this setting doesn't work. We've seen that we can change the default encryption here. You may ask me, well, SSE-C is missing. Indeed, it is missing because SSE-C can only be done from the CLI, not from the console. That means you cannot enable SSE-C right here. Finally, for client-side encryption, you have to encrypt everything client-side, then upload it to AWS, and decrypt it client-side, so you don't need to tell AWS that the data is client-side encrypted. Therefore, the only options you can deal with in the console are SSE-S3, SSE-KMS, and DSSE-KMS. That's it. We've seen all the encryption options in AWS. 
+
+![](../img/02/84.png)
 
 ### S3 - Default Encryption vs. Bucket Policies
+
+This was just a short lecture on default encryption versus bucket policies. By default, all the buckets now have default encryption.
 
 * SSE-S3 encryption is automatically applied to new objects stored in S3 bucket
 * Optionally, you can “force encryption” using a bucket policy and refuse any 
@@ -540,3 +569,97 @@ adding a file, for example, beach.jpeg. Under properties, we'll find server-side
 ![](../img/02/65.png)
 
 * Note: Bucket Policies are evaluated before “Default Encryption”
+
+
+### S3 - Acces Points
+
+So now let's talk about S3 access points. So let's take an example of an S3 bucket that has a lot of data. We have finance data, we have sales data, and we have different users or groups that want to access their data. We could create a very complicated S3 bucket policy and make it grow over time. The more users, the more data that you have, the more unmanageable this may become. 
+
+So what is the solution? Well, we can create what's called S3 access points. So we can, for example, create a finance access point that is going to be connected to the finance data. 
+
+How is it connected to the finance data? Well, we're going to define an access point policy, and this policy looks just like an S3 bucket policy, and it's going to grant read-write access to the finance prefix. Then we can define a sales access point. Again, this will be connected to the sales data thanks to an access point policy, a different one attached to this access point, which is going to grant read-write access to the sales prefix. 
+
+
+As you can see, I now have two policies, and if I want to have an analytics access point, well, we can create it so that it points to finance and sales, but in read-only access. So we're going to create our own read-only policy on the analytics access point. So as you can see here, we have pushed the security management from the S3 bucket policy into the access points, and each access point will have its own security. Therefore, with the proper IAM permissions, then our users can access the finance access point and connect only to the finance part of our bucket. The users as well for sales can only access the sales, and the analytics group can access finance and sales at the same time. 
+
+So by using access points, we define different ways to access our S3 bucket, and the result of that is that we have a very simple way to manage security. We have policies attached to each access point, and also we have a very simple bucket policy on Amazon S3. Therefore, we can really scale access to our S3 buckets. So to summarize, access points simplify security management for S3 buckets, and each access point will have its own DNS name, that's how you connect to the access points. You can choose it to be connected to the internet as an origin or a VPC for private traffic, and then you attach again an access point policy, which is very similar to a bucket policy, and this allows you to manage security at scale.
+
+![](../img/02/85.png)
+
+* Access Points simplify security management for S3 Buckets
+* Each Access Point has:
+  * its own DNS name (Internet Origin or VPC Origin)
+  * an access point policy (similar to bucket policy) – manage security at scale
+
+
+**S3 – Access Points – VPC Origin**
+
+Regarding the VPC origin of S3 access points, we can define them to be privately accessible. So that's, for example, an EC2 instance in a VPC accesses without going through the internet, our S3 bucket, through the VPC access point, through a VPC origin. So to do so, to get access to this VPC origin, we must create what's called a VPC endpoint to access the access points, so it's something in our VPC that will allow us to connect privately into the access point through our VPC origin. And then this VPC endpoint has a policy, and this policy must allow access to the target bucket and the access point, so the VPC endpoint policy will allow our EC2 instance to connect to both the VPC, the access point on Amazon S3, and the S3 bucket. So in this case, we have VPC endpoint for security, we also have security for the access point policy, and security at the S3 bucket level. All right, that's it for access points, 
+
+![](../img/02/86.png)
+
+• We can define the access point to be accessible only from within the VPC
+• You must create a VPC Endpoint to access the Access Point (Gateway or Interface Endpoint)
+• The VPC Endpoint Policy must allow access to the target bucket and Access Point
+
+### S3 - Object Lambda
+
+So there's another use case for S3 access points, and it's called S3 Object Lambda. 
+
+![](../img/02/87.png)
+
+So the idea is that you have an S3 bucket, but you want to modify the object just before it is retrieved by a caller application. And instead of, for example, duplicating our bucket to have different versions of each object, we can use S3 Object Lambda instead. And for this, we need the S3 access points that we just saw. So how does that work? Say we have the cloud and we have an S3 bucket in it. So an e-commerce application maybe owns the data in this S3 bucket, and so they're able to access directly the S3 bucket and put and get the original object out of it. But then an analytics application may want to only have access to the redacted object. That means that some data has been deleted from the object. And so instead of creating a new S3 bucket for this, what we can do is create an S3 access point on top of our S3 bucket, and it's connected to a Lambda function. Now we haven't seen Lambda in depth, but a Lambda function allows you to run a bit of code in the cloud very easily. And so this Lambda function is going to redact the object as it is being retrieved. And on top of this Lambda function, we're going to create an S3 Object Lambda access point. And this is how the analytics application is going to access our S3 bucket. So to summarize, the analytics application accesses our S3 Object Lambda access point, which invokes our Lambda function. Our Lambda function is going to retrieve the data from the S3 bucket and run some code to redact the data. And therefore, the analytics application is obtaining a redacted object from the very same S3 bucket as the e-commerce application. Now, a marketing application may want to have access to an enriched object, and they have a customer loyalty database to enhance the data. So instead of again creating a new S3 bucket and creating all the objects with all the enriched data, what we can do is, again, use a Lambda function. So another piece of code, and this one will enrich the data by looking it up from the customer loyalty database. And therefore, we can also create an Object Lambda access point on top of it. And therefore, our marketing application can access this S3 Object Lambda access point to get again the enriched objects. As you can see, we only need one S3 bucket, but we can create access points and Object Lambdas to modify the data as we wish. So the use cases for it are to redact, for example, PII data—personally identifiable information—for analytics or non-production environments, or, for example, to convert data from XML to JSON, or to perform any kind of transformation you want, for example, resizing and watermarking images on the fly, where the watermark is specific to the user who requests the object. So that's kind of a cool usage for S3 Object Lambda. So I hope you liked it, and I will see you in the next lecture.
+
+
+* Use AWS Lambda Functions to change the object before it is retrieved by the caller application
+* Only one S3 bucket is needed, on top of which we create **S3 Access Point** and **S3 Object Lambda Access Points**.
+* Use Cases:
+  * Redacting personally identifiable information for analytics or non-production environments.
+  * Converting across data formats, such as converting XML to JSON.
+  * Resizing and watermarking images on the fly using caller-specific details, such as th
+
+
+## EC2 Instance Storage Section
+
+**What’s an EBS Volume?**
+
+Welcome to this section where we will look at the different storage options for EC2 instances. So first, the most important ones are going to be EBS volumes, so let's define what they are. An EBS volume stands for Elastic Block Store. It's a network drive that you can attach to your instances while they run. And we've been using them without even knowing. These EBS volumes allow us to persist data even after the instance is terminated, and that's the whole purpose. We can recreate an instance and mount the same EBS volume from before, and we'll get back our data. That is very helpful. So these EBS volumes, at the CCP level, can only be mounted to one instance at a time. And when you create an EBS volume, it is bound to a specific availability zone. That means that you cannot have an EBS volume created in, for example, US-EAST-1A, attached to an instance in US-EAST-1B. We'll see this in the diagram in a second. So how do you think of EBS volumes? Well, you can think of them as network USB sticks. So it's a USB stick that you can take from a computer and put in another computer, but you actually don't physically put it in a computer. It's attached through the network. The feature gives us 30 gigabytes of free EBS storage of type general purpose, SSD or magnetic, per month. And in this course, we'll be using this with the GP2 or GP3 volumes.
+
+* An `EBS (Elastic Block Store) Volume` is a `network` drive you can attach to your instances while they run
+* It allows your instances to persist data, even after their termination
+* They can only be mounted to one instance at a time (at the CCP level)
+* They are bound to a specific availability zone
+* Analogy: Think of them as a “network USB stick”
+* Free tier: 30 GB of free EBS storage of type General Purpose (SSD) or Magnetic per month
+
+**EBS Volume**
+
+Now let's look at it. EBS volumes are a network drive, as I said. It's not a physical drive. So to communicate between the instance and the EBS volume, it will be using the network. And because the network is used, there may be a bit of latency from one computer to another server. Now, EBS volumes, because they are a network drive, can be detached from an EC2 instance and attached to another one very quickly. And that makes it super handy when you want to do failovers, for example. EBS volumes are locked to a specific availability zone. That means, as I said, if it's created in US-EAST-1A, it cannot be attached to US-EAST-1B. But we will see in this section that if we do a snapshot, then we are able to move a volume across different availability zones. And finally, it's a volume, so you have to provision capacity in advance. You need to say how many gigabytes you want in advance and the IOPS, which are IO operations per second. You're basically defining how you want your EBS volume to perform. You're going to get billed for that provisioned capacity. And you can increase the capacity over time if you want to have better performance or more size.
+
+* It’s a network drive (i.e. not a physical drive)
+  * It uses the network to communicate the instance, which means there might be a bit of latency
+  * It can be detached from an EC2 instance and attached to another one quickly
+* It’s locked to an Availability Zone (AZ)
+  * An EBS Volume in us-east-1a cannot be attached to us-east-1b
+  * To move a volume across, you first need to snapshot it
+* Have a provisioned capacity (size in GBs, and IOPS)
+  * You get billed for all the provisioned capacity
+  * You can increase the capacity of the drive over time
+
+**EBS Volume - Example**
+
+![](../img/02/88.png)
+
+So as a diagram, what does it look like? Well, we have US-EAST-1A. We have one EC2 instance, and we can attach, for example, one EBS volume to that EC2 instance. If we create another EC2 instance, as I said, an EBS volume cannot be attached to two instances at a time at the certified client practitioner level. Therefore, this other EC2 instance needs to have its own EBS volume attached to it. But it is very possible for us to have two EBS volumes attached to one instance. Think of it as two network USB sticks into one machine. That makes a lot of sense. Now, EBS volumes are linked to an availability zone. So as you can see, all this diagram has been so far using US-EAST-1A. If you want to have other EBS volumes in another AZ, then you would need to create them separately in the other availability zone. So just as your EC2 instances are bound to an AZ, so are the EBS volumes.
+
+**EBS – Delete on Termination attribute**
+
+![](../img/02/89.png)
+
+
+Finally, it is possible for us to create EBS volumes and leave them unattached. They don't need to be necessarily attached to an EC2 instance. They can be attached on demand, and that makes it very, very powerful. Finally, when we go ahead and create EBS volumes through EC2 instances, there is this thing called a delete-on-termination attribute. And this can come up in the exam. If you look at this, when we create an EBS volume in the console, when we create an EC2 instance, there is the second-to-last column called delete-on-termination. By default, it is ticked for the root volume and not ticked for a new EBS volume. This controls the EBS behavior when an EC2 instance is being terminated. By default, as you can see, the root EBS volume is deleted alongside the instance being terminated, so it's enabled. And by default, any other attached EBS volume is not deleted because it's disabled by default. But obviously, as we can see in this UI, we can control if we want to enable or disable delete-on-termination. And so a use case would be, for example, if you want to preserve the root volume when an instance is terminated, for example, to save some data, then you can disable delete-on-termination for the root volume, and you'll be good to go. That could be an exam scenario.
+
+
+### EBS - Hands On
+
+
