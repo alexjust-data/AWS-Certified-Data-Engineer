@@ -30,7 +30,13 @@
   - [S3 - Acces Points](#s3---acces-points)
   - [S3 - Object Lambda](#s3---object-lambda)
 - [EC2 Instance Storage Section](#ec2-instance-storage-section)
+  - [EBS (Elastic Block Store)](#ebs-elastic-block-store)
   - [EBS - Hands On](#ebs---hands-on)
+  - [EBS - Elastic Volumes](#ebs---elastic-volumes)
+  - [EFS – Elastic File System](#efs--elastic-file-system)
+  - [EFS – Performance \& Storage Classes](#efs--performance--storage-classes)
+  - [EFS – Storage Classes](#efs--storage-classes)
+  - [EFS - Hands On](#efs---hands-on)
 
 ## Set up an AWS Billing Alarm
 
@@ -621,9 +627,13 @@ So the idea is that you have an S3 bucket, but you want to modify the object jus
 
 ## EC2 Instance Storage Section
 
+Welcome to this section where we will look at the different storage options for EC2 instances. 
+
+### EBS (Elastic Block Store)
+
 **What’s an EBS Volume?**
 
-Welcome to this section where we will look at the different storage options for EC2 instances. So first, the most important ones are going to be EBS volumes, so let's define what they are. An EBS volume stands for Elastic Block Store. It's a network drive that you can attach to your instances while they run. And we've been using them without even knowing. These EBS volumes allow us to persist data even after the instance is terminated, and that's the whole purpose. We can recreate an instance and mount the same EBS volume from before, and we'll get back our data. That is very helpful. So these EBS volumes, at the CCP level, can only be mounted to one instance at a time. And when you create an EBS volume, it is bound to a specific availability zone. That means that you cannot have an EBS volume created in, for example, US-EAST-1A, attached to an instance in US-EAST-1B. We'll see this in the diagram in a second. So how do you think of EBS volumes? Well, you can think of them as network USB sticks. So it's a USB stick that you can take from a computer and put in another computer, but you actually don't physically put it in a computer. It's attached through the network. The feature gives us 30 gigabytes of free EBS storage of type general purpose, SSD or magnetic, per month. And in this course, we'll be using this with the GP2 or GP3 volumes.
+So first, the most important ones are going to be EBS volumes, so let's define what they are. An EBS volume stands for Elastic Block Store. It's a network drive that you can attach to your instances while they run. And we've been using them without even knowing. These EBS volumes allow us to persist data even after the instance is terminated, and that's the whole purpose. We can recreate an instance and mount the same EBS volume from before, and we'll get back our data. That is very helpful. So these EBS volumes, at the CCP level, can only be mounted to one instance at a time. And when you create an EBS volume, it is bound to a specific availability zone. That means that you cannot have an EBS volume created in, for example, US-EAST-1A, attached to an instance in US-EAST-1B. We'll see this in the diagram in a second. So how do you think of EBS volumes? Well, you can think of them as network USB sticks. So it's a USB stick that you can take from a computer and put in another computer, but you actually don't physically put it in a computer. It's attached through the network. The feature gives us 30 gigabytes of free EBS storage of type general purpose, SSD or magnetic, per month. And in this course, we'll be using this with the GP2 or GP3 volumes.
 
 * An `EBS (Elastic Block Store) Volume` is a `network` drive you can attach to your instances while they run
 * It allows your instances to persist data, even after their termination
@@ -662,4 +672,141 @@ Finally, it is possible for us to create EBS volumes and leave them unattached. 
 
 ### EBS - Hands On
 
+https://github.com/alexjust-data/AWS_Certified_Cloud_Practitioner?tab=readme-ov-file#ebs-hands-on
 
+
+### EBS - Elastic Volumes
+
+* You don’t have to detach a volume or restart your instance to change it!
+  * Just go to actions / modify volume from the console
+* Increase volume size
+  * You can only increase, not decrease
+* Change volume type
+  * Gp2 -> Gp3
+  * Specify desired IOPS or throughput performance (or it will guess)
+* Adjust performance
+  * Increase or decrease
+
+
+### EFS – Elastic File System
+
+https://github.com/alexjust-data/AWS_Certified_Cloud_Practitioner?tab=readme-ov-file#efs--overview
+
+EFS is a managed NFS, which is a network file system. And because it's a network file system, it can be mounted on many EC2 instances, and these EC2 instances can also be in different availability zones. That's the whole power of EFS. It's highly available, very scalable, and expensive—it's about three times the cost of a GP2 EBS volume—and you pay per use, so you don't have to provision capacity in advance. Let me explain.
+
+You have your EFS file system, and you surround it with a security group. Then, you can have EC2 instances, many of them, in the US-East-1A availability zone, for example, or EC2 instances in the US-East-1B or US-East-1C availability zones, and they can all connect at the same time to the same network file system through EFS.
+
+* Use cases: content management, web serving, data sharing, Wordpress
+* Uses NFSv4.1 protocol
+* Uses security group to control access to EFS
+* Compatible with Linux based AMI (not Windows)
+* Encryption at rest using KMS
+  
+* POSIX file system (~Linux) that has a standard file API
+* File system scales automatically, pay-per-use, no capacity planning!
+
+The use cases of EFS include content management, web serving, data sharing, and WordPress. It uses the NFS protocol internally, and to control access to your EFS, you need to set up a security group. It's important to note that EFS is only compatible with Linux-based AMIs, not Windows. You can enable encryption at rest in your EFS drive using KMS. EFS is a standard file system on Linux, so it uses the POSIX system and has a standard file API.
+
+The cool thing about EFS is that you don’t need to plan the capacity in advance. The file system will scale automatically, and you pay per use for each gigabyte of data stored in EFS. 
+
+### EFS – Performance & Storage Classes
+
+Now, let’s talk about the different performance and storage classes.
+
+In terms of scale, EFS supports thousands of concurrent NFS clients and more than 10 gigabytes of throughput. It can grow to a petabyte-scale network file system automatically, which is really nice. You can also set the performance mode at the time of EFS network file system creation, and there are several options. The first is General Purpose, which is the default. It's used for latency-sensitive use cases, such as web servers or CMS. But if you want to maximize throughput, you have MaxIO, which has higher latency but higher throughput and is highly parallel. It's great for big data applications or media processing needs.
+
+For throughput modes, you have different options. The first is Bursting. For example, 1 terabyte of storage gives you 50 megabytes per second, with bursts up to 100 megabytes per second. You don’t have to remember the exact numbers, but that gives you an idea. Then, there’s Provisioned, where you can specify the throughput regardless of your storage size. So, for example, you could have 1 gigabyte per second of throughput for 1 terabyte of storage. That’s useful because you’ve decoupled your throughput from your storage. Finally, you have Elastic, which automatically scales the throughput up and down based on your workload. For example, you can get up to 3 gigabytes per second for reads and 1 gigabyte per second for writes based on your workload. This is great for unpredictable workloads.
+
+* **EFS Scale**
+  * 1000s of concurrent NFS clients, 10 GB+ /s throughput
+  * Grow to Petabyte-scale network file system, automatically
+* **Performance Mode (set at EFS creation time)**
+  * General Purpose (default) – latency-sensitive use cases (web server, CMS, etc…)
+  * Max I/O – higher latency, throughput, highly parallel (big data, media processing)
+* **Throughput Mode**
+  * **Bursting** – 1 TB = 50MiB/s + burst of up to 100MiB/s
+  * **Provisioned** – set your throughput regardless of storage size, ex: 1 GiB/s for 1 TB storage
+  * **Elastic** – automatically scales throughput up or down based on your workloads
+    * Up to 3GiB/s for reads and 1GiB/s for writes
+    * Used for unpredictable workloads
+
+### EFS – Storage Classes
+
+![](../img/02/90.png)
+
+For storage classes, we have several options. There are storage tiers, which are a lifecycle management feature that allows you to move files to different storage tiers after a certain number of days. You have the Standard tier, which is used for frequently accessed files, and the EFS IA (Infrequent Access) tier, which has a lower storage cost but a fee to retrieve files. Then, there’s the Archive storage tier, used for rarely accessed data—perhaps data accessed only a few times a year—making it a lot cheaper to store.
+
+To move your files automatically between storage tiers, you can implement lifecycle policies, which let you define after how many days a file should be moved to a specific tier. For example, if you have files in EFS Standard and one of them hasn’t been accessed for 60 days, you can set up a lifecycle policy to move it to EFS IA.
+
+In terms of availability and durability, Standard is great for a multi-AZ setup, where your EFS spans multiple availability zones, making it ideal for production workloads as it's resistant to disasters. But if you just want to do development or have cheaper options, you can choose One Zone, which gives you a single availability zone with backups, and it's also compatible with IA storage tiers. So, you have the EFS One Zone IA option as well.
+
+By using the right EFS storage classes, you can achieve up to 90% in cost savings, which is very helpful.
+
+### EFS - Hands On
+
+![](../img/02/91.png)
+
+So let's go ahead and practice using the Amazon Elastic File System service. Let's create our file system. Here, we can give it an optional name, but I'll leave it empty. We have to choose a VPC where we want to connect our file system. We'll leave it as the default VPC as well. We could just click Create and be done, but I want to show you the options. 
+
+![](../img/02/92.png)
+
+
+So let's click on Customize.
+
+Again, we'll leave the name empty and optional. Next, we need to choose a file system type. 
+
+We have two options: 
+* `Regional`, which gives you a file system within a region across multiple availability zones, providing very high availability and durability of data. 
+* But if you want to reduce costs, you could use the `One Zone` option, in which case you choose a specific availability zone. This is good for development environments, but not for production environments, because if that availability zone becomes unavailable, then your data will be inaccessible. 
+
+So, for production settings, you'll definitely want to use Regional, and we'll use Regional for this hands-on.
+
+Next, we can enable or disable `automated backups`, but it's recommended to keep them enabled. 
+
+![](../img/02/93.png)
+
+After that, we have `Lifecycle Management`, which moves data across different storage tiers to save costs. You can transition data to Infrequent Access or Archive and back to Standard. For example, you can set it so that if a file hasn’t been accessed for 30 days (you can customize this), it moves to the Infrequent Access storage tier, which will be cheaper—except when you access the file. The assumption is that after 30 days, the file is rarely accessed. If a file hasn’t been accessed in, say, 90 days, you can move it to the Archive, which is even cheaper. Then, if the file is accessed again, it can automatically transition back to Standard, as it might be reused more frequently. This is Lifecycle Management, and we’ll keep it on.
+
+Next is Encryption, which we’ll leave enabled—that's perfect. 
+
+Then, we have `Performance Settings`, specifically `Throughput Mode`, with three options: Elastic, Provisioned, and Bursting. Let’s start with Bursting. Bursting allows the throughput to scale with the amount of storage you're using, and it can exceed the normal limits temporarily—that’s why it’s called bursting. For example, if you have 1 gigabyte of storage, you get throughput based on that; if you have 1 terabyte, you get higher throughput.
+
+![](../img/02/94.png)
+
+Now, let's look at `Elastic`. Elastic is recommended because, regardless of the size of your EFS file system, it provides all the I/O you need and scales automatically. You only pay for what you use, making it ideal for workloads with unpredictable I/O demands, where throughput can scale from 0 to 100 megabytes per second quickly. This is why `Elastic is the recommended` mode—it requires no manual settings.
+
+Finally, we have Provisioned mode, which is used when you know in advance the amount of throughput you’ll need. For instance, you could specify that you'll need 100 megabytes per second of throughput, and there’s also a bursting limit of 300 megabytes per second. Since throughput is provisioned in advance, you'll pay for it in advance. Elastic is generally the recommended setting.
+
+![](../img/02/95.png)
+
+Under Additional Settings, we have General Purpose and Max I/O. With Elastic, you get the I/O you need based on your performance requirements, so General Purpose is the only option for Performance Mode. However, if you use Bursting or Provisioned, you can choose between two settings: General Purpose, which offers low-latency, high-performance for latency-sensitive applications, and Max I/O, which is for highly parallelized workloads and can tolerate higher latency in exchange for greater throughput. This is ideal for big data scenarios.
+
+The best recommended setting from AWS is to use Enhanced with General Purpose and Elastic throughput mode. Hopefully, this isn't too confusing. I don’t love that under Enhanced, there’s both Elastic and Provisioned. Really, there are just three options: Bursting, Elastic, and Provisioned, and those are what you should remember for the exam.
+
+![](../img/02/96.png)
+
+Let's click on **Next** now. 
+
+The next step involves **`Network Access`** settings. We have the network access settings, and they're very important. We have to choose a `VPC`, so I'll choose the default VPC. 
+
+Then, the **mount targets** —because we've chosen a regional type of EFS file system—will be `available` across three AZs. Each AZ is going to be assigned a `subnet`. I'll leave it as is and choose the default subnet. The `IP` is automatic, and we need to assign a `security group`. So, we need to go ahead and create a specific security group for my EFS system.
+
+![](../img/02/97.png)
+
+
+I'll go into the EC2 Console, then go to Security Groups, and create a new security group. 
+
+![](../img/02/98.png)
+ 
+![](../img/02/100.png)
+ 
+I'll call it `efs-demo`, and give it a description like EFS Demo SG. 
+
+For now, we won’t configure any `inbound rules`. 
+
+I'll **`click Create Security Group`**, and the group will be created successfully.
+
+
+
+
+10:49
