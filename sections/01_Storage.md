@@ -785,7 +785,7 @@ The best recommended setting from AWS is to use Enhanced with General Purpose an
 
 ![](../img/02/96.png)
 
-Let's click on **Next** now. 
+Let's click on **Next** now. Okay, so my EFS demo is created successfully. 
 
 The next step involves **`Network Access`** settings. We have the network access settings, and they're very important. We have to choose a `VPC`, so I'll choose the default VPC. 
 
@@ -794,19 +794,47 @@ Then, the **mount targets** —because we've chosen a regional type of EFS file 
 ![](../img/02/97.png)
 
 
-I'll go into the EC2 Console, then go to Security Groups, and create a new security group. 
+I'll go into the **`EC2 Console`**, then go to Security Groups, and create a new security group. 
 
 ![](../img/02/98.png)
  
-![](../img/02/100.png)
+![](../img/02/99.png)
  
 I'll call it `efs-demo`, and give it a description like EFS Demo SG. 
 
 For now, we won’t configure any `inbound rules`. 
 
-I'll **`click Create Security Group`**, and the group will be created successfully.
+![](../img/02/101.png)
+
+I'll **`click Create Security Group`**, and the group will be created successfully. Okay, so my EFS demo is created successfully, what I need to do is to refresh the page; the default ones that we come next; the default ones that we come next. And now I can remove these security groups and choose the EFS demo security group that I have created from before.
+
+![](../img/02/100.png)
 
 
+06:07
+
+So now we have done all the network access configuration. I'll click **`Next`**.
+
+Next, we have the File System Policy section, which is optional, and we won't modify it now as it’s more advanced and unnecessary for this setup.
+
+![](../img/02/102.png)
+
+So I will click on Next.
+
+Once we're happy with everything, we'll click **`Create`**.
+
+![](../img/02/103.png)
+
+click **`Create`**. Now, my file system is being created, and I'll update you once it's ready.
+
+![](../img/02/104.png)
+
+My file system is now available. I can go into it and see that 6 kilobytes of size is currently being used. With EFS, you only pay for the storage you use, so my current cost is zero. That’s good, and now that the file system is created, we want to mount it onto EC2 instances.
+
+![](../img/02/105.png)
 
 
-10:49
+So, the next step is to create EC2 instances. 
+
+6:54
+
