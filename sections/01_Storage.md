@@ -37,6 +37,11 @@
   - [EFS – Performance \& Storage Classes](#efs--performance--storage-classes)
   - [EFS – Storage Classes](#efs--storage-classes)
   - [EFS - Hands On](#efs---hands-on)
+  - [EBS vs EFS – Elastic Block Storage](#ebs-vs-efs--elastic-block-storage)
+  - [EBS vs EFS – Elastic File System](#ebs-vs-efs--elastic-file-system)
+- [AWS Backup](#aws-backup)
+  - [AWS Backup Vault Lock](#aws-backup-vault-lock)
+  - [AWS Backup - Hands On](#aws-backup---hands-on)
 
 ## Set up an AWS Billing Alarm
 
@@ -836,5 +841,206 @@ My file system is now available. I can go into it and see that 6 kilobytes of si
 
 So, the next step is to create EC2 instances. 
 
-6:54
+![](../img/02/106.png)
+
+So, the next step is to create EC2 instances. Let’s launch some instances. 
+
+I’ll name the first one Instance A because we will launch it in the subnet of AZA. We’ll use Amazon Linux 2. Everything looks good to go. We'll use a t2.micro instance because it’s free to use. 
+
+![](../img/02/107.png)
+
+We’ll disable the key pair and use EC2 Instance Connect to access our instance. For network settings, I’ll leave everything as is, and a new security group will be created with rules to allow SSH access from anywhere, which is good.
+
+There’s 8 gigabytes of GP2 storage, but since we want to configure the storage of the EC2 instance to mount the Amazon EFS, we can now do this from within the EC2 console, which is exciting. Let me show you how. Under File Systems, you can click Edit, 
+
+![](../img/02/108.png)
+
+but you cannot add a file system until a subnet is selected. 
+
+![](../img/02/109.png)
+
+`You currently have no file systems on this instance. You must select a subnet before you can add an EFS file system.`
+
+So, we scroll back up to Network Settings, click Edit,
+
+![](../img/02/110.png)
+
+and select EU West 1A as the subnet. 
+
+![](../img/02/111.png)
+
+Once that’s done, we can go back to File Systems. Now, we can add an EFS or FSx file system. We’ll choose to add an EFS file system and click Add Shared File System.
+
+![](../img/02/112.png)
+
+The system will link to my EFS, and the mount point will be /mnt/efs/fs1. That works for us. The security groups will be automatically created and attached, which is great. It will also automatically mount the shared file system by attaching the required user data scripts, which we previously had to run manually on the EC2 instance. This automation is a great improvement.
+
+![](../img/02/113.png)
+
+Let’s create this instance and **`launch instance`**.
+
+![](../img/02/114.png)
+
+**instance B**
+
+Once the instance is launched, I can view all instances. Now, let’s launch a second instance, and I’ll name it Instance B. Again, we’ll use Amazon Linux 2. To make things quick, I’ll proceed without a key pair. I’ll select EU West 1B as the subnet. 
+
+![](../img/02/116.png)
+
+For the security group, I’ll select the one created earlier, Launch Wizard 2. Then, we need to edit the file system and add the same EFS file system as before, using the same mount point. All the other options will remain as they are. 
+
+![](../img/02/117.png)
+
+![](../img/02/118.png)
+
+Now, we’ll **launch that instance**.
+
+![](../img/02/119.png)
+
+Let’s look at the interesting stuff that has happened. I’ll set the instance state to Running and refresh until both of my instances are running. Now they’re both up. If we go into the EFS Console and check the Network tab, we can see that each availability zone now has multiple security groups. There’s the EFS Demo group we created earlier, along with EFS SG1 and EFS SG2, which were automatically created by the EC2 console and attached to our EFS file system.
+
+![](../img/02/120.png)
+
+If I check the security group for Instance B, for example, I can look at EFS SG2 and view its inbound rules. 
+
+![](../img/02/122.png)
+
+We can see that it allows NFS traffic on port 2049, and the source of this traffic is the security group itself. That security group is attached to Instance B, which allows Instance B to access the EFS file system.
+
+![](../img/02/124.png)
+
+The EFS SG2 security group is also attached to the **instance B**.
+
+![](../img/02/125.png)
+
+We need to access the EFS file system because that security group right here called EFS-SG2 is attached into my EFS file system. So all the setup is done by AWS for us, which is truly nice. 
+
+![](../img/02/126.png)
+
+So now if I go into one of these instances, we're going to `connect` using EC2 instance connect on this tab. 
+
+![](../img/02/127.png)
+
+![](../img/02/128.png)
+
+![](../img/02/129.png)
+
+And then **I will also do the exact same thing by connecting to `instance B`** over EC2 instance connect. 
+
+So now I can, for example, verify the fact that, yes, in ls slash mnt EFS FS1, there is an EFS file system. And now we need to create files in it. So to make it simple, I will elevate to my right and type sudo su. And then I can do echo hello world into the mnt EFS FS1 as a hello.txt. So we've created that file named hello.txt. And if I do cat and then this entire file name right here, as you can see, it says hello world. 
+
+```sh
+[root@ip-172-31-20-125 ec2-user]# ls /mnt/efs/fs1/
+[root@ip-172-31-20-125 ec2-user]# sudo su
+[root@ip-172-31-20-125 ec2-user]# echo "Hello world" > /mnt/efs/fs1/hello.txt
+[root@ip-172-31-20-125 ec2-user]# cat /mnt/efs/fs1/hello.txt
+Hello world
+```
+
+So this file has been created into my EFS file system from this EC2 instance, which is an euwest1a. But now if I go into my second EC2 instance and do ls and then the same file system, so I look for files in it, as you can see, we also see this hello.txt file in it. And if I do cat and then cat the file hello.txt, it says hello world as well. 
+
+```sh
+   ,     #_
+   ~\_  ####_        Amazon Linux 2023
+  ~~  \_#####\
+  ~~     \###|
+  ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
+   ~~       V~' '->
+    ~~~         /
+      ~~._.   _/
+         _/ _/
+       _/m/'
+[ec2-user@ip-172-31-20-125 ~]$ ls /mnt/efs/fs1/
+hello.txt
+[ec2-user@ip-172-31-20-125 ~]$ cat /mnt/efs/fs1/hello.txt
+Hello world
+[ec2-user@ip-172-31-20-125 ~]$ 
+```
+
+
+So as you can see, the EFS file system is indeed mounted as a network drive onto both my EC2 instances. And they are in different AZs and they share the same EFS. So that's amazing. And that's a different kind of storage that you have the demo of it right now. 
+
+
+
+So that's it for the EFS demo. That was pretty complete. Now to just clean up, what you can do is you can terminate these two EC2 instances. So you go here and you terminate them. 
+
+![](../img/02/130.png)
+
+And something else you can do is you can go into the EFS file system. You can delete it by entering the file system ID.
+
+![](../img/02/131.png)
+
+ And then when everything is deleted, you can go ahead into your security groups and delete the extra security groups that have been created during this demo. Okay, that's it for this lecture. I hope you liked it. 
+
+ ### EBS vs EFS – Elastic Block Storage
+
+ So now let's talk about the differences of EVS volumes and EFS file systems. So the EVS volumes, they're attached to one instance at a time, except in the edge case of using the multi-attach feature of the io1 and io2 types of volume, but that is for very specific use cases. EVS volumes are also locked at the AZ level, so here is an example. We have one EC2 and AZ1, and we have one EVS volume attached to it, and it cannot be attached to an EC2 instance in AZ2. For the GP2 type of volume, the io will increase if the disk size increases, and for the GP3 and io1 type of volumes, you can increase the io independently from your disk size. To migrate an EVS volume across AZ, we need to take a snapshot, so it will go into the EVS snapshots, and then we can restore the snapshot into another AZ. This is how we move from one AZ to the next. Now the EVS volumes backups, they will use io, and so you shouldn't run them while your application is handling a lot of traffic because that may impact the performance. For your EC2 instances, the root EVS volumes of your instances will get terminated by default if the EC2 instance gets terminated, but you can disable that behavior. 
+
+![](../img/02/132.png)
+
+* EBS volumes…
+  * one instance (except multi-attach io1/io2)
+  * are locked at the Availability Zone (AZ) level
+  * gp2: IO increases if the disk size increases
+  * gp3 & io1: can increase IO independently
+* To migrate an EBS volume across AZ
+  * Take a snapshot
+  * Restore the snapshot to another AZ
+  * EBS backups use IO and you shouldn’t run them while your application is handling a lot of traffic
+* Root EBS Volumes of instances get terminated by default if the EC" instance gets terminated (you can disable that)
+
+
+### EBS vs EFS – Elastic File System
+
+Now for EFS, it's a bit different. So it's a network file system, and the goal is really to attach it to hundreds of instances across availability zones, so we really see the distinction here. So with one EFS file system, we can have different mount targets on different AZs, and then multiple instances can share that one file system together. So it's very helpful for example when you have WordPress, and it's only for Linux instances because it is using the POSIX system. The EFS has a higher price point than EVS, but you can leverage storage tiers for cost savings. So hopefully you understand now the difference between EFS and EVS, and for the instance store, well it is physically attached to the EC2 instance, and so therefore if you lose your EC2 instance, you will lose the storage as well. All right, that's it. I hope you liked it, and I will see you in the next lecture.
+
+![](../img/02/134.png)
+
+
+## AWS Backup
+
+So, AWS Backup is a fully managed service and it allows you to centrally manage and automate backups across all your AWS services. And the list is getting bigger and bigger by the day. So the idea is that you want to have a central place, you don't want to create any custom scripts or have any manual processes. You want to have a central view of your backup strategy. So supported services are pretty wide. For example, Amazon EC2, EPS, Amazon S3, RDS, and all the database engines supported, Aurora, DynamoDB, DocumentDB, Amazon Nameshare, EFS, FSx, including Illustrator and Windows Cloud Server and probably others. AWS Storage Gateway, such as the Volume Gateway, and more that can come over time. But I'm not necessarily going to update this lecture because, well, it doesn't really matter. The idea is that you get the concept behind AWS Backup and the most important services are shown on this slide.
+
+* Fully managed service
+* Centrally manage and automate backups across AWS services
+* No need to create custom scripts and manual processes
+* Supported services:
+  * Amazon EC2 / Amazon EBS
+  * Amazon S3
+  * Amazon RDS (all DBs engines) / Amazon Aurora / Amazon DynamoDB
+  * Amazon DocumentDB / Amazon Neptune
+  * Amazon EFS / Amazon FSx (Lustre & Windows File Server)
+  * AWS Storage Gateway (Volume Gateway)
+* Supports cross-region backups
+* Supports cross-account backups
+
+So it supports cross-region backups. This means that you can have your backups pushed to another region for disaster recovery strategy all in one place. And also supports cross-account backups if you are using multiple accounts in your AWS strategy. So it supports point-in-time recovery for supported services, such as Aurora. It supports on-demand and scheduled backups. There's tag-based backup policies to make sure you only backup any resources that have been tagged with production. And you can create backup policies known as backup plans. You define the frequency, for example, every 12 hours or weekly or monthly or whatever cron expression you have. The backup window. If you want to transition the backup itself to cold storage, so never or maybe after some days, some weeks, some months, or some years, and the retention period of your backup. So every, always, or days, weeks, months, and years. So it's quite supportive and comprehensive and it supports really most services. So it's a really nice addition to the AWS services.
+
+* Supports PITR for supported services
+* On-Demand and Scheduled backups
+* Tag-based backup policies
+* You create backup policies known as Backup Plans
+* Backup frequency (every 12 hours, daily, weekly, monthly, cron expression)
+* Backup window
+* Transition to Cold Storage (Never, Days, Weeks, Months, Years)
+* Retention Period (Always, Days, Weeks, Months, Years)
+
+So if you have a look at AWS Backup, we create a backup plan, as I said, and then you assign specific AWS resources that are important to you. So here is a list, but it can get bigger. And then once it's done, well, automatically your backup, your data is going to be backed up to Amazon S3 in an internal bucket that is specific to AWS Backup.
+
+![](../img/02/135.png)
+
+### AWS Backup Vault Lock
+
+And another feature that you should know about for AWS Backup is the vault lock. So you enforce a warm write once, read many policy. That means that all your backup that you store in your backup vault cannot be deleted. So the idea is that you know for sure, you can prove it, that thanks to the vault lock policy, you cannot delete your backups. And it provides you an additional layer of defense for your backups against, for example, inadvertent or malicious delete operations or updates that shorten or alter the retention period. And even the root user itself cannot delete backups when enabled. So it gives you strong guarantees on the safety of your backups. Okay, that's all you need to know for the AWS Backup service. I hope you liked it and I will see you in the next lecture.
+
+* Enforce a WORM (Write Once Read Many) state for all the backups that you store in your AWS Backup Vault
+* Additional layer of defense to protect
+your backups against:
+  * Inadvertent or malicious delete operations
+  * Updates that shorten or alter retention periods
+* Even the root user cannot delete backups when enabled
+
+![](../img/02/136.png)
+
+### AWS Backup - Hands On
 
