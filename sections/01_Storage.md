@@ -1044,3 +1044,122 @@ your backups against:
 
 ### AWS Backup - Hands On
 
+So we need to type this backup into the search bar and open the backup service. So we are going to create our first backup plan.
+
+![](../img/02/137.png)
+
+So I'm going to click on Create Backup Plan. And we have three options. 
+
+`Start options`
+
+Either we start with a template, or we build a new plan, or we define a plan using JSON. The simplest for us is to start with a template. And we can have different templates. For example, daily, 35-day retention, daily, monthly, one-year retention, and so on. So let's go with daily, monthly, one-year retention. And I'll call it Test Plan. 
+
+`Backup rules`
+
+Next, you click on Backup Rules. And you see we can have many backup rules in our backup rules. So we have two. We have daily backups and monthly. 
+
+![](../img/02/138.png)
+
+Schedule:
+
+* `Backup Rule Name`: The name of the backup rule, here set as DailyBackups.
+Must be between 1 to 50 characters and case-sensitive.
+
+* `Backup Vault`: This is where the backups will be stored. In the screenshot, the default vault selected is aws/efs/automatic-backup-vault. You also have the option to create a new vault if needed.
+
+* `Backup Frequency`: Specifies how often backups are taken. In this case, it's set to Daily backups.
+
+Backup Window:  
+* `Start Time`: Specifies the time backups will start. The example shows 05:00 (5 AM) in the Europe/Madrid (UTC+02:00) time zone.
+* `Start Within`: Defines a window for when the backup plan should start if it misses the exact * start time. Here, it's set to 8 hours.
+* `Complete Within`: This defines the time frame within which the backup job should be completed. It's set to 7 days.
+  
+Point-in-Time Recovery (PITR): 
+* An option to enable continuous backups to restore the backup to a specific point in time. 
+* This feature is useful for services like Aurora, RDS, S3, and SAP HANA.
+
+![](../img/02/139.png)
+
+Lifecycle:
+
+
+`Cold Storage`: 
+* You can choose to move backups from warm to cold storage. This is an option for resources like EFS, SAP HANA, Timestream, DynamoDB, and others.
+* Cold storage is used for long-term archival, and it requires a minimum of 90 days of retention. In this case, Amazon EBS snapshots can be archived if cold storage is enabled and the backup frequency is at least monthly.
+* Total Retention Period: Specifies how long backups are stored. Here it’s set to 35 days. This is the period during which the backup will be kept in warm storage before being deleted or transitioned to cold storage.
+  
+Copy to Destination (Optional):
+* You can choose to copy the backup to a different region or a separate backup vault. This is useful for disaster recovery scenarios where you want the backup in another location.
+A region can be selected if you opt for this feature.
+
+Tags Added to Recovery Points (Optional):
+* You can add tags to backups (recovery points) for better management and identification. For instance, tags like environment (e.g., "production") can be applied.
+There’s an option to add up to 50 tags, but currently, no tags are assigned in the screenshot.
+
+![](../img/02/140.png)
+
+
+**`"Save Backup Rule"`**
+
+And for monthly, 
+
+
+well, we get the similar thing. So it's going into the default backup vault. It's monthly on day one of each month. And the rest looks the same. So we actually transition these ones to cold storage after one month. And then we retain them for one year. 
+
+![](../img/02/141.png)
+
+![](../img/02/142.png)
+
+Okay. So we have these ready. And then I can just scroll down and click on **`create plan`**.
+
+So now our test plan is created. And we need to assign resources to it. So I'm going to click on assign resources. And I will just call it test assignments. And so here for iGrow, we're going to use a default role, which is going to create a role for us with the correct permissions. Or you can choose your own one. But let's go with default role. Easy. And then for resource selection, we have two things we can do. Number one, we can include all resource types. Or number two, we can include specific resource types. For example, if you wanted to just have a DynamoDB table, and then you could select the resource you want in there, you could do this. Or if you wanted to, you could have all tables. So it's one way of doing it. Or if you go with all resource types, you really would use this as a combination with tags. And so for tags, you would say, well, if the key environment is equal to the value production, then do a backup. This would be the kind of use cases for backups. But you're free to do anything you want, of course. 
+
+![](../img/02/143.png)
+
+And then when you're done, you click on **`Assign resources`**.
+
+
+And so just to make it very, very clear, if I went into EC2 and I were to **create an EBS volume**, 
+
+![](../img/02/144.png)
+
+and that volume would have, for example, one gigabyte, and then the key would be environment production, then this would be automatically backed up by my backup plan because it has the correct tags.
+
+![](../img/02/145.png)
+
+
+
+![](../img/02/146.png)
+
+So if you look at our volume right now, and we go into tags, as we can see, it has environment production, 
+
+![](../img/02/147.png)
+
+which corresponds to the tags that I've set up for my backup plan. So this is the assignments right here. And we can have multiple assignments as well in here. 
+
+![](../img/02/148.png)
+
+And then that's it. The backup plan is going to run automatically, and then the backups are going to happen here in my backup vault. 
+
+The jobs are the jobs that are going to be scheduled and happening. So we have backup jobs, restore jobs, and copy jobs if we wanted to.
+
+![](../img/02/149.png)
+
+And then we can look at the settings. So the settings is around, do you want to have backup policies, cross-account monitoring, cross-account backups, and so on. 
+
+
+![](../img/02/150.png)
+
+So we've seen the basics of how backups work. And so that's it. I won't show you all this, okay? That's all you need to know. And I'm going to delete everything. 
+
+So for that, please make sure to delete your EBS volume, or you can wait a day if you wanted to see if the backups work, obviously.
+
+![](../img/02/152.png)
+
+ And then when you're done, you take the assignment and you delete it. 
+ 
+![](../img/02/153.png)
+ 
+So type the name of the assignment in here. And then for the daily backup rules, you can delete them, or delete directly the backup plan. And for this, just enter the name of the backup plan and press delete.
+
+![](../img/02/154.png)
