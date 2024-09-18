@@ -1,2 +1,3 @@
 - [Fundamentals](sections/00_Fundamentals.md)
 - [Storage](sections/01_Storage.md)
+- [Database](sections/02_Database.md)
