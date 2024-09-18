@@ -8,6 +8,7 @@
   - [DynamoDB – Primary Keys](#dynamodb--primary-keys)
 - [DynamoDB - Hands On](#dynamodb---hands-on)
 - [DynamoDB in Big Data](#dynamodb-in-big-data)
+- [DynamoDB - Throughput (RCU \& WCU)](#dynamodb---throughput-rcu--wcu)
   - [DynamoDB – Read/Write Capacity modes](#dynamodb--readwrite-capacity-modes)
   - [R/W Capacity Modes – Provisioned](#rw-capacity-modes--provisioned)
   - [DynamoDB – Write Capacity Units (WCU)](#dynamodb--write-capacity-units-wcu)
@@ -16,6 +17,7 @@
   - [DynamoDB – Partitions Internal](#dynamodb--partitions-internal)
   - [DynamoDB – Throttling](#dynamodb--throttling)
   - [R/W Capacity Modes – On-Demand](#rw-capacity-modes--on-demand)
+- [DynamoDB - Throughput (RCU \& WCU) - Hands on](#dynamodb---throughput-rcu--wcu---hands-on)
 
 `Managing and querying structured and semi-structured data`
 
@@ -237,6 +239,9 @@ Now, how does DynamoDB relate to the big data world? Well, there's some very com
 * Large data with low I/O rate: use S3 instead
 
 
+### DynamoDB - Throughput (RCU & WCU)
+
+
 #### DynamoDB – Read/Write Capacity modes
 
 Okay, so now let's talk about read and write capacity modes for DynamoDB. So this is how you control your table's capacity, so you have to specify an event, so read and write throughput, so you have two modes actually. The first one is called provision mode, which is the default mode, in which we specify the read and write per second, so also called read capacity units and write capacity units. You need to plan your capacity beforehand, you're going to pay for whatever is going to be provisioned, so if you say I want 10 read capacity units instead of 5 write capacity units, you're going to pay for that every hour, and you have the option to do autoscaling, as we'll see very soon. There's a second mode called the on-demand mode, and this one will automatically have the reads and the writes scaled up and down based on your workloads, and there's no capacity planning needed, so you don't need to provision capacity units, they will just be there, and you're going to pay exactly for what you use, but it's going to be a lot more expensive than provision mode. So the idea is that you have different use cases, and we'll see them in this lecture in details. So you can switch between the two modes, provision and on-demand, once every 24 hours. So we're going to do a deep dive on both of them, so do not worry right now, it's just an introduction
@@ -319,3 +324,6 @@ Now, the last mode we need to understand, and this is a much easier mode to unde
 * **Write Request Units (WRU)** – throughput for writes (same as WCU)
 * 2.5x more expensive than provisioned capacity (use with care)
 * Use cases: unknown workloads, unpredictable application traffic, …
+
+
+### DynamoDB - Throughput (RCU & WCU) - Hands on
