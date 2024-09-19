@@ -18,6 +18,20 @@
   - [DynamoDB – Throttling](#dynamodb--throttling)
   - [R/W Capacity Modes – On-Demand](#rw-capacity-modes--on-demand)
 - [DynamoDB - Throughput (RCU \& WCU) - Hands on](#dynamodb---throughput-rcu--wcu---hands-on)
+- [DynamoDB - Basic APIs](#dynamodb---basic-apis)
+  - [Writing Data](#writing-data)
+  - [Reading Data](#reading-data)
+  - [Reading Data (Query)](#reading-data-query)
+  - [Reading Data (Scan)](#reading-data-scan)
+  - [Deleting Data](#deleting-data)
+  - [Batch Operations](#batch-operations)
+  - [PartiQL](#partiql)
+- [DynamoDB - Basic APIs - Hands On](#dynamodb---basic-apis---hands-on)
+- [DynamoDB - Indexes (LSI \& GSI)](#dynamodb---indexes-lsi--gsi)
+  - [Local Secondary Index LSI](#local-secondary-index-lsi)
+  - [Global Secondary Index (GSI)](#global-secondary-index-gsi)
+  - [Indexes and Throttling](#indexes-and-throttling)
+- [DynamoDB - Indexes (LSI \& GSI) - Hands On](#dynamodb---indexes-lsi--gsi---hands-on)
 
 `Managing and querying structured and semi-structured data`
 
@@ -327,3 +341,277 @@ Now, the last mode we need to understand, and this is a much easier mode to unde
 
 
 ### DynamoDB - Throughput (RCU & WCU) - Hands on
+
+Let's have a look at how we can define the RCU and WCU of our tables. So if we take our users table, for example, and you go on the right-hand side and you do **`additional settings`**, 
+
+![](/img/03/34.png)
+
+you have the read-write capacity, and you can edit it. 
+
+![](/img/03/35.png)
+
+So this is what we have defined at table creation time, but the cool thing about NMDB is that we can switch between the capacity modes if we need to, and then we can also change them over time. So let's take the most simple capacity mode right now, which is on-demand. And this is simplified billing for paying for the actual read and write of your application. But this is twice or three times as expensive as provisioned. And so obviously this is when you have a very unusual, unpredictable type of workload, or maybe this is in your development environment, and let's consider that you're not using the table at all for 24 hours a day, but maybe one day for one hour you'll be using the table a lot. And so therefore, this is a great capacity mode because it actually bills you for what you've been using, which is quite amazing. Now there's provisioned capacity mode, and this is the one we spend most of the time on to understand and to compute the reads and writes. And so let's go into the capacity calculator. So as you can see here, you can specify the average item size. For example, six kilobytes, how many reads per second you want, so maybe three reads per second and two writes per second. The type of reads you want to have, so eventually consistent and strongly consistent. There's transactional, but I will define this a bit later on. I don't want to overwhelm you right now, so eventually or strongly consistent. And then for the write consistency, same standard or transactional, but again, transactional we'll see a little bit later. And as you can see, based on what I choose, it gives me the RCU and the WCU, as well as the estimated costs I will have for my table. So this is quite a handy calculator, and I would suggest that you practice a little bit with these settings and you try to guess correctly what's the RCU and WCU for this table because this is something that the exam will ask you.
+
+![](/img/03/36.png)
+
+
+Now let's take a look at the table capacity. So we can obviously have off autoscaling and off autoscaling for reads and writes, and so therefore each provisioned capacity unit, and they won't change over time unless you manually change them, but you can also set up autoscaling. And autoscaling is really cool because we're just saying, what's my min and my max I'm willing to consider, and what's my target utilization as a percentage? And then we will try, for example, if we have maximum capacity of 100, it will set to 100, the WCU, if you're actually consuming on average 70 WCUs and so on. But if you're consuming, say, 7 WCUs, then automatically the autoscaling will kick in and the desired capacity units will be 10 for that table. So this is going to be nice because you don't have to think too hard about setting the WCU and RCU. You just need to think about what's my min, what's my max, and what's my target utilization, and your application and DynamoDB will do the rest, which is nice to have a better pricing and a better scaling. So this is applying to both autoscaling for reads and for writes, so this is good. And then you would get the estimated cost and so on. So if I set it to autoscaling max 3 and min 1, and then again max 3 and min 1, and click on Save Changes,
+
+
+![](/img/03/37.png)
+
+
+now what I'm going to do is just wait a little bit of time for autoscaling to kick in and to see the autoscaling activities. And as you can see, the provision was 2 and 2 for WCUs, but we had 1 to 3 in terms of range for autoscaling. And I refreshed autoscaling activities, and as you can see for this table, the setting read capacity was set to 1 and write capacity was set to 1 because I'm not using the table, and so autoscaling kicked in and it worked. Therefore, if I refresh this page and remove this here, as you can see now, the RCU and WCUs are 1 and 1. So autoscaling is quite cool, it works just like EC2, but for DynamoDB.
+
+![](/img/03/38.png)
+
+
+### DynamoDB - Basic APIs
+
+
+#### Writing Data
+
+In the exam, you will see the API calls of the MODB referred by their name. So it's good for us to see them once. So if you want to write data, you have a few options. You have PutItem, and when you do a PutItem, it creates or fully replaces a new item that has the same primary key. It will consume write capacity units, and so the idea is that you want to do a full replace or writing a new item. The second one is UpdateItem, which is a bit different than PutItem. This one will edit the existing item's attributes, or will add a new item if it does not exist. But the idea is that with UpdateItem, we only edit a few attributes and not every other attribute, so this is the difference between PutItem and UpdateItem. And we can use it with atomic counters that we'll see in this section as well. And then you have ConditionalWrite, which is to accept a write update delete only if a condition is met, and this is helping with concurrent access to items, and we'll see this as well in this section.
+
+* **PutItem**
+  * Creates a new item or fully replace an old item (same Primary Key)
+  * Consumes WCUs
+* **UpdateItem**
+  * Edits an existing item’s attributes or adds a new item if it doesn’t exist
+  * Can be used to implement **Atomic Counters** – a numeric attribute that’s unconditionally incremented
+* **Conditional Writes**
+  * Accept a write/update/delete only if conditions are met, otherwise returns an error
+  * Helps with concurrent access to items
+  * No performance impact
+
+
+#### Reading Data
+
+To read data, we have GetItem, and GetItem is very simple and easy to understand. You read based on the primary key, and the primary key, again, can be a hash or a hash plus run, so you have the two options. And you get two modes to read from, so you have the EventuallyConsistentReadMode or to have StronglyConsistentReadMode, so you need to specify it. It will take more RCU and then maybe a little bit more latency. You can also specify a projected expression in your API, and this projection expression is going to help you receive only a few attributes out of the DynamoDB.
+
+* **GetItem**
+  * Read based on Primary key
+  * Primary Key can be **HASH** or **HASH+RANGE**
+  * Eventually Consistent Read (default)
+  * Option to use Strongly Consistent Reads (more RCU - might take longer)
+  * **ProjectionExpression** can be specified to retrieve only certain attributes
+
+#### Reading Data (Query)
+
+Next, we have the query, and the query is to return items based on a key condition expression, which is a partition key, so it must be the equal operator, so you're saying, hey, I want to query for job123, and also optionally a sort key, and because you can sort, you can have equal, less than, over than, begins, between, and so on. Then you can specify a filter expression, and this is to add additional filtering after the query operation has been done, but before the data is returned to you, and this is to use with non-key attributes, so you cannot use a filter expression with hash or range attributes. And when the query returns, it's going to be a list of items, obviously, and you have a limit of how many items you retrieve based on the limit query parameter, and either you're going to reach that limit of number of items or you're going to get up to one megabyte of data. But if you want to get, obviously, more data over time, you can do pagination on the results and ask for more and more and more. Now you can query a table or a local secondary index or global secondary indexes, and we'll see those in the next lectures as well. 
+
+
+* Query returns items based on:
+  * KeyConditionExpression
+    * Partition Key value (must be = operator) – required
+    * Sort Key value (=, <, <=, >, >=, Between, Begins with) – optional
+  * FilterExpression
+    * Additional filtering after the Query operation (before data returned to you)
+    * Use only with non-key attributes (does not allow HASH or RANGE attributes)
+* Returns:
+  * The number of items specified in Limit
+  * Or up to 1 MB of data
+* Ability to do pagination on the results
+* Can query table, a Local Secondary Index, or a Global Secondary Index
+
+
+#### Reading Data (Scan)
+
+And finally, you have a scan, so getItem was for one item, then the query was for a specific partition key and a sort key, and scanItem is to read an entire table, and then if you wanted to, you could filter the data, but this is only done on the client side, so this is very inefficient. So scan is to really export the entire table, and each scan will return up to one megabyte of data, and if you want to keep on reading, then you use pagination techniques, so that means page one, page two, page three, and so on. It will consume a lot of RCU because you are reading your entire table, and so therefore, if you want to not impact your normal operations, you need to impact the scan using a limit statement or to reduce the size of the result and then pause a little bit. And if you wanted to instead consume a lot of RCUs and do a scan as fast as possible, then for faster performance, you would use a parallel scan. In this case, multiple workers that you define will scan multiple data segments at the same time, which will increase the throughput and RCU consumed, and if you wanted to start a parallel scan and limit its impact, you could use limit conditions and so on. And then scans can be used with projection expression and filter expression, so projection expression to only retrieve certain attributes and filter expression to send stuff server-side
+
+
+* Scan the entire table and then filter out data (inefficient)
+* Returns up to 1 MB of data – use pagination to keep on reading
+* Consumes a lot of RCU
+* Limit impact using **Limit** or reduce the size of the result and pause
+* For faster performance, use **Parallel Scan**
+  * Multiple workers scan multiple data segments at the same time
+  * Increases the throughput and RCU consumed
+  * Limit the impact of parallel scans just like you would for Scans
+* Can use **ProjectionExpression & FilterExpression** (no changes to RCU)
+
+
+#### Deleting Data
+
+Now, if you wanted to delete data out of DynamoDB, you have the delete item, which is used to delete an individual item, and then you can also do a conditional delete, so delete this item only if money equals zero. And if you wanted to delete everything in your table, you have delete table, so this is to delete the whole table and its item, and it's much quicker than doing a scan and then deleting each and every single item on the table. Delete table will just drop everything, and this is something that can come up in the exam. If you wanted to just delete everything, do not do a scan, just use the delete table API. 
+
+
+* **DeleteItem**
+  * Delete an individual item
+  * Ability to perform a conditional delete
+* **DeleteTable**
+  * Delete a whole table and all its items
+  * Much quicker deletion than calling **DeleteItem** on all items
+
+
+#### Batch Operations
+
+Now, for efficiency purposes, you can actually batch operations in DynamoDB. So you save in latency and you gain in efficiency by reducing the number of API calls you do to the database, and all the operations as part of a batch are going to be applied in parallel by DynamoDB for better efficiency. So because you have a batch of operations, though, part of the batch can fail. In that case, you will receive the failed items back and you can retry only these failed items. So in the write mechanism, you have batch write item, and this allows you to perform up to 25 put item and or delete item in one call. You have up to 16 megabytes of data written and still have the same limit of 400 kilobytes of data per item, and you cannot update item. You can only do put item or delete item. Now, if you have items that were not able to be written for whatever reason, usually because of a lack of write capacity, then you will receive back something called unprocessed items, and then you can retry the items within the unprocessed items. So two options to process them correctly. Either you use an exponential backup strategy to keep on retrying with longer and longer time until it succeeds, or if you consistently get these unprocessed items and scaling issues, then, of course, you need to add write capacity units to allow your batch operations to complete efficiently. For batch get item, you will return items from one or more tables, and you can receive up to 100 items and up to 16 megabytes of data, and all these items are going to be retrieved in parallel to minimize latency. Again, if you are missing some items, it's because you may have some unprocessed keys because you have failed read operations because you don't have enough capacity, in which case, same idea. You use exponential backup to retry or you add read capacity units to increase your read capacity.
+
+
+* Allows you to save in latency by reducing the number of API calls
+* Operations are done in parallel for better efficiency
+* Part of a batch can fail; in which case we need to try again for the failed items
+
+* **BatchWriteItem**
+  * Up to 25 **PutItem** and/or **DeleteItem** in one call
+  * Up to 16 MB of data written, up to 400 KB of data per item
+  * Can’t update items (use **UpdateItem**)
+  * **UnprocessedItems** for failed write operations (exponential backoff or add WCU)
+
+* **BatchGetItem**
+  * Return items from one or more tables
+  * Up to 100 items, up to 16 MB of data
+  * Items are retrieved in parallel to minimize latency
+  * **UnprocessedKeys** for failed read operations (exponential backoff or add RCU)
+
+
+#### PartiQL
+
+Also, we have PartyQL. So we've seen that in DynamoDB, we have specific API calls to do specific things, but sometimes all that you know as a data engineer or whatever, as a developer, may be SQL. And so you can use SQL on DynamoDB by using PartyQL. So here you have a standard SQL query where you find the order ID and the total from your orders table, and you have a filtering condition and an ordering condition. And so using PartyQL, you can do the exact same operations we saw before, which is to select, insert, update, and delete data in DynamoDB. But this time, instead of doing the DynamoDB-specific APIs, you can just use SQL, and you can run your queries across multiple DynamoDB tables, but you cannot do joins, okay? You can just do the select, insert, update, and delete. Everything you can do with an API, but then you use SQL for writing these calls. So you run PartyQL queries from the Management Console or from the NoSQL Workbench for DynamoDB or from DynamoDB APIs or from the CLI or from the SDK. And the goal of it is really not to add new capabilities to DynamoDB because you have the same capabilities, but it's just to use SQL to write these API calls against DynamoDB. So hopefully that makes sense. I hope you liked it, and I will see you in the next lecture.
+
+
+* SQL-compatible query language for DynamoDB
+* Allows you to select, insert, update, and delete data in DynamoDB using SQL
+* Run queries across multiple DynamoDB tables
+* Run PartiQL queries from:
+  * AWS Management Console
+  * NoSQL Workbench for DynamoDB
+  * DynamoDB APIs
+  * AWS CLI
+  * AWS SDK
+
+```sql
+SELECT OrderID, Total
+FROM Orders
+WHERE OrderID IN [1,2,3]
+ORDER BY OrderId DESC
+```
+
+
+### DynamoDB - Basic APIs - Hands On
+
+![](/img/03/41.png)
+
+So let's have a look at these data API calls we can do. So if I go on my table, as we can see right now, we are in the scan, and we can select a table, and then we click on run. So scan is going to scan the entire table, and obviously going to return many items to us. If we wanted to create an item, 
+
+![](/img/03/43.png)
+
+
+what we could do is specify a user ID, so alice456, then we specify a timestamp, so let me just do this one very quickly, and then t0506 and 00, here we go. Okay, and then some content for it, alice blog. Okay, now let's create this item.
+
+![](/img/03/44.png)
+
+Okay, now let's create this item. So this was a put item. Why? Because we have sent a new item into DynamoDB, and we specified user ID and post timestamp, and this was new, so here we go, created. If you want to look at update item, what I can do is action, and then edit, and then I will just edit one specific attribute, so alice blog edited, and click on save change,
+
+![](/img/03/45.png)
+
+
+![](/img/03/46.png)
+
+
+ and behind the scenes, this is going to do a update item API call. 
+ 
+![](/img/03/47.png)
+ 
+So we have seen update, now let's look at get
+
+
+So if I click on this one, for example `John123`, and I go into the item editor, well, behind the scenes, by clicking on this row, on this item, I was able to retrieve the content of this item, and so this was a get item that was done, so this is good.  
+
+Now we can do, obviously, batch actions, so we can do action and then delete items through a batch delete item, okay, so batch write and a batch delete. But if you want to delete everything in the table, you can do a scan and a batch delete, but this would not be very efficient.
+
+![](/img/03/48.png)
+
+
+But this would not be very efficient. The other way to do it would be to simply drop the table and be done. 
+
+
+Now finally, let's have a look at scan and query. So scan really gives you all the tables you have, and then you can apply a filter if you wanted to, but this is done client-side for this filter, so this will be filtered in your web browser, not in DynamoDB directly. Or you can do a query, and a query is very helpful because we can specify a specific user ID, for example, John123, and then click on run, and this gives us all the items of John123, but also we could have a query and specify a condition on the post timestamp, which is a sort key.
+
+![](/img/03/49.png)
+
+So we can have equal to, less than equal to, greater than, between, and begins with. So if you wanted to know all the posts after, say, 2021-11, and click on run, we will only get one return item, but then if we do 2021-09, we get two items back. So you can see the queries here is only done on user ID and post timestamp. We cannot query on the content or search for the content. We could filter on the content if we wanted to afterwards, but this would be done client-side. So this really shows you the power of using partition keys, such as a hash key and a sort key. So that's it. We've seen all the APIs of DynamoDB.
+
+![](/img/03/50.png)
+
+
+### DynamoDB - Indexes (LSI & GSI)
+
+#### Local Secondary Index LSI
+
+So an LSI is going to give you an alternative sort key for your table. So you have the same partition key from your base table, but you're going to get an additional sort key. And this sort key consists of one scalar attribute, so it could be a string, a number, or a binary. And you can get up to five LSIs per table. Now, LSIs must be defined at table creation time, so you cannot create them after your table has been created. So you need to have some careful thinking into how you want your table to be designed. Next, on your LSI, you can have some or all attributes from your main table. So it's up to you to choose in your LSI if you want to only have maybe one specific attribute because this is what you're trying to query for. So if we take an example of here, this is our table, which has user ID, game ID, game timestamp, score, and results. And right now we can do queries on user ID and game ID very simply, but we cannot do a query on user ID and game timestamp. For this, we need to do a scan and then do some client-side filtering. So to do so, if you wanted to do a query based on user ID and game timestamp, we need to create an LSI and define the LSI on the attribute game timestamp. And if we do so, then we can do a query on, hey, give me all the games that have been done by this user between 2021 and 2020, and so on. So this is super important for you to understand. This is the same partition key as before, but we have a different sort key, thanks to an LSI.
+
+![](/img/03/51.png)
+
+* **Alternative Sort Key** for your table (same **Partition Key** as that of base table)
+* The Sort Key consists of one scalar attribute (String, Number, or Binary)
+* Up to 5 Local Secondary Indexes per table
+* **Must be defined at table creation time**
+* **Attribute Projections** – can contain some or all the attributes of the base table (**KEYS_ONLY, INCLUDE, ALL**)
+
+#### Global Secondary Index (GSI)
+
+Next, we have GSI, or Global Secondary Indexes. So this is going to give you an alternative primary key. So you can have a different hash key, a different partition key, or you can have a different hash key and sort key as well from the base table. So this is helpful if you wanted to speed up queries on things that are non-key attributes within your table. So the index can consist of scalar attributes, so string, number, and binary. And again, you can specify which attributes you want to project on that index. And for that index, though, it's very special because it's kind of like a different new table. And therefore, for this index, you must provision the RCU and WCUs. Now, the GSIs are powerful because they can be added or modified after the table has been created. So let's take a very simple table in which we have user ID, game ID, and game timestamp. With this table, we're able to query based on user ID. So give me all the games of this user. But we cannot query on game ID. As we can see right now, if you want to query on game ID, it would be extremely difficult to do a scan and then filter client-side. So instead, we're going to create a GSI, a global secondary index, which is going to give us the ability to query by game ID. So now the partition key for that GSI becomes the game ID. The sort key may be, for example, game timestamp, and this is what you want to query on. And the attributes become user ID because we've done a projection of the user ID attributes. So you can see in this one, we're creating some fully different new queries by defining a new partition key and a sort key. And this is why it's very important in DynamoDB to understand how you're going to query data, to understand how you're going to make your local secondary indexes and your global secondary indexes. So within LSI, within GSI, very, very different purposes. But let's talk about these indexes and throttling.
+
+![](/img/03/52.png)
+
+* **Alternative Primary Key (HASH or HASH+RANGE)** from the base table
+* Speed up queries on non-key attributes
+* The Index Key consists of scalar attributes (String, Number, or Binary)
+* **Attribute Projections** – some or all the attributes of the base table (**KEYS_ONLY, INCLUDE, ALL**)
+* Must provision RCUs & WCUs for the index
+* **Can be added/modified after table creation**
+
+
+#### Indexes and Throttling
+
+But let's talk about these indexes and throttling. So when you have a GSI, if the rights are throttled on the GSI, then the main table will be throttled as well. So this is a very, very important caveat that comes up in the exam. So even if the WCUs are fine on the main table, if they are throttling on the GSI, then the main table, no matter what, will be throttling. And therefore, choose your GSI partition key carefully and assign your WCU capacity very, very carefully. Whereas for LSI, so local secondary indexes, they will use the WCU and the RCU of the main table, and there's no special throttling considerations to be had. OK, so that's it for this lecture. I hope you like it.
+
+* Global Secondary Index (GSI):
+  * If the writes are throttled on the GSI, then the main table will be throttled!
+  * Even if the WCU on the main tables are fine
+  * Choose your GSI partition key carefully!
+  * Assign your WCU capacity carefully!
+
+* Local Secondary Index (LSI):
+  * Uses the WCUs and RCUs of the main table
+  * No special throttling considerations
+
+### DynamoDB - Indexes (LSI & GSI) - Hands On
+
+
+![](/img/03/53.png)
+
+
+![](/img/03/54.png)
+
+
+![](/img/03/55.png)
+
+
+![](/img/03/56.png)
+
+
+**`Create table`**
+
+![](/img/03/57.png)
+
+
+![](/img/03/58.png)
+
+
+![](/img/03/59.png)
+
+![](/img/03/60.png)
+
+
+**`Create index`**
+
+![](/img/03/61.png)
+
+![](/img/03/62.png)
+
+![](/img/03/63.png)
+
+![](/img/03/64.png)
