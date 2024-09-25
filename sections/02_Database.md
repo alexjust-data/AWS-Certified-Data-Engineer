@@ -32,6 +32,10 @@
   - [Global Secondary Index (GSI)](#global-secondary-index-gsi)
   - [Indexes and Throttling](#indexes-and-throttling)
 - [DynamoDB - Indexes (LSI \& GSI) - Hands On](#dynamodb---indexes-lsi--gsi---hands-on)
+  - [DynamoDB - PartiQL](#dynamodb---partiql)
+  - [DynamoDB Accelerator (DAX)](#dynamodb-accelerator-dax)
+  - [DynamoDB Accelerator (DAX) vs.ElastiCache](#dynamodb-accelerator-dax-vselasticache)
+  - [DynamoDB Accelerator (DAX) Hand On](#dynamodb-accelerator-dax-hand-on)
 
 `Managing and querying structured and semi-structured data`
 
@@ -580,38 +584,187 @@ But let's talk about these indexes and throttling. So when you have a GSI, if th
 
 ### DynamoDB - Indexes (LSI & GSI) - Hands On
 
+So let's have a look at how we can create indexes. So back into my table, I'm going to create a new table, and I'll call this one Demo Indexes. And we need to choose a partition key, so let's choose UserID and sort key GameTimeStep. So this is allowing us to query on UserID and GameTimeStep. And for this, I'm going to customize settings,
 
 ![](/img/03/53.png)
 
+I'm going to say I want provision capacity of 1 RCU and 1 WCU, and here we can define our secondary indexes. So you can see we can create either a local index or a global index. Now local indexes can only be created at table creation time, whereas global indexes can be created afterwards. So we can create a local index, 
 
 ![](/img/03/54.png)
 
+So we can create a local index, and here we need to specify a different sort key. So as you can see, we do not have the option to specify a different partition key, so UserID will remain the `partition key` for this index, but we can specify a different sort key. So for example, let's say I want to create a local index, and the sort key is going to be called GameID. So now the index name is GameID underscore index, and then what attributes do we want to project onto this index? We want all, only the keys, or only include specific attribute names that we specify. So we'll keep it simple and have it as all. 
 
 ![](/img/03/55.png)
 
+ So we just created this index, and we could go ahead and create a global secondary index in which we have the option to specify a different partition key, and optionally a different sort key, as well as project some attributes. So let's just for now not create this global secondary index, we're just going to create a local index, okay? And then click on create table. 
 
 ![](/img/03/56.png)
 
 
 **`Create table`**
 
+So we just created this index, and we could go ahead and create a global secondary index in which we have the option to specify a different partition key, and optionally a different sort key, as well as project some attributes. So let's just for now not create this global secondary index, we're just going to create a local index, okay? And then click on create table. Okay, so my table is now created,
+
 ![](/img/03/57.png)
 
+and let's have a look at how we can query it right now.
 
 ![](/img/03/58.png)
 
+I go into query, as you can see, I can query either a table or an index, and I have two options. I can query my demo indexes, which is my table, so I can specify a user ID and a game timestamp, or I could query my index and specify a user ID and a GameID. So as you can see, this local index allows me to query by a different partition key, a different sort key, excuse me, with the same partition key. 
 
 ![](/img/03/59.png)
+
+ So let's go back into the table details, and let's go into the indexes tab. So as you can see, there is one local secondary index that has been defined, so this one, and we cannot create another one. So LSIs have to be defined at table creation time, and not afterwards, whereas GSIs, so global secondary indexes, can be created afterwards.
 
 ![](/img/03/60.png)
 
 
 **`Create index`**
 
+So we could create an index, and we could enter a completely different partition key, for example, GameID, and a sort key, for example, GameTimestamp, okay? And this gives me a GSI, and now we need to also create some capacity for my GSI, so the local secondary indexes type in the RCU and WCU of the main table, whereas for a global secondary index, you need to create your own read and write capacity. So either we copy from base table, or we customize settings, and we can, again, specify autoscaling on and off. 
+
 ![](/img/03/61.png)
+
+So we'll just `copy from base table`, and have one and one for RCU and WCUs, and then what attributes we want to project
 
 ![](/img/03/62.png)
 
+and then this global secondary index is going to be created. Now remember, if you query a lot, that GSI and writes get throttled, then the writes will be throttled as well on the main table, whereas the LSI just types into the RCU and WCU of the main table. Okay, so my global secondary index is now created,
+
 ![](/img/03/63.png)
 
+and what I can do now is that if I go back into view items, I can look at my table, and now I can query by game ID, `game timestamp inde`x, and so as you can see now, the partition key I can query by is my game ID, and my sort key is my game timestamp. So this really shows you all the powers of indexes. 
+
 ![](/img/03/64.png)
+
+
+#### DynamoDB - PartiQL
+
+Let me talk about PartyQL for DynamoDB, which allows you to use a SQL-like syntax to manipulate DynamoDB tables. So this is what the statements would look like, and then from this you can insert, for example, or update, or select, or delete items from a DynamoDB table. So it's to allow people who are more confident with SQL to still be able to interact with DynamoDB. And it also supports batch operations if you need to. So let me show you how PartyQL works in the console. So I am in my tables, and on the left-hand side is the PartyQL editor.
+
+![](/img/03/65.png)
+
+So let's open some of these tables. For example, let's open the Users table.
+
+![](/img/03/66.png)
+
+And I emptied it, but I can, for example, add an item real quick. 
+
+![](/img/03/67.png)
+
+So I can add the user ID, 123, as well as a new attribute named Stéphane. And this is good.
+
+![](/img/03/68.png)
+
+![](/img/03/69.png)
+
+And for my other table, the Users post, I can again add some items. So user ID 123, post ID 456, and create the item.
+
+![](/img/03/70.png)
+
+![](/img/03/71.png)
+
+![](/img/03/72.png)
+
+As well as for the demo indexes, I can create an item.
+
+![](/img/03/73.png)
+
+ User ID 123, game timestamp 2022, even if it's not really good. And then game ID 456. 
+
+![](/img/03/74.png)
+
+Okay, so I have created some items into all my tables. And now if you go to the PartyQL editor, we can look, for example, at the Users table. 
+
+![](/img/03/75.png)
+
+Then we can also get an adjacent view, if you wanted to, because this is what will be used in your code to deal with it. We can download the results for CSV.  
+
+![](/img/03/76.png)
+
+![](/img/03/77.png)
+
+Next, for more complicated stuff, you can look at the demo indexes table. And we can scan this table again, so we have the look at all the items. But you can do more interesting stuff. For example, you can query the table. And when you query the table, it generates for you a statement. And you say select start from demo indexes, where user ID equals, for example, 123. And then you can also have an end game times 10 equals sort key value, but this is optional. And if you run this, obviously, then we get the correct items.  
+
+![](/img/03/79.png)
+
+And so we can start building some pretty complicated queries. But because we have an index right here, we can actually use this index and scan it. 
+
+![](/img/03/80.png)
+
+So we can do select start from demo indexes, and then the name of the index. And it's going to return the item based on my index. And you can do many things. You can run insert statements, although they're not easy to run directly from the UI, because they're not automatically generated. You can also set an item. So you can update a specific item and set the attribute value, the partition key value, and the sort key value, and so on. 
+
+![](/img/03/81.png)
+
+Or you can, for example, drop a specific item and then delete from statements.
+
+![](/img/03/82.png)
+
+So this editor is just for people who want to use SQL against DynamoDB. And I just wanted to show you the feature very briefly. 
+
+#### DynamoDB Accelerator (DAX)
+
+So now let's talk about DynamoDB Accelerator, or DAX. DAX is a fully managed, highly available, and seamless in-memory cache for DynamoDB. The idea is that you're going to cache the most popular data, and therefore you're going to get microsecond latency for cached reads and queries. It doesn't require you to change any of your application logic, it's compatible with the existing DynamoDB APIs, and you just create a DAX cluster and you're good to go. Now, DAX, what does it solve? It solves the hotkey problem. So if you're reading a very specific key, or a very specific item, too many times, then you may get throttling on your RCUs. But if it's cached by DAX, then you've just solved that problem. So let's have an example. We have a DynamoDB, it's made of tables, and our application is trying to access these tables. Now, in between, we're going to create a DAX cluster, which is made of cache nodes, and we're going to provision them in advance. Now, the application will directly interact with the DAX cluster, and the DAX cluster will fetch the data from the DynamoDB tables. So by default, that means that some data is going to be cached, and if you think cache, you need to think TTL, so the TTL is going to be 5 minutes, so by default, every cached data will live for 5 minutes in your DAX cluster. Now, the DAX cluster is made of nodes, and so therefore, you need to provision them, and you can have up to 10 nodes in the cluster, and it's a good idea to be in a multi-AZ kind of setup, to have at least three nodes recommended in production, so one in each AZ. And DAX is fully secure, so you have encryption at rest, you have IAM authentication, VPC security, cloud-share integration, and so on. So remember, DAX is here to help you cache the most popular items or queries from DynamoDB.
+
+![](/img/03/83.png)
+
+* Fully-managed, highly available, seamless in-memory cache for DynamoDB
+* Microseconds latency for cached reads & queries
+* Doesn’t require application logic modification (compatible with existing DynamoDB APIs)
+* Solves the “Hot Key” problem (too many reads)
+* 5 minutes TTL for cache (default)
+* Up to 10 nodes in the cluster
+* Multi-AZ (3 nodes minimum recommended for production)
+* Secure (Encryption at
+
+
+
+Now, the question we have is, what's the difference between DynamoDB, Accelerator, so DAX, and ElastiCache? Well, they can be used as a combination, and the exam may test you on figuring out if it's best to use DynamoDB, DAX, or if you want to use ElastiCache. So with DAX, what you're going to do is that you're going to have a cache for individual objects or for your queries or your scans. This is very, very handy, and this is what I call simple types of queries, so your objects, your queries, and your scans. But if you're doing some kind of logic application-wise, you're doing a scan, and then you're doing the sum, and then you're filtering out some data, and so on, and you don't want to do this every single time because this is competitionally expensive, what you can do is you can store the results of whatever your application just did in Amazon ElastiCache and retrieve the data from ElastiCache directly instead of re-querying DAX and re-performing the aggregation client-side. So this could be a good way to actually use them both together in architecture. Okay, so now let's go ahead and see how we can create a DAX cluster.
+
+#### DynamoDB Accelerator (DAX) vs.ElastiCache
+
+![](/img/03/84.png)
+
+Now, the question we have is, what's the difference between DynamoDB, Accelerator, so DAX, and ElastiCache? Well, they can be used as a combination, and the exam may test you on figuring out if it's best to use DynamoDB, DAX, or if you want to use ElastiCache. So with DAX, what you're going to do is that you're going to have a cache for individual objects or for your queries or your scans. This is very, very handy, and this is what I call simple types of queries, so your objects, your queries, and your scans. But if you're doing some kind of logic application-wise, you're doing a scan, and then you're doing the sum, and then you're filtering out some data, and so on, and you don't want to do this every single time because this is competitionally expensive, what you can do is you can store the results of whatever your application just did in Amazon ElastiCache and retrieve the data from ElastiCache directly instead of re-querying DAX and re-performing the aggregation client-side. So this could be a good way to actually use them both together in architecture. Okay, so now let's go ahead and see how we can create a DAX cluster.
+
+#### DynamoDB Accelerator (DAX) Hand On
+
+![](/img/03/85.png)
+
+So in the DynamoDB console, on the left-hand side, you have DAX. And DAX is not part of the free tier, so creating a DAX cluster is not going to be free. But you can just go ahead and see the process. So you create a cluster, for example, DemoDax. And then the node family. So which kind of nodes do you want to attribute into your DAX cluster? It could be T types or R types. So R is memory and T is for bursting. So this is recommended for use cases requiring a lower throughput. And this is for always-ready capacity. Or you can compare all families. And in here, you can select the node types you want. So you want an R5 large, an R4X large, and so on. Or do you want to have a T2 small, and so on. So in this example, I'll take a T2 small. And then the cluster size. So you want 1 up to actually 11 nodes. So they keep on increasing the capacity. 3 is going to give you a multi-AZ setup. But 1 is going to be good for, for example, just 1 AZ or for development. But if you have 1 or 2 nodes, you might experience reduced availability. So let's go ahead and do 1 node. I'm just going to go ahead and create this for you. 
+
+![](/img/03/88.png)
+
+![](/img/03/89.png)
+
+But you don't have to go ahead because this will cost you some money. Now the subnet group is which subnet group you want to associate it with. So demo subnet group. So this has to live within a specific subnet group and in a VPC. So you choose your VPC ID. And then you choose the subnet you want to have. Obviously, 3 subnets means you can have 3 nodes and be in a highly available setup. 
+
+![](/img/03/90.png)
+
+Access control. So what is the security group to access your DAX cluster? And you need to open up port 8111. Or 9111 if you do intrinsic encryption. So we need to go ahead and create a security group from the EC2 console. But right now, I'll keep it simple and just use a default security group just to show you the process. And then AZ allocation. Do you want to have automatic or do you want to spread your nodes manually? So we'll keep it as automatic.
+
+![](/img/03/91.png)
+
+Next for IAM permissions. So we need to provide an IAM service role that will give the DAX cluster access to DynamoDB. And so therefore, we are just going to create this IAM role called DAX to DynamoDB. And the policy will be created. We'll provide rewrite rights. And we're going to give access to all tables. But we can obviously limit some tables if we needed to. And then we're going to encrypt data intrinsic and at rest on our DAX cluster. 
+
+![](/img/03/92.png)
+
+So this is good. And then for parameter groups, we're going to choose the existing one. So this one. And we can, on the left-hand side, define some more parameters thanks to parameter groups. 
+
+![](/img/03/93.png)
+
+So this is going to basically tell how long to cache the item thanks to the time to live. And what's the query time to live as well. So this is the setting you have as part of the parameter group. But by default, the one is giving you five minutes of TTL on both item time and query time. Okay. The maintenance window. 
+
+![](/img/03/94.png)
+
+And so you can say no preference or specify your time window, your tags. And then you're good to go. You can review it and create your cluster. 
+
+![](/img/03/95.png)
+
+And then you're good to go. You can review it and create your cluster. 
+
+![](/img/03/96.png)
+
+So my DAX cluster is now created. And let's have a look. So the important thing I want you to look at is here. There is a cluster endpoint. And this is the endpoint your application should leverage to just leverage the DAX feature. Now we can have a look at the nodes. So we can have a look at the node types, how many VCP per node, memory, and so on. So we can add nodes over time if we wanted to. But as you can see, we cannot change the node types. Okay. And we need to create a new DAX cluster if you wanted to. We can have some monitoring. So we can do alarms and metrics around whether or not the cache is being used correctly. So cache hits, cache misses for items and queries, CPU utilization, and so on. So this is very, very handy to see if DAX is effective for you. Events to monitor the events of your database. As well as settings if you want to modify some settings such as a parameter group, network configuration, security configuration, maintenance window, and tags. Okay. So that's it for DAX. I hope you liked it. Now I'm just going to delete this cluster, including all the CloudWatch alarms. And I will see you in the next lecture. Bye.
+
