@@ -36,6 +36,9 @@
   - [DynamoDB Accelerator (DAX)](#dynamodb-accelerator-dax)
   - [DynamoDB Accelerator (DAX) vs.ElastiCache](#dynamodb-accelerator-dax-vselasticache)
   - [DynamoDB Accelerator (DAX) Hand On](#dynamodb-accelerator-dax-hand-on)
+  - [DynamoDB - Streams](#dynamodb---streams)
+  - [DynamoDB Streams \& AWS Lambda](#dynamodb-streams--aws-lambda)
+  - [DynamoDB - Streams - Hand On](#dynamodb---streams---hand-on)
 
 `Managing and querying structured and semi-structured data`
 
@@ -766,5 +769,140 @@ And then you're good to go. You can review it and create your cluster.
 
 ![](/img/03/96.png)
 
-So my DAX cluster is now created. And let's have a look. So the important thing I want you to look at is here. There is a cluster endpoint. And this is the endpoint your application should leverage to just leverage the DAX feature. Now we can have a look at the nodes. So we can have a look at the node types, how many VCP per node, memory, and so on. So we can add nodes over time if we wanted to. But as you can see, we cannot change the node types. Okay. And we need to create a new DAX cluster if you wanted to. We can have some monitoring. So we can do alarms and metrics around whether or not the cache is being used correctly. So cache hits, cache misses for items and queries, CPU utilization, and so on. So this is very, very handy to see if DAX is effective for you. Events to monitor the events of your database. As well as settings if you want to modify some settings such as a parameter group, network configuration, security configuration, maintenance window, and tags. Okay. So that's it for DAX. I hope you liked it. Now I'm just going to delete this cluster, including all the CloudWatch alarms. And I will see you in the next lecture. Bye.
+So my DAX cluster is now created. And let's have a look. So the important thing I want you to look at is here. There is a cluster endpoint. And this is the endpoint your application should leverage to just leverage the DAX feature. Now we can have a look at the nodes. So we can have a look at the node types, how many VCP per node, memory, and so on. So we can add nodes over time if we wanted to. 
 
+![](/img/03/97.png)
+
+But as you can see, we cannot change the node types. Okay.  And we need to create a new DAX cluster if you wanted to. 
+
+![](/img/03/98.png)
+
+We can have some monitoring. So we can do alarms and metrics around whether or not the cache is being used correctly. 
+
+
+![](/img/03/99.png)
+
+So cache hits, cache misses for items and queries, CPU utilization, and so on. So this is very, very handy to see if DAX is effective for you. Events to monitor the events of your database. As well as settings if you want to modify some settings such as a parameter group, network configuration, security configuration, maintenance window, and tags. 
+
+![](/img/03/100.png)
+
+Okay. So that's it for DAX. I hope you liked it. Now I'm just going to delete this cluster, including all the CloudWatch alarms. And I will see you in the next lecture. Bye.
+
+![](/img/03/101.png)
+
+
+#### DynamoDB - Streams
+
+So let's have a look at DynamoDB Streams. So streams are an ordered list of item-level modifications, such as create, update, and delete, that are happening within a table. So whenever you will insert an item, or modify it, or delete it, then that modification would be visible in the stream, and the stream will represent the list of all the modifications over time in your table. So stream records can be sent to multiple places, such as Kinesis Data Streams, so you can send a DynamoDB Stream into Kinesis and then do whatever you want with it. You can also use a Lambda function to read directly from your DynamoDB Streams, or you can use the Kinesis Client Library application to read directly as well from a DynamoDB Stream. The data retention within a DynamoDB Stream is up to 24 hours, so you need to make sure to either persist it somewhere like Kinesis Data Stream, where you can have a longer retention, or use whatever Lambda or KCL application to persist it somewhere more durable. The use cases for using DynamoDB Streams is to react to changes in real time happening in your DynamoDB tables, for example, having a flow to send a welcome email to your users, to do analytics, to transform the stream and create derivative tables in DynamoDB, or to send data to OpenSearch for indexing and give search probabilities on top of DynamoDB, or if you want to implement global tables and cross-region replication, you will need to have streams in the first place. 
+
+* Ordered stream of item-level modifications (create/update/delete) in a table
+* Stream records can be:
+  * Sent to Kinesis Data Streams
+  * Read by AWS Lambda
+  * Read by Kinesis Client Library applications
+* Data Retention for up to 24 hours
+* Use cases:
+  * react to changes in real-time (welcome email to users)
+  * Analytics
+  * Insert into derivative tables
+  * Insert into OpenSearch Service
+  * Implement cross-region replication
+
+![](/img/03/102.png)
+
+So if you look at the architecture of DynamoDB Streams, so we have our application, which does create, update and delete operations on our table, and any of these changes is going to appear in a DynamoDB Stream. So from there, Kinesis Data Stream can be a receiver of the DynamoDB Stream, and because we're using Kinesis Data Streams, then we can have Kinesis Data Firehose as a result, and then maybe send it to Amazon Redshift to perform some analytics queries on top of your data in DynamoDB, or send it to Amazon S3 for archival of all these changes, in case we need to, or sending it to OpenSearch Service to index it and to create a search capability on top of your DynamoDB table. The cool thing about this architecture is that pretty much everything is managed by AWS. If you wanted to add your own custom logic, you could use a processing layer, in which you would create either a Kinesis client library app, maybe running on EC2, or a Lambda function that would be reading from DynamoDB Streams, and from this, you can implement any sort of logic you want. So for example, you can have messaging or send notifications in Amazon SNS, you can do some filtering and transformation and then reinsert the data into a DynamoDB table, or for example, you can also use Lambda to send data into OpenSearch if you wanted to. So this gives you a different kind of architecture and all the possibilities that open up by using DynamoDB Streams. 
+
+
+**DynamoDB Streams**
+
+So the cool thing about DynamoDB Streams, though, is that we don't have to provision any kind of shards. This is done automatically by AWS, so it is really a hands-off approach. Now, if you enable DynamoDB Streams, just so you know, the records are not going to be retroactively populated in the stream after enabling it, because this is an exam trick. So once you enable the stream, only then will you receive these updates based on the changes that are appearing in your DynamoDB table.
+
+* Ability to choose the information that will be written to the stream:
+  * **KEYS_ONLY** – only the key attributes of the modified item
+  * **NEW_IMAGE** – the entire item, as it appears after it was modified
+  * **OLD_IMAGE** – the entire item, as it appeared before it was modified
+  * **NEW_AND_OLD_IMAGES** – both the new and the old images of the item
+* DynamoDB Streams are made of shards, just like Kinesis Data Streams
+* You don’t provision shards, this is automated by AWS
+* **Records are not retroactively populated in a stream after enabling it**
+
+
+#### DynamoDB Streams & AWS Lambda
+
+Finally, let's have a look at how DynamoDB Streams and Lambda work. So for this, we need to define an event source mapping to read from a DynamoDB Stream, and then you need to ensure that the Lambda function has the appropriate permissions to pull from the DynamoDB Stream, and then the Lambda function will be invoked synchronously. So let's take an example. The table goes into a DynamoDB Stream. The Lambda function will have an event source mapping, which is an interval process that will be pulling the DynamoDB Stream and retrieving records in batches from the DynamoDB Stream, and once the records are passed on to the event source mapping, then the event source mapping will invoke the Lambda function synchronously with a batch of records from the DynamoDB Stream. So that's it for this lecture. I hope you liked it, and I will see you in the next lecture for some hands-on.
+
+* You need to define an Event Source Mapping to read from a DynamoDB Streams
+* You need to ensure the Lambda function has the appropriate permissions
+* Your Lambda function is invoked synchronously
+
+![](/img/03/103.png)
+
+#### DynamoDB - Streams - Hand On
+
+Let's get our user's post table, and on it we're going to enable DynamoDB Streams. So to do so, let's go to Exports and Streams, and here we're going to have DynamoDB Streams Details, and we're going to enable it. 
+
+![](/img/03/104.png)
+
+Now we have the option to choose which type of view we want to have within our DynamoDB Streams. 
+
+
+And it should be Key Attributes, New Image, Old Image, or New and Old Images. So I'm going to keep the last option to get as much information as possible, and I will enable the stream. 
+
+![](/img/03/105.png)
+
+So now my stream is enabled, and within it, as you can see, if I scroll down, there is the trigger.
+
+![](/img/03/106.png)
+
+And the trigger is, what is the stream going to trigger? So we can create a trigger, and here we have a lambda function that can be invoked every time your DynamoDB Stream is updated. So to do so, let's go ahead and create a new function.
+
+![](/img/03/107.png)
+
+**`Create new`**
+
+And we can use a blueprint, and in here I can type DynamoDB, and we have a DynamoDB Process Stream Python, which is going to log all the updates made to a table. So this is good. Let's configure it, and I'll call it Lambda Demo DynamoDB Stream. Next, we're going to create a new role with basic Lambda permissions, and we'll make sure to add this role to add the permissions to read from DynamoDB. Now for DynamoDB triggers, we need to create the trigger, so it's going to be the Users Post, which table was it? The Users Post table, yes, indeed. And the batch size is 100. I guess this is how many records were read at a time. The batch window, if you wanted to gather records before invoking the function, so to be more efficient. And the starting position, so if you want to read from the start or from the end of the stream, just in case the stream had been already created. So we're good, we're able to trigger, and as you can see, what this does is that it just prints the records that we get out of the stream into the logs, so we'll be able to view this in CloudWatch logs.
+
+![](/img/03/108.png)
+
+
+![](/img/03/109.png)
+
+So now we have created a function, but we have an error, which is that the function cannot access our stream, because we have missing IAM permissions. So we're going to fix this, so we click on our function, and then under Configuration, we're going to go under Permissions, and this is the `execution role`. 
+
+![](/img/03/110.png)
+
+So let's attach this policy, and to be honest, one of these is going to work, I'm trying to make this as simple as possible, which is why I'm not spending a lot of time on this. 
+
+![](/img/03/111.png)
+
+Now we have to click on this execution role, and we're going to add the necessary permissions to read from DynamoDB. So we'll attach the policy, and I will look for DynamoDB, and we'll have DynamoDB read-only access, because what we're doing is that we're actually reading from DynamoDB. So this is good, and this one is also good to read from DynamoDB. So we'll attach these two just in case, but this is meant for Lambda, so probably a little bit better. 
+
+![](/img/03/112.png)
+
+
+![](/img/03/113.png)
+
+So let's attach this policy, and to be honest, one of these is going to work, I'm trying to make this as simple as possible, which is why I'm not spending a lot of time on this. So let's refresh now this page, 
+
+![](/img/03/115.png)
+
+and it seems like we're good to go. So we have more actions on DynamoDB, so this is good. 
+
+
+![](/img/03/114.png)
+
+And now if we refresh this, we can choose this function and set the batch size in 100, and we create this trigger. 
+
+![](/img/03/116.png)
+
+So now that means that my DynamoDB stream is going to trigger my Lambda function, 
+
+![](/img/03/117.png)
+
+and if I go back into my Lambda function and refresh this page, we can see that DynamoDB is indeed triggering my Lambda function. So this is an enabled type of integration with these settings.
+
+![](/img/03/118.png)
+
+3:25
+
+So next what I'm going to do is just test it out. So we're going to go to our table, and what I'm going to do is click on View Items, and we're going to do a few things. For example, let's take this item, the second post of John, we're going to do action, edit it, and then I'm going to modify it. So I'm going to say second post here, edit. And click on Save Change, so this is good. And then we'll take Alice, and we're going to do action, and then duplicate, so this is going to create a new thing and a way to just add a bit more data. I say new Alice blog, and then create item. And then finally, we actually don't like this blog, so I'm going to delete it. So I'm going to do action, and then delete items, and yes. Okay, so we've done three kinds of operations. We've had an update, a create, and a delete. And so we went into Manage the Function. Manage the Function executed this code, which was printing, so logging these events. And so what I need to do is just go into CloudWatch Logs and have a look at whether or not we saw these information in our logs. So let's click on View the Logs in CloudWatch Logs. And here we have some information around this log stream. And as we can see in this log stream, we get a lot of information. Okay, so we get one line, so this was a modify, and this was a DynamoDB record, so it gives you the key, the user ID, and as well as the new image, okay, and the content, so we can see, yes, a second post, yeah, edit. And we can also see the old image, so what it was before. So that was like for one request. Then we have an insert, and so again, we can see the DynamoDB record in it, and then the new image, and there's no old image because obviously it was an insert, so there was nothing before. And then we get a remove, and again, this remove operation was logged. We have the old image, and obviously there's no new image because the thing was removed, okay? So that's fairly easy. We just enable the stream, and it went to another function, and another function was logging it, but this is the basis to have these kind of integrations with DynamoDB Strips, okay? Lastly, please make sure to disable the trigger, so on the DynamoDB, you take this trigger, and you disable it or delete it, whatever you want, and you're good to go. So that's it for this lecture. I hope you liked it, and I will see you in the next lecture.
