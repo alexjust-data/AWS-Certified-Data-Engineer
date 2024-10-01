@@ -1,50 +1,99 @@
 **Database**
 
 - [Amazon DynamoDB](#amazon-dynamodb)
-  - [Traditional Architecture](#traditional-architecture)
-  - [NoSQL databases](#nosql-databases)
-  - [Amazon DynamoDB](#amazon-dynamodb-1)
-  - [DynamoDB - Basics](#dynamodb---basics)
-  - [DynamoDB – Primary Keys](#dynamodb--primary-keys)
-- [DynamoDB - Hands On](#dynamodb---hands-on)
-- [DynamoDB in Big Data](#dynamodb-in-big-data)
-- [DynamoDB - Throughput (RCU \& WCU)](#dynamodb---throughput-rcu--wcu)
-  - [DynamoDB – Read/Write Capacity modes](#dynamodb--readwrite-capacity-modes)
-  - [R/W Capacity Modes – Provisioned](#rw-capacity-modes--provisioned)
-  - [DynamoDB – Write Capacity Units (WCU)](#dynamodb--write-capacity-units-wcu)
-  - [Strongly Consistent Read vs. Eventually Consistent Read](#strongly-consistent-read-vs-eventually-consistent-read)
-  - [DynamoDB – Read Capacity Units (RCU)](#dynamodb--read-capacity-units-rcu)
-  - [DynamoDB – Partitions Internal](#dynamodb--partitions-internal)
-  - [DynamoDB – Throttling](#dynamodb--throttling)
-  - [R/W Capacity Modes – On-Demand](#rw-capacity-modes--on-demand)
-- [DynamoDB - Throughput (RCU \& WCU) - Hands on](#dynamodb---throughput-rcu--wcu---hands-on)
-- [DynamoDB - Basic APIs](#dynamodb---basic-apis)
-  - [Writing Data](#writing-data)
-  - [Reading Data](#reading-data)
-  - [Reading Data (Query)](#reading-data-query)
-  - [Reading Data (Scan)](#reading-data-scan)
-  - [Deleting Data](#deleting-data)
-  - [Batch Operations](#batch-operations)
-  - [PartiQL](#partiql)
-- [DynamoDB - Basic APIs - Hands On](#dynamodb---basic-apis---hands-on)
-- [DynamoDB - Indexes (LSI \& GSI)](#dynamodb---indexes-lsi--gsi)
-  - [Local Secondary Index LSI](#local-secondary-index-lsi)
-  - [Global Secondary Index (GSI)](#global-secondary-index-gsi)
-  - [Indexes and Throttling](#indexes-and-throttling)
-- [DynamoDB - Indexes (LSI \& GSI) - Hands On](#dynamodb---indexes-lsi--gsi---hands-on)
-  - [DynamoDB - PartiQL](#dynamodb---partiql)
-  - [DynamoDB Accelerator (DAX)](#dynamodb-accelerator-dax)
-  - [DynamoDB Accelerator (DAX) vs.ElastiCache](#dynamodb-accelerator-dax-vselasticache)
-  - [DynamoDB Accelerator (DAX) Hand On](#dynamodb-accelerator-dax-hand-on)
-  - [DynamoDB - Streams](#dynamodb---streams)
-  - [DynamoDB Streams \& AWS Lambda](#dynamodb-streams--aws-lambda)
-  - [DynamoDB - Streams - Hand On](#dynamodb---streams---hand-on)
+    - [Traditional Architecture](#traditional-architecture)
+    - [NoSQL databases](#nosql-databases)
+    - [Amazon DynamoDB](#amazon-dynamodb-1)
+    - [DynamoDB - Basics](#dynamodb---basics)
+    - [DynamoDB – Primary Keys](#dynamodb--primary-keys)
+  - [DynamoDB - Hands On](#dynamodb---hands-on)
+  - [DynamoDB in Big Data](#dynamodb-in-big-data)
+  - [DynamoDB - Throughput (RCU \& WCU)](#dynamodb---throughput-rcu--wcu)
+    - [DynamoDB – Read/Write Capacity modes](#dynamodb--readwrite-capacity-modes)
+    - [R/W Capacity Modes – Provisioned](#rw-capacity-modes--provisioned)
+    - [DynamoDB – Write Capacity Units (WCU)](#dynamodb--write-capacity-units-wcu)
+    - [Strongly Consistent Read vs. Eventually Consistent Read](#strongly-consistent-read-vs-eventually-consistent-read)
+    - [DynamoDB – Read Capacity Units (RCU)](#dynamodb--read-capacity-units-rcu)
+    - [DynamoDB – Partitions Internal](#dynamodb--partitions-internal)
+    - [DynamoDB – Throttling](#dynamodb--throttling)
+    - [R/W Capacity Modes – On-Demand](#rw-capacity-modes--on-demand)
+  - [DynamoDB - Throughput (RCU \& WCU) - Hands on](#dynamodb---throughput-rcu--wcu---hands-on)
+  - [DynamoDB - Basic APIs](#dynamodb---basic-apis)
+    - [Writing Data](#writing-data)
+    - [Reading Data](#reading-data)
+    - [Reading Data (Query)](#reading-data-query)
+    - [Reading Data (Scan)](#reading-data-scan)
+    - [Deleting Data](#deleting-data)
+    - [Batch Operations](#batch-operations)
+    - [PartiQL](#partiql)
+  - [DynamoDB - Basic APIs - Hands On](#dynamodb---basic-apis---hands-on)
+  - [DynamoDB - Indexes (LSI \& GSI)](#dynamodb---indexes-lsi--gsi)
+    - [Local Secondary Index LSI](#local-secondary-index-lsi)
+    - [Global Secondary Index (GSI)](#global-secondary-index-gsi)
+    - [Indexes and Throttling](#indexes-and-throttling)
+  - [DynamoDB - Indexes (LSI \& GSI) - Hands On](#dynamodb---indexes-lsi--gsi---hands-on)
+    - [DynamoDB - PartiQL](#dynamodb---partiql)
+    - [DynamoDB Accelerator (DAX)](#dynamodb-accelerator-dax)
+    - [DynamoDB Accelerator (DAX) vs.ElastiCache](#dynamodb-accelerator-dax-vselasticache)
+    - [DynamoDB Accelerator (DAX) Hand On](#dynamodb-accelerator-dax-hand-on)
+    - [DynamoDB - Streams](#dynamodb---streams)
+    - [DynamoDB Streams \& AWS Lambda](#dynamodb-streams--aws-lambda)
+    - [DynamoDB - Streams - Hand On](#dynamodb---streams---hand-on)
+    - [DynamoDB - Time To Live (TTL)](#dynamodb---time-to-live-ttl)
+    - [DynamoDB - Patterns with S3](#dynamodb---patterns-with-s3)
+    - [DynamoDB – Security \& Other Features](#dynamodb--security--other-features)
+- [Amazon RDS (Relational Database Service)](#amazon-rds-relational-database-service)
+  - [Amazon Aurora](#amazon-aurora)
+  - [Using the LOCK command](#using-the-lock-command)
+  - [Amazon RDS best practices](#amazon-rds-best-practices)
+  - [Amazon RDS operational guidelines](#amazon-rds-operational-guidelines)
+  - [Query optimization in RDS](#query-optimization-in-rds)
+  - [DB-specific tweaks](#db-specific-tweaks)
+  - [DocumentDB (NoSQLdatabase)](#documentdb-nosqldatabase)
+  - [MemoryDB for Redis](#memorydb-for-redis)
+  - [Keyspaces (for Apache Cassandra)](#keyspaces-for-apache-cassandra)
+  - [Amazon Neptune](#amazon-neptune)
+  - [Amazon Timestream](#amazon-timestream)
+- [Amazon Redshift](#amazon-redshift)
+  - [What is Redshift?](#what-is-redshift)
+    - [Redshift Use-Cases](#redshift-use-cases)
+    - [Redshift architecture](#redshift-architecture)
+  - [Redshift Spectrum \& Performance](#redshift-spectrum--performance)
+  - [Redshift Durability and Scaling](#redshift-durability-and-scaling)
+  - [Redshift Distribution Styles](#redshift-distribution-styles)
+    - [Importing / Exporting data](#importing--exporting-data)
+    - [COPY command: More depth](#copy-command-more-depth)
+    - [Redshift copy grants for cross-region snapshot copies](#redshift-copy-grants-for-cross-region-snapshot-copies)
+    - [DBLINK](#dblink)
+    - [Integration with other services](#integration-with-other-services)
+    - [Concurrency Scaling](#concurrency-scaling)
+    - [Automatic Workload Management](#automatic-workload-management)
+    - [Manual Workload Management](#manual-workload-management)
+    - [Short Query Acceleration (SQA)](#short-query-acceleration-sqa)
+    - [Resizing Redshift Clusters](#resizing-redshift-clusters)
+    - [VACUUM command](#vacuum-command)
+    - [Redshift anti-patterns](#redshift-anti-patterns)
+  - [Resizing Redshift Clusters](#resizing-redshift-clusters-1)
+  - [RA3 Nodes, Cross-Region Data Sharing, Redshift ML](#ra3-nodes-cross-region-data-sharing-redshift-ml)
+    - [Newer Redshift features](#newer-redshift-features)
+    - [Amazon Redshift ML](#amazon-redshift-ml)
+  - [Redshift security](#redshift-security)
+  - [Redshift Serverless](#redshift-serverless)
+    - [Redshift Serverless: Getting Started](#redshift-serverless-getting-started)
+    - [Resource Scaling in Redshift Serverless](#resource-scaling-in-redshift-serverless)
+  - [Redshift Materialized Views](#redshift-materialized-views)
+  - [Redshift Data Sharing / Data Shares](#redshift-data-sharing--data-shares)
+  - [Redshift Lambda UDF](#redshift-lambda-udf)
+  - [Redshift Federated Queries](#redshift-federated-queries)
+  - [Redshift System Tables and System Views](#redshift-system-tables-and-system-views)
+  - [Redshift Data API](#redshift-data-api)
+  - [Redshift - Hands On](#redshift---hands-on)
 
 `Managing and querying structured and semi-structured data`
 
 Up next, we're going to dive into the details of the various database technologies Amazon offers for storing your structured or semi-structured data. We will cover DynamoDB, which has a lot of features and details these certification exams try to trip you up with. I'll cover Amazon RDS, along with a few specific points about RDS that the exam guide calls out and best practices for using it. We will touch on DocumentDB, MemoryDB for Redis, Amazon Keyspaces for Apache Cassandra, and Amazon Neptune. Then I'll resurface, going into depth on Amazon Redshift. Redshift is Amazon's data warehousing solution, and it's a very important component in data engineering and data analytics that you can expect to see a lot of on the exam. As with every section, we'll wrap up with a quiz featuring example questions to reinforce what you've learned and give some practice in thinking the way the exam expects you to. It's not enough to learn the trivia about each service. You need to think through how to assemble these services and features into larger systems, and these quizzes will give you some experience in doing that. This is one of the longer sections in the course, so let's get started. Let's dive into database systems on AWS.
 
-### Amazon DynamoDB
+## Amazon DynamoDB
 
 `NoSQL Serverless Database`
 
@@ -903,6 +952,877 @@ and if I go back into my Lambda function and refresh this page, we can see that 
 
 ![](/img/03/118.png)
 
-3:25
 
-So next what I'm going to do is just test it out. So we're going to go to our table, and what I'm going to do is click on View Items, and we're going to do a few things. For example, let's take this item, the second post of John, we're going to do action, edit it, and then I'm going to modify it. So I'm going to say second post here, edit. And click on Save Change, so this is good. And then we'll take Alice, and we're going to do action, and then duplicate, so this is going to create a new thing and a way to just add a bit more data. I say new Alice blog, and then create item. And then finally, we actually don't like this blog, so I'm going to delete it. So I'm going to do action, and then delete items, and yes. Okay, so we've done three kinds of operations. We've had an update, a create, and a delete. And so we went into Manage the Function. Manage the Function executed this code, which was printing, so logging these events. And so what I need to do is just go into CloudWatch Logs and have a look at whether or not we saw these information in our logs. So let's click on View the Logs in CloudWatch Logs. And here we have some information around this log stream. And as we can see in this log stream, we get a lot of information. Okay, so we get one line, so this was a modify, and this was a DynamoDB record, so it gives you the key, the user ID, and as well as the new image, okay, and the content, so we can see, yes, a second post, yeah, edit. And we can also see the old image, so what it was before. So that was like for one request. Then we have an insert, and so again, we can see the DynamoDB record in it, and then the new image, and there's no old image because obviously it was an insert, so there was nothing before. And then we get a remove, and again, this remove operation was logged. We have the old image, and obviously there's no new image because the thing was removed, okay? So that's fairly easy. We just enable the stream, and it went to another function, and another function was logging it, but this is the basis to have these kind of integrations with DynamoDB Strips, okay? Lastly, please make sure to disable the trigger, so on the DynamoDB, you take this trigger, and you disable it or delete it, whatever you want, and you're good to go. So that's it for this lecture. I hope you liked it, and I will see you in the next lecture.
+So next what I'm going to do is just test it out. So we're going to go to our table, and what I'm going to do is click on View Items, 
+
+![](/img/03/119.png)
+
+and we're going to do a few things. For example, let's take this item, the second post of John, we're going to do action, edit it, 
+
+![](/img/03/120.png)
+
+and then I'm going to modify it. So I'm going to say second post here, edit. 
+
+![](/img/03/121.png)
+
+And click on Save Change, so this is good. And then we'll take Alice, and we're going to do action, and then duplicate, so this is going to create a new thing and a way to just add a bit more data. 
+
+![](/img/03/122.png)
+
+I say new Alice blog, and then create item. 
+
+
+![](/img/03/123.png)
+
+And then finally, we actually don't like this blog, so I'm going to delete it. So I'm going to do action, and then delete items, and yes. 
+
+![](/img/03/124.png)
+
+Okay, so we've done three kinds of operations. We've had an update, a create, and a delete. And so we went into Manage the Function. Manage the Function executed this code, which was printing, so logging these events. 
+
+![](/img/03/125.png)
+
+And so what I need to do is just go into CloudWatch Logs and have a look at whether or not we saw these information in our logs. So let's click on View the Logs in CloudWatch Logs. 
+
+![](/img/03/127.png)
+
+And here we have some information around this log stream. 
+
+![](/img/03/128.png)
+
+And as we can see in this log stream, we get a lot of information. Okay, so we get one line, so this was a modify, and this was a DynamoDB record, so it gives you the key, the user ID, and as well as the new image, okay, and the content, so we can see, yes, a second post, yeah, edit. And we can also see the old image, so what it was before. So that was like for one request. Then we have an insert, and so again, we can see the DynamoDB record in it, and then the new image, and there's no old image because obviously it was an insert, so there was nothing before. And then we get a remove, and again, this remove operation was logged. We have the old image, and obviously there's no new image because the thing was removed, okay? So that's fairly easy. 
+
+![](/img/03/129.png)
+
+We just enable the stream, and it went to another function, and another function was logging it, but this is the basis to have these kind of integrations with DynamoDB Strips, okay? Lastly, please make sure to disable the trigger, so on the DynamoDB, you take this trigger, and you disable it or delete it, whatever you want, and you're good to go. 
+
+
+![](/img/03/130.png)
+
+
+#### DynamoDB - Time To Live (TTL)
+
+So now let's talk about TimeToLive. TimeToLive allows you to automatically delete items after an expiry timestamp. So the idea is that you have a column you'll define, and then when you say the time of right now goes over the value of this column, then please remove the item. So having an item being deleted by a TimeToLive constraint does not consume any WCU, so there's no extra cost, and this timestamp must be a number that represents the Unix epoch timestamp value, as we'll see in the hands-on. Non-expired items will not be expired right away. There is a guarantee that they will be expired within 48 hours of the expiration, but in real life, it's actually pretty good. So if you look at a table, for example, a SessionData table, that has two columns, UserId and SessionId, we want to add an expiry time, which is going to be a TTL of our table, and we're going to define when each session will expire. Now what happens is that when you go and there is an expiration process in DynamoDB, it will look at the current time and say the current time is this, and it will mark, scan the table, and expire items that are going to obviously have a TTL epoch time less than the time right now. And then the second process will scan and delete these items from the table, and this is how TTL works. Now, these expired items that have been deleted will still appear in the read, query, and scan, so if you don't want them, you need to do some client-side filtering, so there could be some expired items already in your queries. You need to wait up to 48 hours to see it being deleted. And when the items are deleted, they're also deleted from your indexes, so your local secondary indexes and your global secondary indexes, and a delete operation for each expired item enters the DynamoDB stream. That means that any item that gets deleted thanks to the TTL will be in that stream, and you can recover it if you wanted to. Now the use cases for TTL would be to reduce stored data by keeping only current items, to adhere to regulatory obligations, or, for example, for the session data, it is a perfect use case of TTL. Okay, so let's have a look at how we can define a TTL in DynamoDB. So let's go ahead and create a table.
+
+![](/img/03/131.png)
+
+* Automatically delete items after an expir
+* Doesn’t consume any WCUs (i.e., no extra cost)
+* The TTL attribute must be a “Number” data type with “Unix Epoch timestamp” value
+* Expired items deleted within 48 hours of expiration
+* Expired items, that haven’t been deleted, appears in reads/queries/scans (if you don’t want them, filter them out)
+* Expired items are deleted from both LSIs and GSIs
+* A delete operation for each expired item enters the DynamoDB Streams (can help recover expired items)
+* Use cases: reduce stored data by keeping only 
+
+
+![](/img/03/132.png)
+
+![](/img/03/133.png)
+
+We'll customize the settings, we'll set provisions, and we'll have one RCU and one WCU, and then we'll go ahead and create this table. 
+
+**`create table`**
+
+So my table is now created, and what I'm going to do is just add a little bit of data. 
+
+![](/img/03/134.png)
+
+![](/img/03/135.png)
+
+![](/img/03/136.png)
+
+
+So I'm going to insert some items, so I'm going to create an item,
+
+![](/img/03/138.png)
+
+user ID is John123, and then I'm going to add an attribute, for example, name is going to be John, and then I want to have an expireOn attribute. So expireOn, essentially it's not a string, it's going to be a number. So we do expireOn, and then we need to give an expiration date to John. So I call it epochConverterOnline, and let's just get the first one.
+
+https://www.epochconverter.com/
+
+![](/img/03/137.png)
+
+ And so this is how we can translate a timestamp of soon into an epoch timestamp, which I can enter into DynamoDB. So, for example, if I take, say, five minutes from now, so here we go, and I do human to timestamp, here is the epoch value of five minutes from now. So I'm going to paste that in and click on Create Item.
+
+![](/img/03/138.png)
+
+So that's one item that has been created, and I will create the second item, and this one is Alice456, it's a user ID, well, Alice's name is going to be Alice, and we need to, again, have an expireOn. And the expireOn, we can say, for example, one hour from now, so we'll have 10 here, and click on human data timestamp, take this in, and paste it, and create item. So now we have two rows in our DynamoDB table, and both of them have a different expireOn attribute.
+
+![](/img/03/140.png)
+
+![](/img/03/139.png)
+
+Now we need to go ahead and define the TTL on our table. So if we look at our table, 
+
+![](/img/03/142.png)
+
+we can see the TimeToLive is currently disabled, so what I can do is go to Additional Settings, 
+
+![](/img/03/143.png)
+
+scroll down, and then look for the TimeToLive, and click on Enable.
+
+![](/img/03/144.png)
+
+**`Turn on TTL`**
+
+Now we need to give the TTL attribute name, so what is the data that I want to expire, the column I want to expire on, so expireOn is the name that I give to this TTL attribute name. And then we can run a preview, 
+
+![](/img/03/145.png)
+
+Now we need to give the TTL attribute name, so what is the data that I want to expire, the column I want to expire on, so expireOn is the name that I give to this TTL attribute name. And then we can run a preview, okay? So if we run a preview right now, it says that these two items will be deleted in one hour, so if we take, for example, the time right now, which is right here, and I do Run Preview, it says, hey, there's no items that I want to delete, right? But if we do one hour from now, so if we do, for example, 10.10.10, and I get this epoch timestamp right here, and paste it, Run Preview, only John will be expired, okay? And then if I go a bit after, so if I go to 10.50, and take a human timestamp, data timestamp, and paste this in, Run a Preview, now two items will be deleted. And you could either specify an epoch value, or a custom time, or in the next 60 minutes, 24 hours, or seven days, which is quite cool for running some simulations. So we can enable TTL, and now TTL is enabled, and automatically, if I wait for one hour, my items are going to be completely expired, okay? So this is pretty cool, and we can do a graph of all the items deleted in the last 24 hours, thanks to this feature right here, okay? So this is a Kawash metric. So that's it for this lecture. I hope you liked it.
+
+![](/img/03/146.png)
+
+
+#### DynamoDB - Patterns with S3
+
+So now let's look at two ways we can use DynamoDB with Amazon S3. And the first one is how to store large objects in DynamoDB. Well, it turns out that, as you know, in your tables in DynamoDB, you can only store up to 400 kilobytes of data. So obviously, if you just want to start storing some images, some videos, all that kind of stuff, DynamoDB is not the best place for it. So instead, what we're going to do is that we're going to have an Amazon S3 bucket that will contain our large objects. So what is the process to upload a large object? Well, say we upload an image into Amazon S3. We're going to get back an objects key. And what we're going to do is that we're going to store this metadata from the application into DynamoDB. So we'll have a product ID, a product name, and then an image URL, which is a pointer directly into Amazon S3. Now, what we've done is that we've effectively stored a very small amount of data in our products table in DynamoDB, and we've stored the large item in Amazon S3. Now, from the reading perspective, a client who wants to read this data first gets the metadata from DynamoDB, and then we'll get the image back from Amazon S3 to reconstruct these large objects. So we can go on and on and have many different products and use a strategy at scale. And the cool thing about this strategy is that we're using each service for what it's good at. So Amazon S3 is great for storing large objects, and DynamoDB is great for storing small objects that are going to be indexed with specific attributes. So in this example, we have the perfect combination of Amazon S3 and DynamoDB.
+
+![](/img/03/147.png)
+
+
+**DynamoDB – Indexing S3 Objects Metadata**
+
+Another combination or synergy we can have is to use DynamoDB as a way to index S3 objects metadata. So the application is going to upload objects into Amazon S3, and Amazon S3 will have notifications set up, for example, to invoke a Lambda function. That Lambda function will store the objects metadata into DynamoDB table, for example, object size, date, who created it, whatever you want to think of about these objects. And why do we do this? Well, because it's much easier for us to build some queries on top of the DynamoDB table than on top of an S3 bucket. Again, an S3 bucket is not meant to be really scanned. It's meant to store large objects, and you're supposed to have some sort of database that knows what these objects are, their attributes, and so on. So by creating an application on top of DynamoDB, we can answer some questions such as, hey, we want to find objects by a specific timestamp on our S3 bucket, or we want to find the total storage used by a customer, or list all the objects with certain attributes, or find all the S3 objects uploaded within a date range. All of this by querying DynamoDB table, and then we read back the results from the DynamoDB, and we retrieve the necessary objects from your S3 buckets, okay? So hopefully these two strategies make sense. They're quite common, and they can come up at the exam. I hope you liked it. And I will see you in the next lecture.
+
+ChatGPT said:
+ChatGPT
+
+
+![](/img/03/148.png)
+
+#### DynamoDB – Security & Other Features
+
+So one last talk about DynamoDB security and some other features. So for security, we have VPC endpoints that are going to be available to access DynamoDB without using the public internet and only keeping all the traffic within your VPC. Access to DynamoDB is fully controlled by IAM, which makes it a great database choice in AWS. And you have encryption at rest using AWS KMS or in transit using SSL and TLS. There are backup and restore features available. You have two of them, so you have point-in-time recovery, so PITR, just like RDS, and there's no performance impact, or you can just do a normal backup and restore. Now there's the concept of global tables in DynamoDB. So the idea is that you have a multi-region, multi-active, fully replicated high-performance table in DynamoDB. And how to enable it? Well, you need to first enable DynamoDB Streams. So while DynamoDB is a cloud service, it's possible for you to get a simulation of DynamoDB on your local computer called DynamoDB Local. And the idea is that you have a local DynamoDB database that you can use to develop and test your applications locally without using the DynamoDB web service, which is really, really handy. And if you wanted to migrate data to and from DynamoDB, the AWS Database Migration Service is a great choice. So for example, from MongoDB to DynamoDB, or DynamoDB to Oracle, MySQL, S3, and so on.
+
+* Security
+  * VPC Endpoints available to access DynamoDB without using the Internet
+  * Access fully controlled by IAM
+  * Encryption at rest using AWS KMS and in-transit using SSL/TLS
+* Backup and Restore feature available
+  * Point-in-time Recovery (PITR) like RDS
+  * No performance impact
+* Global Tables
+  * Multi-region, multi-active, fully replicated, high performance
+* DynamoDB Local
+  * Develop and test apps locally without accessing the DynamoDB web service (without Internet)
+* AWS Database Migration Service (AWS DMS) can be used to migrate to DynamoDB (from MongoDB, Oracle, MySQL, S3, …)
+
+
+**DynamoDB – Users Interact with DynamoDB Directly**
+
+Now another feature you need to understand around DynamoDB is going to be around fine-grained access. So for example, if you have clients and applications, web or mobile, and they need to access directly our DynamoDB table, then we don't want to give them IAM permissions and IAM roles of users directly from AWS. That would be truly inefficient and a security hole. Instead, we're going to use an identity provider. It could be Amazon Cognito User Pools, Google Login, Facebook Login, OpenID Connect, or SAML, or whatever. And the users will, in the simplified flow, log in with these identity providers, and they will have the feature to exchange the credentials they just got for temporary AWS credentials. And the idea is that because they're temporary, they're more secure. And with them, they can be associated with an IAM role. But this IAM role must be restricted because now that our clients and applications can access a DynamoDB table, you want them to be able to do operations only on the data that they own.
+
+![](/img/03/149.png)
+
+
+**DynamoDB – Fine-Grained Access Control**
+
+And so how do we do this, this fine-grained access control? Well, we have a federated login to get temporary credentials. Then we create an IAM role, and this IAM role will have a condition. And this condition will lead onto what the user can do. So here is a sample policy. So in this policy, the user can do get item, batch get item, query, put item, update item, delete item, and batch write item on a specific table. But there's a condition here, and the condition is saying, hey, only if the leading key is corresponding to DynamoDB, and then the connect identity pseudo variables, which will be replaced at runtime by the specific user. And so effectively, what we're saying is that with leading key, we only limit row-level access for users based on what the primary key value is. And so therefore, we make sure that the users can only modify and access their own data. And you can also specify conditions on attributes. And this would be to limit the specific attributes a user can see in your DynamoDB table. So to summarize, you have fine-grained access control by using a federated login, and by specifying a condition on leading keys if you want to limit at the row level, or attributes if you want to limit at the column level, the attribute level. Okay, that's it for this lecture. I hope you liked it, and I will see you in the next lecture. Let's talk briefly about Amazon RDS, the release.
+
+![](/img/03/150.png)
+
+* Using Web Identity Federation or Cognito Identity Pools, each user gets AWS credentials
+* You can assign an IAM Role to these users with a Condition to limit their API access to DynamoDB
+* LeadingKeys – limit row-level access for users on the Primary Key
+* Attributes – limit specific attributes the user can see
+
+
+## Amazon RDS (Relational Database Service)
+
+Let's talk briefly about Amazon RDS, the relational database service. It's not really relevant to big data, it's really more for small data, but it will come up on the exam and you need to know what it is. Usually sort of an example of what not to do or maybe an example of how to import your RDS data into a larger big data system. 
+
+**What is RDS?**
+
+What is RDS? Well, it is a hosted relational database and that can be any of the following database types. Amazon Aurora, which we'll talk about shortly. You can also host a MySQL database, a PostgreSQL database, MariaDB, which is basically an open source version of MySQL, Oracle, or a Microsoft SQL server. So it's a way to just have AWS host your own little database host so you don't have to worry about maintaining that database host yourself, which as we all know, being a DBA is not always a fun thing, kind of a handy thing. But it's not for big data. Like I said, it might appear on the exam as an example of what not to use for a big data problem or in the context of migrating from RDS into Redshift or something like that. It's made for smaller needs where you can get away with a single database host and store all of your data there. For example, I use RDS and Amazon Aurora for backing up my websites. So for WordPress, it's using RDS as its backing store for that. 
+
+
+* Hosted relational database
+  * Amazon Aurora
+  * MySQL
+  * PostgreSQL
+  * MariaDB
+  * Oracle
+  * SQL Server
+* Not for “big data”
+  * Might appear on exam as an example of what not to use
+  * Or in the context of migrating from RDS to Redshift etc.
+
+**ACID**
+
+A good time today to talk about ACID compliance. This comes up frequently in the world of relational databases in general and all the RDS databases offer full ACID compliance. So if you do need a database that meets these requirements, RDS can be a solution provided that you don't need massive datasets that can't fit on a single host. Now, under the hood, it might actually be using more than one host. That's all kind of a black box to us, but it still makes sense to think of RDS as more of a small data solution. ACID, anyway, stands for Atomic, Consistent, Isolated, and Durable. And just a little refresher here for you guys. So atomicity ensures that either the transaction as a whole is successfully executed or if part of a transaction fails, then the entire transaction is invalidated. So if you're sending a transaction that does more than one thing, if any bit of that fails, the entire transaction gets discarded. Consistency ensures that the data written to the database as part of the transaction must adhere to all defined rules and restrictions, including constraints, cascades, and triggers. Isolation ensures that each transaction is independent unto itself, and this is critical in achieving concurrency control. Finally, durability ensures that all the changes made to the database be permanent once a transaction is successfully completed.
+
+
+* RDS databases offer full ACID compliance
+  * Atomicity
+  * Consistency
+  * Isolation
+  * Durability
+
+### Amazon Aurora
+
+ Let's talk a bit about Amazon Aurora, which is another choice for RDS. It provides support for MySQL and PostgreSQL databases. So for example, if you wanted to back your own WordPress site or something with Amazon Aurora, you could do that and it would just look like MySQL to WordPress as far as it's concerned. So it's a hosted alternative for MySQL and PostgreSQL. And according to the marketing speak from Amazon Web Services, it's up to five times faster than MySQL and three times faster than PostgreSQL. Of course, your mileage may vary. Actually, realizing those exact gains may not be possible. That's kind of marketing speak, but it is faster. It's also cheap. It can be up to one-tenth of the cost of commercial databases. Sort of an unfair comparison there, though, because MySQL is not a commercial database, right? So they're basically saying compared to getting Oracle or something like that, it's going to be a lot cheaper. But using just open source MySQL, it would be a lot cheaper as well. The current limit for storage is up to 128 terabytes per database volume. So note that the storage is decoupled from the actual instance for Aurora. And it also offers up to 15 read replicates. So if you need higher performance, you can use read replicas to gain faster, more distributed, scalable access to your underlying data. That's a good feature. And that also decreases the replication time down to milliseconds. So that's a handy thing, too. It also offers continuous backup to S3, so you never have to worry about losing your data. And it also offers replication across regions and across availability zones. So you can replicate your data all over the world, however you want to. It also offers a newer, I should say, service called Aurora Serverless. 
+
+
+* MySQL and PostgreSQL – compatible
+* Up to 5X faster than MySQL, 3X faster than PostgreSQL
+* 1/10 the cost of commercial databases
+* Up to 128TB per database volume
+* Up to 15 read replicas
+* Continuous backup to S3
+* Replication across regions and availability zones
+* Automatic scaling with Aurora Serverless
+
+
+**Aurora Security**
+
+So if you don't want to dedicate hardware to it and pay for that hardware all month long, if you have more dynamic, inconsistent traffic to your database, Aurora Serverless might be a better choice for you. That offers automatic scaling with your traffic, as opposed to just paying for a server, a database host sitting there all the time waiting for you that may or may not be getting used. But if you have a use case where you're hitting that database pretty consistently 24-7, you're probably better off with a dedicated database instance. But you have the choice with Aurora. You can have your own database. But you do have the choice with Aurora. You can either use your own dedicated database host, or you can use Aurora Serverless and have that capacity scale up automatically. As far as security goes with Aurora, it offers VPC network isolation, obviously. It can also do at-rest encryption using KMS. So data, backup, snapshots, and replicas can all be encrypted. And it can do in-transit security as well using SSL. So that's Aurora in a nutshell and RDS. Again, usually not in the context of big data, but Aurora is going in interesting directions. So we'll keep an eye on that going forward.
+
+
+* VPC network isolation
+* At-rest with KMS
+* Data, backup, snapshots, and replicas can be encrypted
+* In-transit with SSL
+
+
+### Using the LOCK command
+
+One thing I want to call out explicitly is the idea of using locks in relational databases. That is something that shows up on the exam guides, so we better talk about it. One way of doing that is using the lock command. So the idea of locks is preventing two people from doing the same thing at the same time to something, right, and getting conflicting results as a result. So implicitly, relational databases will lock your tables to prevent that from happening. So you don't want two people writing at the same time to the same piece of data, right? And you also don't want people reading data while that write is in process to that bit of data. So generally, to ensure ACID compliance, databases will automatically and implicitly lock things to prevent that sort of thing from happening. You don't really need to do anything special about that. However, it is possible to explicitly lock tables or explicitly lock rows to ensure your own data integrity and concurrency control. If you don't want to just put your faith in the database to do the right thing, there could be some special circumstances where you want more explicit control over those locks. So there's two kinds of locks. There's what's called a shared lock and an exclusive lock. So the syntax for a shared lock is for share. We'll see an example of that on the next slide. But a shared lock allows reads but prevents writes, and it can be held by multiple transactions. So if you want to allow people to read the data that's being accessed by your transaction but prevent people from writing to it during your transaction, you can say for share to enforce a shared lock. You can also have an exclusive lock that prevents all reads and writes to a resource, and only one transaction can hold an exclusive lock at a time. That's why it's called exclusive. The syntax for that is for update, and that says, while I'm accessing this data, nobody can read it, nobody can write to it, nobody can look at it or touch it but me. 
+
+
+* Relational databases implicity `lock` tables to prevent two things writing to it at the same time, or reading while a write is in process.
+* Tables or rows can also be explicitly locked to ensure data integrity and concurrency control.
+* Types of locks:
+  * Shared Locks: Allow reads, prevent writes. Can be held by multiple transactions. (FOR SHARE)
+  * Exclusive Locks: Prevent all reads and writes to a resource. Only one transaction can hold an exclusive lock. (FOR UPDATE)
+
+**Examples (MySQL)**
+
+Some examples, and these are in MySQL, the syntax, again, varies from database to database, so don't get too hung up on the syntax. But if you wanted to lock an entire table, you could say lock tables employees, where employees is the name of the table I want to lock, write. That would lock the entire employees table against being written to. And when I'm done, I would have to say unlock tables to release that lock. Now Redshift also has a lock command that works very much the same way for the same purpose. So if I want to make sure nobody can write to my table while I'm doing something, lock tables is the way to do it. And thinking in terms of what the exam might be asking about, that's probably what they're going to ask about. I don't know, I haven't actually taken the exam yet when I'm recording this because it's before the beta exam right now. So I'm not giving you any forbidden knowledge there, I'm just an educated guess. Also an example of doing a shared lock. So let's say I want to allow reads but prevent writes during this transaction. So I'm not explicitly locking and unlocking here. You share it in exclusive locks or just applying to the transaction I'm in. So while the select statement is being executed, because I'm saying for share, that means that during this execution, other processes can do reads from the table, but nobody can write to it while that's being executed. And just for completeness, for update here is an example of an exclusive lock. During the lifetime of this transaction, nobody can read or write until that transaction is complete. So it is important to make sure that any transactions that do have a lock do complete. So if for some reason that transaction got interrupted or did not complete, you could end up with what's called a deadlock, where that lock is never released. So that is a potential failure mode, and again, maybe something the exam might expect you to know about. This exam focuses on operations and data engineering, so let's talk about some RDS best practices and operations to optimize the performance of your database and their operational stability. Tip number one is to use CloudWatch to keep an eye on your memory, CPU, storage, and replica lag on your RDS. Thank you.
+
+* Lock an entire table:
+  * `LOCK TABLES employees WRITE;` -- Locks the entire 'employees' table for write operations
+  * Use `UNLOCK TABLES;` to release the lock.
+  * Note: Redshift also has a LOCK command for the same purpose.
+* Shared lock (allow reads, prevent other writes during this transaction.)
+  * `SELECT * FROM employees WHERE department = 'Finance' FOR SHARE;`
+* Exclusive lock (prevent all reads and writes during this transaction)
+  * `SELECT * FROM employees WHERE employee_id = 123 FOR UPDATE;`
+* Make sure the transactions
+
+
+### Amazon RDS best practices
+
+This exam focuses on operations and data engineering, so let's talk about some RDS best practices and operations to optimize the performance of your database and their operational stability. 
+
+### Amazon RDS operational guidelines
+
+Tip number one is to **use CloudWatch to keep an eye on your memory, CPU, storage, and replica lag** on your RDS instances. Kind of goes without saying that you should use CloudWatch, right, if you're going to be caring about the performance of any system, not just RDS. And if you're going to be doing automatic backups, try to do that during the time of day that has the lowest write IOPS. If you're trying to back something up while it's still being actively written to, that gets complicated. And don't just guess. Don't just say, well, nobody hits my database at two in the morning. No, use your CloudWatch metrics to figure that out and actually base that on some real data. 
+
+Be aware that having insufficient I-O capacity on your instances are going to cause problems if you need to recover after a failure. So the last thing you want to happen is have a database go down on you and find that you're having a hard time switching to a backup instance because your I-O capacity is insufficient to do that failover. So make sure that your database instances has as much I-O as they need. You might need to migrate to one with more. One way to get better I-O capacity is to move to general purpose or provisioned IOPS storage for your RDS instances. Also, if you have applications hitting your RDS database, make sure the time to live on the DNS for that database is set to 30 seconds or less. Again, you don't want to be in a situation where you need to failover your database and your failover strategy is to change the DNS entry from one host to another. 
+
+And then you find out that the DNS is being cached for an hour, right? So instead of switching over in 30 seconds, you now have to sit around for an hour while your cache is for DNS on your app's timeout. So make sure you think about the time to live on DNS for your database if you intend to use DNS as your failover mechanism. And test your failovers before you need it. You know, you don't want to be figuring this out when you're under the gun because things melted down and your applications are no longer functioning. At Amazon, we used to call this game day. We would simulate a massive failure of everything at Amazon in a test environment and kind of practice how we might deal with that. So a good idea to practice failover before you actually need to do it. Make sure you have enough RAM provisioned on your RDS instances to include your entire working set. Again, you don't have to guess about this. You can monitor the read IOPS metric. And if that metric is small and stable, that implies that you're not hitting disk very much so you probably have enough RAM to include your working set. However, if it's not stable and it's higher than you expect, that probably means you're hitting disk more than you should and you need more RAM. 
+
+Also, if your data in RDS is being exposed externally through an app somehow to the outside world or a website, you might want to think about imposing rate limits in the Amazon API gateway to protect your database. So if you want to protect your database against denial of services attacks and things like that, you can set up a rate limit in the API gateway to make sure that nobody can hit your application more than some reasonable frequency that you are designed to handle. 
+
+* Use CloudWatch to monitor memory, CPU, storage, replica lag
+* Perform automatic backups during daily low in write IOPS
+* Insufficient I/O will make recovery after failure slow.
+* Migrate to DB instance with more I/O
+* Move to General Purpose or Provisioned IOPS storage
+* Set TTL on DNS for your DB instances to 30 seconds or less from your apps
+* Test failover before you need it
+* Provision enough RAM to include your entire working set
+* If your ReadIOPS metric is small and stable, you’re good
+* Rate limits in Amazon 
+
+### Query optimization in RDS
+
+Also for improving performance in RDS, you can optimize your queries. Query optimization 101 is use indices whenever you can. So whenever you have a select statement, make sure you look at your queries and make sure you have the indices you need to make those efficient. And if you're not sure, you can use the explain plans to identify any indexes you might need to support that query. Another way of saying the same thing is avoid full table scans. So if you're doing a full table scan, that means there's something wrong with your query or you don't have an index that you really should have, right? So full table scans or evil indexes are the way to avoid them. Once in a while, use the analyze table command to make sure that the table itself is in good health. If you have where clauses, try to make them as simple as possible. They can cause a lot of overhead. And then there are some engine specific optimizations that we'll talk about next. 
+### DB-specific tweaks
+
+So in MySQL and MariaDB, here are some specific tips.
+
+One is to keep your tables well under 16 terabytes and ideally less than 100 gigabytes. Otherwise, you might run into performance problems with MySQL and its close cousin, MariaDB. Make sure you have enough RAM to hold the indexes of your actively used tables. Try to have less than 10,000 tables because more than that might cause problems. And for your choice of storage engine, AWS recommends using InnoDB. If you're using PostgreSQL, there are some tips for when you're loading data into PostgreSQL initially. Apparently, this can be slow. So you want to make sure you're disabling DB backups and also multi-AZ capabilities while you're doing your initial massive load into PostgreSQL. Furthermore, there are specific parameters you can tweak to make that happen more quickly. I'd be surprised if these showed up on the exam, but some are obvious, like making sure auto-vacuum is off during that operation. So the takeaway there is that loading data into PostgreSQL can be slow. There are some specific things you need to do to speed that up. When you're not loading data, though, you do want auto-vacuum on. That's going to be important for maintaining performance going forward. And finally, for SQL Server, you want to make sure you're using RDS DB events to keep an eye on any failovers that might be happening within SQL Server. Also, if you're using SQL Server in a multi-AZ availability zone environment, do not turn on simple recover mode, offline mode, or read-only mode. All of those will break a multi-AZ deployment, so important to remember. And they do recommend that you deploy your SQL Server into all availability zones for redundancy purposes and to make sure things keep working as well as they can. Finally, if you're using Oracle, well, that's its own beast. Optimization in Oracle could be the subject of a whole course of its own, and I really doubt they're going to get into the details of that because, well, people usually use the open source options on RDS these days anyhow. So that's RDS optimization in a nutshell. So things to remember for the exam.
+
+* MySQL, MariaDB
+  * Keep tables well under 16TB, ideally under 100GB
+  * Have enough RAM to hold indexes of actively used tables
+  * Try to have less than 10,000 tables
+  * Use InnoDB for storage engine
+* PostgreSQL
+  * When loading data, disable DB backups and multi-AZ. Tweak various DB parameters such as maintenance_work_mem, max_wal_size, checkpoint_timeout. Disable synchronous_commit, autovacuum, and ensure tables are logged.
+  * Use autovacuum
+* SQL Server
+  * Use RDS DB Events to monitor failovers
+  * Do not enable simple recover mode, offline mode, or read-only mode (this breaks Multi-AZ)
+  * Deploy into all AZ’s
+* Oracle is its own beast
+
+### DocumentDB (NoSQLdatabase)
+
+Now, let's talk about DocumentDB. So the same way we had Aurora as the way for AWS to implement a sort of big cloud-native version of PostgreSQL and MySQL, we have DocumentDB, which is an Aurora version for MongoDB. So MongoDB, if you don't know, there's a logo on the top right corner of your screen, it is another NoSQL database, and you need to remember this for the exam, so DocumentDB is a NoSQL database, and it's based on top of the MongoDB technology, so it's compatible with MongoDB. So MongoDB is used to store, query, and index JSON data, and you have the same similar deployment concept as Aurora with DocumentDB. So that means it's a fully managed database, it's highly available, data is replicated across three availability zones, and DocumentDB storage automatically will grow in increments of 10 gigabytes. And DocumentDB has been engineered so it can scale to workloads with millions of requests per second. So at the exam, if you see anything related to MongoDB, think DocumentDB, or if you see anything related to NoSQL databases, think DocumentDB and also DynamoDB. That's it for this lecture, I hope you liked it, and I will see you in the next lecture.
+
+* Aurora is an “AWS-implementation” of PostgreSQL / MySQL …
+* DocumentDB is the same for MongoDB (which is a NoSQLdatabase)
+* MongoDB is used to store, query, and index JSON data
+* Similar “deployment concepts” as Aurora
+* Fully Managed, highly available with replication across 3 AZ
+* DocumentDB storage automatically grows in increments of 10GB
+* Automatically scales to workloads with millions of requests per seconds
+
+### MemoryDB for Redis
+
+So now let's talk about Amazon MemoryDB for Redis. So it's a Redis-compatible, durable, in-memory database service. So the difference between Redis and MemoryDB for Redis is that while Redis's intent is to be used as a cache with some durability, MemoryDB is really a database that has a Redis-compatible API. So it gives you ultra-fast performance with over 160 million requests per second, so really really high performance, and it's in-memory data, but it's durable data storage with multi-AZ transaction log. So this is a different kind of functioning than Redis. It will scale seamlessly from tens of gigabytes to hundreds of terabytes of storage, and the use cases for MemoryDB for Redis will be your web and mobile applications, online gaming, media streaming, and so on. So imagine you have a lot of microservices and they need access to a Redis-compatible in-memory database, then this is perfect, you use MemoryDB for Redis, you're going to get ultra-fast in-memory speed, as well as a multi-AZ transaction log, which is going to be stored across multiple AZ and will give you access to fast recovery and data durability if you need it. Okay, just an overview, that should be enough for the exam
+
+![](/img/03/151.png)
+
+* Redis-compatible, durable, in-memory database service
+* Ultra-fast performance with over 160 millions requests/second
+* Durable in-memory data storage with Multi-AZ transactional log
+* Scale seamlessly from 10s GBs to 100s TBs of storage
+* Use cases: web and mobile apps, online gaming, media streaming,
+
+
+
+### Keyspaces (for Apache Cassandra)
+
+So now let's talk about Amazon Keyspaces. And Keyspaces is a managed Apache Cassandra on AWS. So Cassandra is an open-source NoSQL distributed database. And so with Keyspaces, you get Cassandra directly managed on the cloud by AWS. So it's going to be a serverless type of service. It's scalable, it's highly available, and fully managed by AWS. And it will automatically scale tables up and down based on the application's traffic. The table's data is going to be replicated three times across multiple AZ. And to perform your queries on top of Keyspaces, you're going to use the Cassandra Query Language, or CQL. So thanks to this, you're going to get single-digit millisecond latency at any scale. And you can do thousands of requests per second. Two capacity modes to note. This is just like DynamoDB. You have the on-demand mode, and then you have the provision mode with autoscaling. And these are the same things as DynamoDB, really. You get encryption features, backup, point-in-time recovery up to 35 days. And so the use cases is going to be to store IoT device information, time series data, and generally from an exam perspective, any time you see Apache Cassandra, you just think about Amazon Keyspaces, and you're done. Okay, that's it for this refresher.
+
+* Apache Cassandra is an open-source NoSQL distributed database
+--
+* A managed Apache Cassandra-compatible database service
+* Serverless, Scalable, highly available, fully managed by AWS
+* Automatically scale tables up/down based on the application’s traffic
+* Tables are replicated 3 times across multiple AZ
+* Using the Cassandra Query Language (CQL)
+* Single-digit millisecond latency at any scale, 1000s of requests per second
+* Capacity: On-demand mode or provisioned mode with auto-scaling
+* Encryption, backup, Point-In-Time Recovery (PITR) up to 35 days
+--
+* Use cases: store IoT devices info, time-series data, …
+
+
+### Amazon Neptune
+
+Now let's talk about Amazon Neptune. Neptune is a fully managed graph database. So an example of what a graph dataset would be, would be for example something we all know, which is a social network. So if we look at a social network, people are friends, they like, they connect, they read, they comment, and so on. So users have friends, posts will have comments, comments have likes from users, users share and like posts, and so all these things are interconnected, and so they create a graph. And so this is why Neptune is a great choice of database when it comes to graph datasets. So Neptune has replication across three AZ, up to 15 read replicas. It's built, it's used to build and run applications that are going to be with highly connected datasets, so like a social network, and because Neptune is optimized to run queries that are complex and hard on top of these graph datasets. You can store up to billions of relations on the database and query the graph with milliseconds latency. It's highly available with replication across multiple availability zones, and it's also great for storing knowledge graphs. For example, the Wikipedia database is a knowledge graph because all the Wikipedia articles are interconnected with each other. Threat detection, recommendations engine, and social networking. So coming from an exam perspective, anytime you see anything related to graph databases, think no more than Neptune. 
+
+![](/img/03/152.png)
+
+* Fully managed graph database
+* A popular graph dataset would be a social network
+  * Users have friends
+  * Posts have comments
+  * Comments have likes from users
+  * Users share and like posts…
+* Highly available across 3 AZ, with up to 15 read replicas
+* Build and run applications working with highly connected datasets – optimized for these complex and hard queries
+* Can store up to billions of relations and query the graph with milliseconds latency
+* Highly available with replications across multiple AZs
+* Great for knowledge graphs (Wikipedia), fraud 
+
+
+### Amazon Timestream
+
+So now let's talk about Amazon Timestream. And the name indicates that it's actually a time series database. So it's fully managed, it's fast, it's scalable, and it's serverless. So what is a time series? Well, it's a bunch of points that have a time included in them. So for example, here's a graph by year. So this is a time series. Now with Timestream, you can automatically adjust the database up and down to scale capacity, and you can store and analyze trillions of events per day. The idea is that if you have a time series database, it's going to be much faster and much cheaper than using relational databases for time series data, hence the specificity of having a time series database. You can do scheduled queries, you can have records with multiple measures, and there is full SQL compatibility. The recent data will be kept in memory, and then the historical data is kept in a cost-optimized storage tier. As well as you have a time series analytics function to help you analyze your data and find patterns in near real time. This database, just like every database on AWS, supports encryption in transit and at rest. So the use cases for Timestream would be to have an IoT application, operational applications, real-time analytics, but everything related to a time series database. 
+
+* Fully managed, fast, scalable, serverless time series database
+* Automatically scales up/down to adjust capacity
+* Store and analyze trillions of events per day
+* 1000s times faster & 1/10th the cost of relational databases
+* Scheduled queries, multi-measure records, SQL compatibility
+* Data storage tiering: recent data kept in memory and historical data kept in a cost-optimized storage
+* Built-in time series analytics functions (helps you identify patterns in your data in near real-time)
+* Encryption in transit and at rest
+* Use cases: IoT apps, operational applications, real- time analytics, …
+
+**Timestream – Architecture**
+
+![](/img/03/153.png)
+
+Now in terms of architecture, Timestream is here, and it can receive data from AWS IoT, so Internet of Things. Kinesis Data Streams through Lambda can receive data as well. Prometheus, Telegraph, there are integrations for that. Kinesis Data Streams as well through Kinesis Data Analytics for Apache Flink can receive data into Amazon Timestream and Amazon MSK as well through the same process. And in terms of what can connect to Timestream, well we can build a dashboard using Amazon QuickSight, we can do machine learning using Amazon SageMaker, we can do Grafana, or because there is a standard JDBC connection into your database, any application that is compatible with JDBC and SQL can leverage Amazon Timestream. So that's it, I think from the exam you just need to remember what Timestream is at a high level, but I want to give you a bit more details as well. So that's it for this lecture, I hope you liked it, and I will see you in the next lecture.
+
+
+
+## Amazon Redshift 
+
+**Fully-managed, petabyte-scale data warehouse**
+
+Next, let's dive into Amazon Redshift. Redshift is AWS's distributed data warehouse solution. So it is a petabyte-scale data warehouse that is spread across an entire cluster, but it's fully managed. So, you know, you don't think about taking care of that cluster. They take care of all the server maintenance for you. Now, given that the world of big data often involves the world of data warehouses and dealing with massive data sets, it should be no surprise that the exam spends a lot of time talking about Amazon Redshift. So we're going to spend a lot of time on it as well. A lot of depth here needed on Redshift, so pay attention, folks. This stuff is all important. 
+
+### What is Redshift?
+
+At a high level, what is Redshift? Well, it is a fast and powerful, fully managed, petabyte-scale data warehouse service. And Amazon claims that it delivers 10 times better performance compared to other data warehouses. So not only is it massively scalable, it's super fast and achieves that speed using machine learning, massively parallel query execution, which is called MPP, and using columnar storage, which we talked about earlier, and using high-performance disks as well. Keep in mind, Redshift is a data warehouse, so it is specifically designed for online analytic processing, OLAP. It's for querying your data and getting insights out of it on an analytical standpoint. It is not made for OLTP. For OLTP, typically, you would want more row-based storage. So you're not going to be hitting your Redshift data warehouse at massive transaction rates, expecting fast responses. It's meant as an analytics tool, which is why it's in the analytics section here. They also claim that in addition to being super fast and super scalable, it's also super cheap. They claim it is the most cost-effective cloud data warehouse, and there is no upfront cost to using Redshift, and that is in stark contrast to building out a massive data warehouse on-premises. I can tell you that firsthand. You just pay as you go for the resources that you're consuming, and that can end up being one-tenth of the cost or less of traditional data warehouses that are stored on-premises. Also, it provides fast querying capabilities over structured data using familiar SQL-based clients and BI tools, just using standard ODBC and JDBC connections. So it just looks like another relational database to the outside world, and you can connect any analytic or visualization tool you want to Redshift on top of it. It's also easily scalable. You can easily scale up or down your cluster with just a few clicks in the AWS Management Console, or with a single API call. So if you do need to scale it up or scale it down, that's very easy to do. It won't be automatic, but at least it's easy. It also uses replication to enhance your availability, and continuous backups to improve your data durability. And it can automatically recover from component and node failures. For monitoring, it integrates with CloudWatch. And for metrics for compute utilization, storage utilization, and read-write traffic to the cluster, those are all available for you free of cost within CloudWatch. And you can also add user-defined custom metrics that you can add using CloudWatch's custom metrics functionality. It also provides information on query and cluster performance using the AWS Management Console, and that helps you in diagnosing performance issues like which user or query is consuming high resources.
+
+
+* Fully-managed, petabyte scale data warehouse service
+* 10X better performance than other DW’s
+* Via machine learning, massively parallel query execution, columnar storage
+* Designed for OLAP, not OLTP
+* Cost effective
+* SQL, ODBC, JDBC interfaces
+* Scale up or down on demand
+* Built-in replication & backups
+* Monitoring via CloudWatch / CloudTrail
+
+#### Redshift Use-Cases
+
+ Some use cases that are listed for Redshift are accelerating all of your analytics workloads. So if you just want your data warehouse to be faster, you might want to move to Redshift. It uses, as you said, machine learning, MPP, and columnar storage on high-performance disks, and result caching to make it super fast. You might also want to use Redshift because you want to unify your data warehouse and your data lake. Something we'll talk about shortly is Redshift Spectrum, which is a way of importing your unstructured data in S3 as just another table in your data warehouse. So you can actually do joins and stuff across your structured data that's been imported into your Redshift servers themselves, together with data lake information that's actually stored in S3 somewhere. That's kind of cool. Maybe you just want to modernize your data warehouse and make it faster and more scalable and easier to manage. Redshift is a potentially easy way of doing that. And there are some more specific use cases that come out of the AWS Big Data White Paper. Those would include analyzing global sales data, storing historical stock trade data, analyzing ad impressions and clicks, aggregating gaming data, and analyzing social trends. These are all examples of stuff you can do with Redshift, or really any data warehouse for that matter. 
+
+ 
+* Accelerate analytics workloads
+* Unified data warehouse & data lake
+* Data warehouse modernization
+* Analyze global sales data
+* Store historical stock trade data
+* Analyze ad impressions & clicks
+* Aggregate gaming data
+* Analyze social trends
+
+#### Redshift architecture
+
+![](/img/03/154.png)
+
+Let's start diving deep into the architecture of Redshift itself. So basically we have clusters. That's kind of the highest level here. That encompasses this entire picture here. A cluster is the core infrastructure component of an Amazon Redshift data warehouse. And a cluster is composed of a **```Leader node```**, which you see here, and one or more **`Compute nodes`**. 
+
+You can contain between one and 128 ``compute nodes`` depending on the node type. So it's not infinitely scalable, but 128 nodes can hold a whole lot of data. 
+
+And each cluster can contain one or more databases. 
+
+![](/img/03/159.png)
+
+Now the user data is going to be stored on the ``compute nodes``. 
+
+![](/img/03/160.png)
+
+The `leader node` is just managing communication with the client programs, 
+
+![](/img/03/161.png)
+
+and all communication with the ``compute nodes``. So it's sort of the interface between your external clients to Redshift and the ``compute nodes`` under the hood. 
+
+![](/img/03/162.png)
+
+It receives all the queries from client applications, parses the queries and develops execution plans, which are in order instead of steps to process those queries. It then coordinates the parallel execution of those plans with the `compute nodes`, and also aggregates the intermediate results from those nodes. Finally, the `leader node` will return those results back to the client applications. Let's talk about the `compute nodes` in more depth. 
+
+![](/img/03/163.png)
+
+So `compute nodes` are responsible for executing the steps specified in the execution plans that it's getting from the `leader node`, and transmitting data among themselves to serve those queries. It then sends those intermediate results back to the `leader node` for aggregation, before being sent back to the client applications. Now each compute node has its own dedicated CPU, memory, and attached disk storage, which are determined by the node type you choose. Alright, so within the compute node we have node slices. So every compute node is divided into slices, and a portion of the node's memory and disk space is going to be allocated to each slice, where it processes a portion of the workload assigned to that node. The number of slices per node is determined by the node size of the cluster. Alright, that's a lot of depth there, but really you need to know it. So a cluster consists of a `leader node` and many `compute nodes`, one or many `compute nodes`, and a compute node in turn consists of node slices that process chunks of the data being given to it.
+
+
+### Redshift Spectrum & Performance
+
+**Redshift Spectrum**
+
+Next, let's dive into Redshift Spectrum. Spectrum allows you to query exabytes. Exabytes, mind you. We're past terabytes here, or petabytes. We're in big data land here for sure. Exabytes of unstructured data in S3 without loading it into your cluster. So in very much the same way that Athena could use the AWS Glue catalog to make tables on top of your S3 data, Redshift Spectrum can do the same thing. It's very much the same idea. It's just that instead of having this console-based query SQL engine in Athena, it actually just looks like another table in your Redshift database. So that way you can have tables that embody your S3 data lake alongside tables that embody data that's actually stored on the Redshift cluster itself, and you can treat them as the same thing and join between them whatever you want to do. So it's really cool. It allows you to run queries against exabytes of unstructured data in S3 without the need to load that data into the Redshift cluster itself or to transform that data in any way. It provides limitless concurrency by allowing multiple queries to access the same data simultaneously in S3. It can scale out to thousands of instances if needed, so your queries will run quickly regardless of data size. And it lets you separate storage and compute capacity, allowing you to scale each independently. So with Spectrum, all of your storage is being done in S3. Spectrum is just doing the compute part of analyzing that data. Redshift Spectrum currently supports many open source data formats including Avro, CSV, Grok, Ion, JSON, ORC, Parquet, RCFile, Regexerta, Sequence Files, Text Files, and TSV. So just about any common open source data format you can imagine, if you have that sitting in an S3 bucket somewhere, Redshift can parse that out and make queries against it. Spectrum also currently supports gzip and snappy compression, so if you do want to compress your S3 data to save space and save bandwidth, you can do that too.  So they've pretty much thought of everything here.
+
+![](/img/03/155.png)
+
+• Query exabytes of unstructured data in S3 without loading
+• Limitless concurrency
+• Horizontal scaling
+• Separate storage & compute resources
+• Wide variety of data formats
+• Support of Gzip and Snappy compression
+
+
+**Redshift Performance**
+
+Going back to Redshift as a whole here, how is Redshift so fast? Well again, it uses Massively Parallel Processing or MPP to do that. Data and query loads are automatically distributed across all nodes, and adding nodes to the data warehouse is made easy and also enables fast query performance as the data warehouse grows. So it will do all of its queries in parallel, and if you need more speed or more capacity, just add more nodes to your cluster and it will automatically take advantage of that extra capacity. It also uses columnar data storage, so your data is organized by column, as column-based systems are ideal for data warehousing and analytics for large dataset query, because typically you're just looking at specific columns of a large number of columns. So you can save a lot of bandwidth and a lot of lookup time by organizing your data by columns instead of by rows. The columnar data is stored sequentially on the storage media and requires far less I.O., thereby improving query performance. And by using columnar storage, each data block stores values of a single column from multiple rows. So as records enter the system, Amazon Redshift is transparently converting the data to columnar storage for each of the columns. This helps you to avoid scanning and discarding unwanted rows. Now, columnar databases are generally not well suited for OLTP, online transaction processing. So remember, an anti-pattern for Redshift is OLTP. It's meant for OLAP, like any data warehouse would be. Redshift uses a block size of one megabyte, which is more efficient and further reduces the number of I.O. requests needed to perform any database loading or other operations that are part of a query execution. It can also do column compression. So compared to row-based data stores, columnar data stores can generally be compressed much more, as it's all sequentially stored on disk in the same type of data format. Multiple compression techniques are often applied for better results. So indexes or materialized views are not required with Redshift, and hence it uses less space compared to traditional relational database systems. It will automatically sample the data and select the most appropriate compression scheme when the data is loaded into an empty table. Compression is a column-level operation that reduces the size of the data when it is stored. Compression can conserve storage space and reduces the size of data that is read from the storage. It reduces the amount of disk I.O. and therefore improves your query performance. So when you're loading data into a Redshift cluster, usually you use the copy command to do that most efficiently. That allows you to copy data into your cluster in a distributed, parallelized manner. And when you issue that copy command, it will automatically analyze and apply compression automatically. You don't have to do anything, it just does it for you. But if you want some insight into what's going on there, it offers an analyze compression command, which will perform compression analysis and produce a report with the suggested compression encoding for the tables analyzed.
+
+• Massively Parallel Processing (MPP)
+• Columnar Data Storage
+• Column Compression
+
+
+### Redshift Durability and Scaling
+
+**Redshift Durability**
+
+Now let's talk about the specifics of Redshift's durability and scalability. Redshift replicates all of the data within the data warehouse cluster when it is loaded automatically. Also, your data is continuously backed up to S3 for you. Three copies of the data are maintained, on the original, on a replica, on compute nodes, and in a backup in S3. So your data is stored in three different places. There's the original copy within your cluster, there's a backup replica copy within your cluster as well, and furthermore, it does periodic backups into S3 for you. So for disaster recovery, Redshift asynchronously replicates your snapshots to S3 in another region as well. It can enable automated snapshots of the data warehouse cluster with a one-day retention period by default. You can extend that retention period up to 35 days if you want. If you turn the retention period down to zero, however, automated backups will be turned off. Now if you need to restore your cluster from a backup, you just choose one of the automated backups, and then AWS will provision a new data warehouse cluster and restore your data to it. You can then switch over to the newly restored cluster from the old one. Redshift replicates the data within the data warehouse cluster and continuously backs up that data to S3. It will mirror each drive's data to the other nodes within the cluster as well. Redshift will automatically detect a failed drive or node and replace it for you automatically. In the event of a drive failure, the Redshift cluster will remain available with a slight decline in performance of certain queries, while Redshift rebuilds that drive from a replica of the data on that drive which is stored on another drive within that node. Single-node clusters do not support data replication because there's nothing to replicate it to. In that case, you would have to restore your cluster from a snapshot in S3 instead. In the event of an individual node failure, Redshift will automatically detect that node failure and replace the failed node in your data warehouse cluster. Until that replacement node is provisioned and added to the database, the cluster will be unavailable for queries and updates. Most frequently accessed data from S3, however, is loaded first in the new node, so you can resume querying that data as quickly as possible. Single-node clusters do not support data replication, and hence you will again need to restore the cluster from a snapshot in S3 in the case of a node failure on a single-node cluster. AWS recommends at least two nodes in your cluster for production purposes. Now in the event of a Redshift cluster availability zone outage, in this case you will not be able to use your cluster until power and network access to the availability zone are restored because Redshift is currently limited to a single availability zone. However, you can restore the cluster from any existing snapshot to a new availability zone within the same region. So in that case, too, your most frequently accessed data will be restored first from S3 so you can resume your queries as soon as possible. Amazon is working to remove that restriction, however. As of November 2022, they announced multi-availability zone support specifically for RA3 clusters.
+
+• Replication within cluster
+• Backup to S3
+• Asynchronously replicated to another region
+• Automated snapshots
+• Failed drives / nodes automatically replaced
+• However – limited to a single availability zone (AZ)
+• Multi-AZ for RA3 clusters now available
+
+
+**Scaling Redshift**
+
+How does Redshift scale? Well, Redshift clusters support both vertical, which is increasing the node instance type, and horizontal, which is increasing the number of nodes, scaling. Your requested changes will be applied immediately when you modify your data warehouse cluster. Here's how the process works. So when you're scaling, an existing data warehouse cluster will remain available for read operations and a new data warehouse cluster is created during scaling operations. When that new cluster is ready, the existing cluster will be temporarily unavailable while a CNAME record for the existing cluster is flipped to a point in the new data warehouse cluster. That only takes a few minutes, and it's usually done during some sort of a maintenance window. Redshift will move the data from the compute nodes in the existing data warehouse cluster in parallel to the compute nodes in the new cluster.
+
+• Vertical and horizontal scaling on demand
+• During scaling:
+• A new cluster is created while your old one remains available for reads
+• CNAME is flipped to new cluster (a few minutes of downtime)
+• Data moved in parallel to new `compute nodes`
+
+
+### Redshift Distribution Styles
+
+When we discussed the Redshift architecture, we talked about how the data in your table is distributed across many compute nodes and many slices within those nodes. Now there are several different ways of actually doing that distribution that you need to understand. So when data is loaded into a table, Redshift will distribute the table's rows to the compute nodes and slices according to the distribution style that you chose when you created the table. The two primary goals of data distribution are to distribute the workload uniformly among the nodes in the cluster and to minimize data movement during query execution. There are four different distribution styles, and they are as follows. 
+
+* AUTO
+  * Auto-distribution. If you don't specify a distribution style, Amazon Redshift uses auto-distribution. And based on the size of the table data, Redshift will assign an optimal distribution style for you. And that might be even, key, or all. So let's dive into each one of those independently. 
+  * Redshift figures it out based on size of data
+* EVEN
+  * First, let's talk about even distribution. So in even distribution, regardless of the values in any particular column, the leader node distributes the rows across the slices in a round-robin fashion. So it's just going to step through each individual slice and keep assigning new data to each slice in a circular manner. This is appropriate when a table does not participate in joins, or when there is not a clear choice between key distribution or all distribution. So even distribution just tries to spread things out as evenly as possible without thinking about trying to cluster data together that might be accessed at the same time. 
+  * Rows distributed across slices in round-robin
+  * EVEN distribution: ![](/img/03/156.png)
+* KEY
+  * Here, the rows are distributed according to the values in one column. So the leader node will place matching values on the same node slice. And matching values from the common columns are physically stored together. So this can come in handy if you're typically going to be doing queries based on a specific column in your data. By using key distribution, you can make sure that all the data associated with a specific key value will be physically located on the same slice. And that can speed up your queries. So the diagram here is showing you that as new rows are coming in from your incoming data, those keys will be hashed and set to a specific slice based on how that key is hashed.
+  * Rows distributed based on one column
+  * KEY distribution: ![](/img/03/157.png)
+* ALL
+  * And with all distribution, a copy of the entire table is distributed to every node. That ensures that every row is co-located for every join that the table participates in. The all distribution multiplies the storage required by the number of nodes in the cluster. So it takes much longer to load, update, or insert data into multiple tables. All distribution is really only appropriate for relatively slow-moving tables. That is, tables that are not updated frequently or extensively. As the cost of redistribution is low, small dimension tables do not benefit significantly from all distribution. Now, if you ever need to view the distribution style of the table, you can query the pgClassInfoView or the svvTableInfoView. The ReflectiveDistStyle column in pgClassInfo will indicate the current distribution style for that table.
+  * Entire table is copied to every node
+  * ALL distribution: ![](/img/03/158.png)
+
+
+
+
+#### Importing / Exporting data
+
+Getting it out of it efficiently, this is the topic. Let's talk about getting data into your Redshift tables and also getting it out of it efficiently. This is a topic that the exam seems to like a lot. So your go-to command for getting data into a Redshift table is the COPY command. It's going to be the most efficient way to load up your Redshift table. You can use the COPY command to read from multiple data files or multiple data streams simultaneously. And that can be done from Amazon S3, from Elastic MapReduce, DynamoDB, or any remote host using the SSH protocol. Now you're going to need role-based or key-based access control to authenticate things there, but once you have all the security hooked up, it's pretty straightforward. If you are importing from S3, it will require a manifest file, which is just a JSON formatted file listing all the data files that you want to load. And also, obviously, an IAM role to give you access to that S3 bucket from Redshift. If you want to get data out of Redshift, the UNLOAD command is the way to do that. So that's going to be just a quick way to unload data from a database table to a set of files in an S3 bucket. Also something to think about is enhanced VPC routing. So that will force all of your COPY and UNLOAD traffic between your cluster and the repositories through your Amazon VPC. If you do not set that up, all of your traffic will be routed through the internet. So you want to make sure your VPC is correctly set up and configured, or the COPY and UNLOAD will fail. You need to make sure your VPC endpoints, your NAT gateway, the internet gateway, are all set up properly to get this all happening within your VPC if you want to avoid routing this data through the internet. So another fine point that the exam might expect you to know. There are some newer features in 2023, so I wouldn't expect to see this on the exam until 2024 and beyond. But if you are watching in 2024 or beyond, this might be important to know. So one is auto-copy from Amazon S3. That just sits there monitoring an S3 bucket, and as new data is seen in that bucket, it will automatically copy that into your Redshift cluster. So that's a way to simplify importing data from S3 even further. You can just sit there looking for new data all the time and automatically copy that into Redshift for you. It's a lot easier. Don't have to sit around and run those copy commands by hand anymore. There's also something called Amazon Aurora Zero ETL integration, and in the same spirit as auto-copy from S3, that sits around and just automatically replicates data from an Aurora database into Redshift all the time. So if you have some Aurora relational database out there and you want to replicate that data into your Redshift tables, that is a way to very easily do that and just keep on doing it automatically. There's also something called Redshift streaming ingestion now, and that will sit around looking for new data on a Kinesis data stream or MSK for your managed Kafka cluster. 
+
+* COPY command
+  * Parallelized; efficient
+  * From S3, EMR, DynamoDB, remote hosts
+  * S3 requires a manifest file and IAM role
+* UNLOAD command
+  * Unload from a table into files in S3
+* Enhanced VPC routing
+* Auto-copy from Amazon S3
+* Amazon Aurora zero-ETL integration
+  * Auto replication from Aurora -> Redshift
+* Redshift Streaming Ingestion
+  * From Kinesis Data Streams or MSK
+
+#### COPY command: More depth
+
+A little more depth on the copy command, the exam seems to be focusing on this more and more. So remember, you want to use copy to load large amounts of data from outside of Redshift into a Redshift table on your Redshift cluster. If you see a question about how do I efficiently load data into Redshift from outside, odds are the answer is the copy command. Now, if your data is already in Redshift in some other table, you don't want to use copy. Copy is for external data that's being imported into your Redshift cluster. If your data is already in another table within Redshift itself, you want to use either the insert into select statement or create table as to actually create a table that's just a view of the other table that you can refer to. So remember, create table as is where you're going to be using to refer to data that's already in Redshift in some other table, and if it's outside of Redshift, you want to use the copy command. Some neat features of the copy command, it can actually decrypt data as it's loaded from S3. So if your S3 data is encrypted, copy can decrypt it as it is loaded in, and it can do that very quickly because it has a hardware accelerated SSL capability to keep that decryption as fast as possible. It can also speed things up by compressing the data as it's sent across. So it supports gzip, lzop, and vzip2 compression to speed up those data transfers even further when you're using a copy command. Another neat feature of the copy command is automatic compression. This is an option that will analyze the data that's being loaded and automatically figure out the optimal compression scheme for storing it. So if you have data that can compress very well, automatic compression can figure out how do I store this data efficiently. That's used to optimize the usage of your actual storage on your cluster. There's one special case that the documentation calls out, and I wouldn't be surprised if it shows up on the exam. If you have a narrow table, that means that you have a table that has a lot of rows but very few columns, you want to load that with a single copy transaction if at all possible. The thing is, if you have multiple copy transactions, there's a bunch of hidden metadata columns that appear. And these hidden columns, to keep track of where things left off, consume too much space. So if you're going to be loading a table that has many rows but very few columns, try to do that within one copy command. Don't break it up over several copy commands. It's also important to remember that copy is designed to parallelize things and do things as efficiently as possible. So if you can do things in one copy command, why not? It's always going to work well.
+
+* Use COPY to load large amounts of data from outside of Redshift
+* If your data is already in Redshift in another table,
+  * Use INSERT INTO …SELECT
+  * Or CREATE TABLE AS
+* COPY can decrypt data as it is loaded from S3
+  * Hardware-accelerated SSL used to keep it fast
+* Gzip, lzop, and bzip2 compression supported to speed it up further
+* Automatic compression option
+  * Analyzes data being loaded and figures out optimal compression scheme for storing it
+* Special case: narrow tables (lots of rows, few columns)
+  * Load with a single COPY transaction if possible
+  * Otherwise hidden metadata columns consume too much space
+
+
+#### Redshift copy grants for cross-region snapshot copies
+
+It's actually pretty amazing the level of depth the exam expects from you on this stuff. So let's talk about a very specific case here. Let's say that you want to copy a snapshot from Redshift automatically to another region, so you have cross-region replication of your snapshots for backup purposes. So let's say you have a KMS-encrypted Redshift cluster, and you have a snapshot of that cluster being saved in some S3 region. Now you want to copy that snapshot to another region for even better backup. The way you would do that is as follows. In your destination AWS region, you create a KMS key if you don't have one already, and then you set up a snapshot copy grant, specifying a unique name for that snapshot copy grant in the destination region. As part of setting up that copy grant, you specify the KMS key ID that you're creating it for. Then back in the source AWS region, you will enable copying of snapshots to the copy grant that you just created. So by using a copy grant that you set up using a KMS key, you can securely copy KMS-encrypted snapshots for your Redshift cluster across to another region. Another bit of connectivity trivia is dblink. And dblink is an extension that allows you to connect your Redshift cluster to a PostgresQL instance, which might be hosted using Amazon's RDS service. At a high level, you might want to do that to get the best of both worlds between the columnar storage of Redshift and the row-based storage of Postgres. Or you might be using it as a way to copy and sync data between a PostgresQL instance and Redshift. So if you want a very efficient way of copying data and keeping data synchronized between Postgres and Redshift, the dblink extension is a way to do that. The way it works is like this. Basically, you launch a Redshift cluster and you launch your PostgresQL instance as well in the same availability zone, mind you. You would then configure the VPC security group for the Amazon Redshift cluster to allow an incoming connection from the RDS PostgresQL endpoint. You would then connect to the RDS PostgresQL instance and run the SQL code you see here to establish that dblink connection between the PostgresQL instance and Amazon Redshift. So just remember dblink exists to connect Redshift to PostgresQL and get the best of both worlds, or maybe to copy and synchronize data between the two more efficiently.
+
+• Let’s say you have a KMS-encrypted Redshift cluster and a
+snapshot of it
+• You want to copy that snapshot to another region for backup
+• In the destination AWS region:
+• Create a KMS key if you don’t have one already
+• Specify a unique name for your snapshot copy grant
+• Specify the KMS key ID for which you’re creating the copy grant
+• In the source AWS region:
+• Enable copying of snapshots to the copy grant you just created
+
+
+
+#### DBLINK
+
+Another bit of connectivity trivia is dblink. And dblink is an extension that allows you to connect your Redshift cluster to a PostgresQL instance, which might be hosted using Amazon's RDS service. At a high level, you might want to do that to get the best of both worlds between the columnar storage of Redshift and the row-based storage of Postgres. Or you might be using it as a way to copy and sync data between a PostgresQL instance and Redshift. So if you want a very efficient way of copying data and keeping data synchronized between Postgres and Redshift, the dblink extension is a way to do that. The way it works is like this. Basically, you launch a Redshift cluster and you launch your PostgresQL instance as well in the same availability zone, mind you. You would then configure the VPC security group for the Amazon Redshift cluster to allow an incoming connection from the RDS PostgresQL endpoint. You would then connect to the RDS PostgresQL instance and run the SQL code you see here to establish that dblink connection between the PostgresQL instance and Amazon Redshift. So just remember dblink exists to connect Redshift to PostgresQL and get the best of both worlds, or maybe to copy and synchronize data between the two more efficiently.
+
+* Connect Redshift to PostgreSQL (possibly in RDS)
+* Good way to copy and sync data between PostgreSQL and Redshift PostgreSQL instance
+
+```sql
+CREATE EXTENSION postgres_fdw;
+CREATE EXTENSION dblink;
+CREATE SERVER foreign_server
+  FOREIGN DATA WRAPPER postgres_fdw
+  OPTIONS (host '<amazon_redshift _ip>', port '<port>', dbname '<database_name>', sslmode
+  'require');
+CREATE USER MAPPING FOR <rds_postgresql_username>
+  SERVER foreign_server
+  OPTIONS (user '<amazon_redshift_username>', password '<password>');
+```
+
+
+#### Integration with other services
+
+How does Redshift integrate with other AWS services? Well, let's go through a few of them. So Amazon S3. You can use parallel processing to export your data from Amazon Redshift data to multiple data files on S3. And of course, you can also import data from S3 or even sit on top of it using Amazon Redshift. Amazon DynamoDB. So by using the copy command, you can also load a Redshift table with data from a single Amazon DynamoDB table. So it's possible to import data from DynamoDB into Redshift using the copy command as well. On EMR hosts or EC2 instances, you can import data using SSH. So again, via the copy command, you can load data from one or more remote hosts, such as EMR clusters or whatever you're running on EC2 for that matter. It also integrates with the AWS Data Pipeline. So you can automate the data movement and transformation in and out of Redshift tables using Data Pipeline. And finally, the AWS Database Migration Service, or DMS, can migrate your data into Amazon Redshift for you, or at least help you with the process. So the Database Migration Service is a whole big topic of its own. Basically, it's a set of tools that allow you to migrate data from some existing data warehouse into Amazon Redshift. And often there's a lot more to that than you might imagine. 
+
+![](/img/03/164.png)
+
+**Redshift Workload Management (WLM)**
+
+You will also need to at least know what Redshift Workload Management is, WLM for short. It's a way to help users prioritize workloads so that short, fast-running queries are not stuck behind long-running, slow queries. The way it works is by creating query queues at runtime according to service classes. And configuration parameters for various types of queues are defined by those service classes. Now you can modify the WLM configuration to create separate queues for long-running queries and for short-running queries, thereby improving system performance and user experience. You can set all this up using the Amazon Redshift Management Console, the Amazon Redshift Command Line Interface, or the Amazon Redshift API.
+
+* Prioritize short, fast queries vs. long, slow queries
+* Query queues
+* Via console, CLI, or API
+
+#### Concurrency Scaling
+
+The topic of scaling and tuning your Redshift cluster comes up a lot in the exam as well. One feature you need to know about is called Concurrency Scaling. This feature allows you to automatically add cluster capacity to handle sudden increases in concurrent read queries. So if you have very bursty access to your Redshift cluster where you have these sudden floods of read queries that come in from outside, Concurrency Scaling can automatically scale up your cluster to handle it. It can support virtually unlimited concurrent users and queries this way. It just keeps on adding more and more capacity as needed as your read queries increase in volume. And you can use workload management queues, which we'll talk about again very shortly, to manage which queries are sent to the Concurrency Scaling cluster. So you can manage through what queue you assign your queries to, which ones can actually take advantage of Concurrency Scaling and which ones do not. This can allow you to, for example, segregate those read queries that you think might be bursty in nature or vary in time and their frequency, and use that to automatically scale out the capacity for that specific query. It kind of reduces the risk of inadvertently adding a bunch of capacity for some offline job that doesn't really need to run fast, necessarily. So you can pick and choose which queries take advantage of Concurrency Scaling. Obviously, it's not free, so you want to give some thought as to which queries can actually have this capability of just automatically adding more and more capacity as needed.
+
+• Automatically adds cluster capacity to handle increase in concurrent read queries
+• Support virtually unlimited concurrent users & queries
+• WLM queues manage which queries are sent to the concurrency scaling cluster
+
+
+#### Automatic Workload Management
+
+Workload Management, WLM, comes in a couple of different flavors. One is called Automatic Workload Management. So with Automatic Workload Management, you can define up to eight different queues that are managed for you. And by default, you have five queues that have an even memory allocation between them, but you can change that, obviously, if you need to. So the idea is that if you have a bunch of large queries going into a queue, like big hash joins or something like that, the concurrency will be lowered on that queue automatically for you. And if you have a bunch of small queries going into a queue, like inserts or scans or simple aggregations, the concurrency level on that queue might be raised. Concurrency is just, how many queries can I run at once, right? So larger queries, obviously, need more capacity. You want to perhaps lower concurrency on those so that they get more resources, whereas small queries can get away with fewer resources and you can run more of them at once. By separating these queries into their own queues, we can take better advantage of the hardware that we have. So each automatic workload query queue can be configured in a bunch of different ways. One thing you can do is set a priority value. That just defines the relative importance of queries within a workload. You can also set concurrency scaling mode. So basically, that's what we talked about before with concurrency scaling. This is where you can say, I want this particular queue to have access to a concurrency scaling cluster and have the ability to automatically add more and more resources, more and more servers under the hood to handle the capacity that queue needs. That costs money, obviously, so you want to think carefully about whether or not that's enabled. You can also assign a set of user groups to a queue, and you can do that by specifying a user group name or by using wildcards. So when a member of a listed user group runs a query, that query will automatically run within the corresponding queue. So you can assign queues to query queues based on users. You can also set up a query group. All that is is a label. So basically, at runtime, you can assign a query group label to a series of queries, and that will define which queue that query goes into. So basically, a tag, a label, that's assigned to the query itself can define which queue it goes to. You can also set up query monitoring rules. These are pretty cool. They allow you to define metrics-based performance boundaries for workload management queues, and you can specify what action to take when a query goes beyond those boundaries. So for example, you might have a queue dedicated to short-running queries, and you might have a query monitoring rule that aborts those queries if they run for more than 60 seconds. So that way, you can enforce that your short-query queue is actually handling short queries, and if something goes wrong with one of those queries, it's not gonna hold up all the other queries in that queue. So a very useful tool there. You can also do things like kick queries off to a different queue if it violates some query monitoring rule. 
+* Creates up to 8 queues
+* Default 5 queues with even memory allocation
+* Large queries (ie big hash joins) -> concurrency lowered
+* Small queries (ie inserts, scans, aggregations) -> concurrency raised
+* Configuring query queues
+  * Priority
+  * Concurrency scaling mode
+  * User groups
+  * Query groups
+  * Query monitoring rules
+
+
+#### Manual Workload Management
+
+The other flavor of WLM is manual workload management, and by default, this comes with one queue with a concurrency level of five. Again, concurrency level is how many queries can I run at once within this queue. In addition, there's a super user queue with a concurrency level of one. This is a queue that's intended for administrative queries that are happening that always must run no matter what. You can define up to eight manual queues, and you can have a concurrency level on a queue up to 50. Each of those queues allows you to define whether or not the concurrency scaling cluster is available to it, where they can automatically add more capacity to that queue. You can also set a manual concurrency level to that queue, defining how many queries I wanna be able to run at once within it. You can assign user groups to it and query groups like we talked about before with automatic queues, just allowing you to automatically route queries to a queue based on what user is running it or what query label has been attached to the query. You can also define the memory allocated to a given queue, the timeout value for running a query within that queue, and again, any query monitoring rules that you might have. You can also enable what's called query queue hopping. If you have a query that times out within a given queue, you can configure things to have it hop to the next queue and try it again on a different queue that might have a higher timeout or more resources available to it. 
+
+* One default queue with concurrency level of 5 (5 queries at once)
+* Superuser queue with concurrency level 1
+* Define up to 8 queues, up to concurrency level 50
+  * Each can have defined concurrency scaling mode, concurrency level, user groups, query groups, memory, timeout, query monitoring rules
+  * Can also enable query queue hopping
+    * Timed out queries “hop” to next queue to try again
+
+#### Short Query Acceleration (SQA)
+
+One more thing to talk about here is short query acceleration or SQA. The idea here is to automatically prioritize short-running queries over longer-running queries. The short queries will run in their own dedicated space, so they don't end up waiting in a queue behind longer queries. So this can be used in place of workload management queues if you just want to accelerate short queries. It can work with create table as statements, remember that, and also read-only queries or select statements. So these are both candidates for short query acceleration. It can automatically run those in their own space so that they don't get stuck behind longer analytic queries. And it works by using machine learning, pretty cool. So it actually tries to predict a query's execution time using machine learning algorithms automatically. So it can kind of guess based on the query itself how long it might take and figure out whether or not that should go into the dedicated space for short queries or not. And you can configure how many seconds you consider to be short. So that's one dial that you have on short query acceleration. So remember, short query acceleration is an alternative to WLM workload management if all you want to do is accelerate short queries and make sure that they don't get stuck behind longer queries. And it can work with create table as statements or read-only select statements. 
+
+* Prioritize short-running queries over longer-running ones
+* Short queries run in a dedicated space, won’t wait in queue behind long queries
+* Can be used in place of WLM queues for short queries
+* Works with:
+  * CREATE TABLE AS (CTAS)
+  * Read-only queries (SELECT statements)
+* Uses machine learning to predict a query’s execution time
+* Can configure how many seconds is “short”
+
+
+#### Resizing Redshift Clusters
+
+
+
+#### VACUUM command
+
+Finally, you need to know what the vacuum command does with Redshift. Vacuum is a command used to recover space from deleted rows and to restore the sort order. So basically, it cleans up your table. There are four different types of vacuum commands. The first one is vacuum full. This is the default vacuum operation. It will resort all the rows and reclaim space from deleted rows. There's also vacuum delete only, which is the same as a full vacuum, except that it skips the sorting part. So it's just reclaiming deleted row space and not actually trying to resort it. You can also do a vacuum sort only, which will resort the table but not reclaim this space. And finally, there's vacuum reindex. That's used for reinitializing interleaved indexes. Remember, we talked about the different sort keys you can have, one of them being interleaved. So reindex will reanalyze the distribution of the values in the table sort key columns and then perform a full vacuum operation after that. 
+
+* Recovers space from deleted rows and restores sort order
+* VACUUM FULL
+* VACUUM DELETE ONLY
+  * Skips the sort
+* VACUUM SORT ONLY
+  * Does not reclaim space!
+* VACUUM REINDEX
+  * Re-analyzes distribution of sort key columns
+  * Then does a full VACUUM
+
+
+#### Redshift anti-patterns
+
+And lastly, let's talk about the anti-patterns for Redshift. This also comes straight out of the AWS Big Data white paper of things they do not want you to use Redshift for. One is for small data sets. So remember, Redshift's strength is that it is massive and highly scalable. If you just have a small, tiny table that you want to store, RDS might be a better choice for that. OLTP, again, they cannot stress enough that Redshift is made for analytic queries, for OLAP. If you need to do transactional, very fast queries, you want to be using RDS or DynamoDB instead. And they're also listing unstructured data for me, which is kind of strange because Redshift's spectrum kind of exists to let you query unstructured data in S3. But if you do need to do some ETL, you should do that first with EMR or Glue ETL or something like that first. And it is not appropriate for storing blob data, that being large binary files. If you do need to store large binary files in your data warehouse, it's best to just store references to those files where they reside in S3 and not the files themselves. So that's a lot about Redshift. But again, you do need a lot of depth for Redshift for the exam. It will be well worth your while to understand and remember everything in these slides.
+
+* Small data sets
+  * Use RDS instead
+* OLTP
+  * Use RDS or DynamoDB instead
+* Unstructured data
+  * ETL first with EMR etc.
+* BLOB data
+  * Store references to large binary files in S3, not the files themselves.
+
+
+### Resizing Redshift Clusters
+
+So, what if concurrency scaling isn't enough, and you need to actually resize your cluster on the fly? You need to add more capacity to it. Well, there's a few ways of doing that, and you need to understand the difference between them. So, one's called elastic resize. You can use this to quickly add or remove nodes of the same type. So if you're happy with the type of nodes, the type of EC2 instances that are running your Redshift cluster, you can add more or remove them using elastic resize. With elastic resize, your cluster will only be down for a few minutes, while it adds that capacity. And it tries to actually keep those connections open across the downtime as well, so you might not even drop any queries. It might not just keep that connection held open and let it resume once that added capacity is in place on your cluster. Now, one limit of elastic resize is that for certain DC2 and RA3 node types, you're limited to either doubling or halving the size of that cluster. You don't really need to remember what the specific types are for the exam, but for certain types, that is what you need to do. You can only double or halve them. If you need to do something a little bit more involved, then you need to go back to what's called classic resize, and that allows you to actually change the node types and or the number of nodes. The thing with classic resize is that if you're actually changing the node types, it could take hours or even days for your cluster to become writable again. So your cluster will be in a read-only state for the entire period of time that it takes to provision that new hardware and swap it out in your cluster. That can be a very lengthy experience. So you want to use elastic resize when you can, but if you need to change your node type, you have to use classic resize. That's the main difference there. One technique for dealing with things in that classic resize scenario is to use what's called snapshot restore resize, and this is a strategy for keeping your cluster available during a classic resize operation. So if you do need to change your node type, or you need to add an amount of capacity that an elastic resize won't allow you to do, what you can do is use a snapshot command to make a copy of your cluster, and then resize that new cluster. So your data is still going to the old cluster while your new cluster is being resized and going through the classic resize process. Once your new cluster is finally done, you can then shift your traffic to that new cluster that's been created. So snapshot, restore, then resize is a way of migrating from one cluster to another using classic resize to minimize downtime.
+
+* Elastic resize
+  * Quickly add or remove nodes of same type
+    * (It *can* change node types, but not without dropping connections – it creates a whole new cluster)
+  * Cluster is down for a few minutes
+  * Tries to keep connections open across the downtime
+  * Limited to doubling or halving for some dc2 and ra3 node types.
+* Classic resize
+  * Change node type and/or number of nodes
+  * Cluster is read-only for hours to days
+* Snapshot, restore, resize
+  * Used to keep cluster available during a classic resize
+  * Copy cluster, resize new cluster
+
+
+### RA3 Nodes, Cross-Region Data Sharing, Redshift ML
+
+#### Newer Redshift features
+
+Let's discuss some of the newer features in Redshift that have come out in the more recent years. In 2020, I think it was, or end of 2019, RA3 nodes were introduced. This is a special node type that's optimized for Redshift, so that was kind of a big deal, and they've been building more and more on top of that over the years. The big idea here, though, is that it comes with managed storage, so they have decoupled compute and storage capabilities with the RA3 node. Basically, their observation was that storage capabilities and computing capabilities were evolving at different rates, so by having the ability to independently scale computing and storage capacity, that lets you make better use of the resources that you have for your Redshift cluster, so that's kind of a big deal. Another thing that came out in 2020, I think, yeah, 2020, was Redshift Data Lake Export, and the idea there is that you can dump a Redshift query right into S3 in Apache Parquet format, so if you have a big query on a big data warehouse in Redshift, you can dump that out to a Data Lake just sitting in S3 pretty easily using Data Lake Export. The motivation of doing that is that the Parquet format is twice as fast to unload, and it also consumes up to 6x less storage, so it's a very fast and compact way of exporting data to a Data Lake, and that Data Lake that you end up with will be compatible with Redshift Spectrum, Athena, EMR, or SageMaker, anything that can read from S3. It's also automatically partitioned for you, so you don't necessarily have to think about that. Also, more recently, in 2022 or into 2021, they've introduced spatial data types, so now there are geometry and geography data types available in Redshift, so if you do need to do things with mapping, those sorts of applications, you can do that in Redshift now with those new data types. And also a new feature is cross-region data sharing, new for 2022. It's sort of been evolving over time, but it's really evolving more lately. The idea here is that you can share live data across Redshift clusters without having to copy them, so we talk a lot about replicating data across different regions and different entities and how much of a pain that can be, so with cross-region data sharing, they've really strove to simplify that as much as possible. So that allows you, again, to share live data across regions, that's a new thing, and even across accounts, if you want to, in a secure manner, very easily. To do that, you do need to use that new RA3 node type that we talked about. It's only supported on our RA3 node types, so that's a big deal, cross-region data sharing, new easy way of managing that problem. 
+
+* RA3 nodes with managed storage
+  * Enable independent scaling of compute and storage
+  * SSD-based
+* Redshift data lake export
+  * Unload Redshift query to S3 in Apache Parquet format
+  * Parquet is 2x faster to unload and consumes up to 6X less storage
+  * Compatible with Redshift Spectrum, Athena, EMR, SageMaker
+  * Automatically partitioned
+* Spatial data types
+  * GEOMETRY, GEOGRAPHY
+* Cross-Region Data Sharing
+  * Share live data across Redshift clusters without copying
+  * Requires new RA3 node type
+  * Secure, across regions and across accounts
+
+
+
+#### Amazon Redshift ML
+
+Another more recent feature is Amazon Redshift ML, or machine learning, and I'm not going to go into a ton of depth on this, because generally speaking, machine learning topics are going to be in the machine learning exam, not the data analytics exam, but still, you should at least know this exists, it might get referenced in the exam. This was introduced in mid-2021, so it is fair game right now. Conceptually, there's this high-level diagram that Amazon gives us that says you start by collecting your data into a data warehouse, which is probably S3, and that Redshift ML encompasses this whole system here, where you're creating a machine learning model just by using a SQL command, using create model, automatically that will kick off to Amazon SageMaker to automatically tune and train your model. Specifically, it's using SageMaker Autopilot, but I'll walk through that in a second here. It will then deploy your model, so you can just hit it with SQL commands in Redshift to get predictions in real time, using SQL commands. The way this would go down in practice is that you would start off by having Redshift export your training data for your machine learning model into Amazon S3. SageMaker Autopilot is the specific technology that's going to sit around there, it's under the train section of this diagram, and it will pre-process your data and try to find the ideal hyperparameters, the best model to use and the best parameters for that model. Once your model has been trained, it's then able to make predictions, and Redshift just registers your prediction function as a SQL function in your Redshift cluster. You can just go ahead and hit your Redshift database to get predictions based on the model that you trained and deployed using Redshift machine learning. Now, when you do create model, that kicks off a lot of stuff under the hood, right? Building and training a machine learning model can be computationally intensive, and that does cost money. You will see a separate line item in Amazon SageMaker in your AWS bill if you're using Redshift ML. You'll also pay for any underlying storage used in S3 for storing the training data and for the data that has to go back and forth between Redshift and SageMaker as it's going through this whole process. So that's Redshift ML in a nutshell. Again, not something you probably have to worry about too much for the exam, but for the sake of completeness, it's an important feature in Redshift.
+
+![](/img/03/165.png)
+
+
+
+### Redshift security
+
+So a couple of specific security concerns I want to talk about with Redshift. We'll talk about security a lot more later in the course, but here are a few things that might show up on the exam. One is the issue of using a hardware security module, or an HSM, with Redshift. And if you're using an HSM with Redshift, you need to use a client and a server certificate to configure a trusted connection between Redshift and the HSM. Now if you're trying to do this after the fact, you're trying to add an HSM to an existing Redshift cluster, you're going to have to copy it over. So if you want to migrate an unencrypted cluster to an HSM encrypted cluster, you're going to have to create the new encrypted cluster first, and then move your data over to that encrypted cluster. So that's kind of the nitty-gritty of using an HSM with Redshift. You need a client and server certificate to do it. Also, there's a cool thing where you can use grant or revoke commands in SQL to actually define access privileges for individual users or for groups of users in Redshift. So an easy way to manage permissions in Redshift is to say something like, grant select on table foo to Bob. That would grant the permission to Bob to do select statements on the table named foo. And you can do things like grant all or grant drop, let people drop data as well. This can all be managed individually to a user or group just using the grant command just like any other SQL command or the revoke command if you want to take those permissions away. So that's the fundamental way that you manage security and access permissions in Redshift.
+
+* Using a Hardware Security Module (HSM)
+  * Must use a client and server certificate to configure a trusted connection between Redshift and the HSM
+  * If migrating an unencrypted cluster to an HSM-encrypted cluster, you must create the new encrypted cluster and then move data to it.
+* Defining access privileges for user or group
+  * Use the GRANT or REVOKE commands in SQL
+  * Example: grant select on table foo to bob;
+
+
+### Redshift Serverless
+
+So, a pretty recent development, just like EMR is going serverless, so is Redshift. Redshift serverless is now available as well, and this promises to automatically scale and provision your Redshift cluster for your workload. So, again, you don't have to think about how much capacity you need, it will figure it out for you. The idea is to optimize your costs and performance, so since you're only paying for the capacity that you're actually using, that should save you some money. And it will also optimize your performance, because if you are going to run a very demanding query of some sort, it can automatically scale that up for you without you having to think about it, which makes life a lot easier. Under the hood, it's using some sort of fancy machine learning, I won't go into details about it, but ML to maintain performance across what might be a variable and sporadic workload, so even if you're hitting it with ad hoc queries, it will learn how to deal with that. The main purpose of this, though, is to make it really easy to spin up a Redshift cluster, right, so I don't have to think about capacity anymore, I can just go ahead and spin up Redshift and it will automatically figure out the capacity that I need and that's all I get billed for, which is great. So, if I want to spin up a little development environment or a test environment, I can do that in one little page here, just go ahead and set up my new database and it will automatically just give me the capacity that I need and no more, which is a lot easier. If I want to do just a quick ad hoc business analysis thing, spin up a quick cluster, answer a question, get out, can do that too, don't have to think about it too much, they just made it a lot easier to set up your cluster, so that makes it easier for other people to use it and encourages you to use it for more types of applications. Once you have spun it up, you just get back a serverless endpoint of some sort and you also get a URL for connecting to it through JDBC or ODBC, or if you're just doing a quick ad hoc thing, you can just use the query editor in the console as well, like we've seen before, you don't have to connect to it externally if you don't want to. 
+
+* Automatic scalling and provisioning for you workload
+* Optimizes costs & performance
+  * Pay only when in use
+* Uses ML to maintain performance across variable & sporadic workloads
+* Easy spinup of development and test environments
+* Easy ad-hoc business analysis
+* You get back a serverle endpoint, JDBC/ODBC connection, or just query via the console´s query editor
+
+#### Redshift Serverless: Getting Started
+
+So getting started, the only hard part right now is actually setting up the IAM role needed to set up Redshift serverless, so you need to start off by creating an IAM role by hand that has this policy attached to it to the right here. You need to make sure that you have access to the Redshift serverless action by hand, and I'm sure they'll make that easier eventually, but for now, you do need to set that IAM role up yourself. Once you have that though, when you're setting up your new Redshift serverless cluster, all you need to do is tell it what your database name is, the user credentials for your admin user, which VPC you want to be running within, any custom encryption settings you might want to use, by default it's just going to use an AWS-owned KMS key, which is usually fine, and any special settings that you might want for audit logging, but that's it. You just fill out one page of that information and you have a Redshift serverless cluster waiting for you to use it, which is kind of awesome. After the fact, you can add snapshots and recovery points later on after you've created it. Those are all still supported as well, so you can have periodic snapshots of your data and the ability to roll stuff back from the previous day or whatever using recovery points later on. That's all still there. Let's talk more about how resource scaling actually works in Redshift serverless. 
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "redshift-serverless:*",
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+* Need an IAM role with this policy
+* Define your
+* Database name
+* Admin user credentials
+* VPC
+* Encryption settings
+* AWS-owned KMS by default
+* Audit logging
+* Can manage snapshots & recovery points after creation
+
+#### Resource Scaling in Redshift Serverless
+
+So because we're shifting our thinking to serverless, they can't really bill us in terms of servers anymore. They're not really exposing what those servers are. So instead, they're going to have us think about what they call Redshift Processing Units, or RPUs, and that's their new billing metric. So you pay for RPU hours down to the per second level, plus any storage that you're using. So the billing in Redshift serverless is based on how many Redshift Processing Units you're using per hour, plus any associated storage fees. So that's charged per gigabyte over time units. You can specify your base RPUs. So kind of like you can specify initial capacity with EMR serverless, same idea with Redshift serverless. You can adjust your base capacity. Now by default, it will be set to automatic, so you don't have to think about it at all. But if you do want to improve your query performance and you know that you're going to need a little bit more capacity for that out of the gate, you can give it a hint. You can say that I want between 32 and 512 RPUs as my base level in my serverless cluster to start with. I can also set my maximum RPUs. So if I want to make sure that I never go beyond a certain resource consumption to control my costs, you can do that too. Of course, they want you to use it to increase your throughput. So although in practice, you probably want to use max RPUs to ensure that you're not billed for more than you expect, you can also use it to improve the throughput of the job if you think the maximum RPUs is set too low.
+
+* Capacity measured in Redshift
+Processing Units (RPU’s)
+* You pay for RPU-hours (per second) plus storage
+* Base RPU’s
+  * You can adjust base capacity
+  * Defaults to AUTO
+  * But you can adjust from 32-512 RPU’s to improve query performance
+* Max RPU’s
+  * Can set a usage limit to control costs
+  * Or, increase it to improve throughput
+
+
+**Redshift Serverless**
+
+A few more things about Redshift serverless. So basically, it does everything that Redshift can, with a few exceptions. Partner groups are not supported with Redshift serverless. Workload management also doesn't work with it. It wouldn't make much sense if it did, right? The whole point is that you don't have to think about that too much. AWS partner integration, currently not supported with Redshift serverless. And also, maintenance windows and version tracks are not supported with Redshift serverless. That's a little bit... That one's worth talking about a little bit. With normal Redshift, you have these maintenance windows, so you kind of know when updates are going to be applied to your cluster and you can plan accordingly. With Redshift serverless, if a software update is being rolled out to Redshift itself, you will get your connections dropped without any warning. So there's no real advanced planning for that with Redshift serverless. That might be something to think about when you're deciding whether or not to use this for now. Also, there are no public endpoints with Redshift serverless. You must access it within a VPC. It will not make that accessible publicly yet. That might change.
+
+* Does everything Redshift can, except:
+  * Parameter Groups
+  * Workload Management
+  * AWS Partner integration
+  * Maintenance windows / version tracks
+  * No public endpoints (yet)
+  * Must access within a VPC
+
+**Redshift Serverless: Monitoring**
+
+Monitoring is something they talk about in the documentation for Redshift serverless. That did also change a bit. So there are a bunch of different views that it provides for monitoring purposes, like sysquery history, sysload history, sysserverless usage, and a few more. They do what you think they do. So basically, it's a history of the queries. It's also a query detail view if you want more information, historical information about the load on your serverless cluster, the usage of that cluster. This can all be useful in troubleshooting performance issues. Maybe your maximum RPUs is set too low, for example, and that might be a way to figure that out. Also, it publishes data to CloudWatch. Connection and user logs are enabled by default. There's also optional user activity log data if you want to publish that as well. That will be published under the AWS Redshift serverless CloudWatch topic. Metrics that are published in CloudWatch include queries completed per second, query duration, queries running, stuff like that, and you can break that down by various dimensions such as the database name, the latency, which is split up into short, medium, or long, the query type, and the stage of the query, the stage that the query is in as it completes. So that's all available to you as well. But in a nutshell, Redshift serverless pretty much works the same way as Redshift. The only difference is that you're not thinking about the underlying capacity, the underlying servers. It's doing that for you. So instead of being built by server usage explicitly, you're being built by RPUs. And you have a few ways of controlling that if you need to, including the base and maximum RPU capacity for Redshift serverless.
+
+
+* Monitoring views
+  * SYS_QUERY_HISTORY
+  * SYS_LOAD_HISTORY
+  * SYS_SERVERLESS_USAGE
+  * …and many more
+* CloudWatch logs
+  * Connection & user logs enabled by default
+  * Optional user activity log data
+  * Under /aws/redshift/serverless/
+* CloudWatch metrics
+  * QueriesCompletedPerSecond, QueryDuration, QueriesRunning,etc.
+  * Dimensions: DatabaseName, latency (short/medium/long), QueryType, stage
+
+### Redshift Materialized Views
+
+![](/img/03/166.png)
+
+
+```sql
+CREATE MATERIALIZED VIEW tickets_mv AS
+    select catgroup,
+    sum(qtysold) as sold
+    from category c, event e, sales s
+    where c.catid = e.catid
+    and e.eventid = s.eventid
+    group by catgroup;
+```
+
+### Redshift Data Sharing / Data Shares
+
+### Redshift Lambda UDF
+
+### Redshift Federated Queries
+
+### Redshift System Tables and System Views
+
+### Redshift Data API
+
+### Redshift - Hands On
+
