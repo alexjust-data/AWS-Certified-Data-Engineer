@@ -56,8 +56,8 @@
   - [Amazon Timestream](#amazon-timestream)
 - [Amazon Redshift](#amazon-redshift)
   - [What is Redshift?](#what-is-redshift)
-    - [Redshift Use-Cases](#redshift-use-cases)
-    - [Redshift architecture](#redshift-architecture)
+  - [Redshift Use-Cases](#redshift-use-cases)
+  - [Redshift architecture](#redshift-architecture)
   - [Redshift Spectrum \& Performance](#redshift-spectrum--performance)
   - [Redshift Durability and Scaling](#redshift-durability-and-scaling)
   - [Redshift Distribution Styles](#redshift-distribution-styles)
@@ -82,11 +82,14 @@
     - [Redshift Serverless: Getting Started](#redshift-serverless-getting-started)
     - [Resource Scaling in Redshift Serverless](#resource-scaling-in-redshift-serverless)
   - [Redshift Materialized Views](#redshift-materialized-views)
+    - [Using Materialized Views](#using-materialized-views)
   - [Redshift Data Sharing / Data Shares](#redshift-data-sharing--data-shares)
   - [Redshift Lambda UDF](#redshift-lambda-udf)
   - [Redshift Federated Queries](#redshift-federated-queries)
   - [Redshift System Tables and System Views](#redshift-system-tables-and-system-views)
   - [Redshift Data API](#redshift-data-api)
+    - [Redshift Data API: Other use cases](#redshift-data-api-other-use-cases)
+    - [Redshift Data API: Finer Points](#redshift-data-api-finer-points)
   - [Redshift - Hands On](#redshift---hands-on)
 
 `Managing and querying structured and semi-structured data`
@@ -1367,7 +1370,7 @@ At a high level, what is Redshift? Well, it is a fast and powerful, fully manage
 * Built-in replication & backups
 * Monitoring via CloudWatch / CloudTrail
 
-#### Redshift Use-Cases
+### Redshift Use-Cases
 
  Some use cases that are listed for Redshift are accelerating all of your analytics workloads. So if you just want your data warehouse to be faster, you might want to move to Redshift. It uses, as you said, machine learning, MPP, and columnar storage on high-performance disks, and result caching to make it super fast. You might also want to use Redshift because you want to unify your data warehouse and your data lake. Something we'll talk about shortly is Redshift Spectrum, which is a way of importing your unstructured data in S3 as just another table in your data warehouse. So you can actually do joins and stuff across your structured data that's been imported into your Redshift servers themselves, together with data lake information that's actually stored in S3 somewhere. That's kind of cool. Maybe you just want to modernize your data warehouse and make it faster and more scalable and easier to manage. Redshift is a potentially easy way of doing that. And there are some more specific use cases that come out of the AWS Big Data White Paper. Those would include analyzing global sales data, storing historical stock trade data, analyzing ad impressions and clicks, aggregating gaming data, and analyzing social trends. These are all examples of stuff you can do with Redshift, or really any data warehouse for that matter. 
 
@@ -1381,7 +1384,7 @@ At a high level, what is Redshift? Well, it is a fast and powerful, fully manage
 * Aggregate gaming data
 * Analyze social trends
 
-#### Redshift architecture
+### Redshift architecture
 
 ![](/img/03/154.png)
 
@@ -1801,8 +1804,20 @@ Monitoring is something they talk about in the documentation for Redshift server
 
 ### Redshift Materialized Views
 
+You need to know about materialized views for the exam as well. Let's talk about what those are in Redshift. So you know what a view is in a database, it's just basically taking the results of a query and making that look like another table you can query subsequently. A materialized view is a little bit different. So it's actually pre-computing the results of that query and storing the results of that query and making that look like another table. So it's different from a normal view, if you will, in that it's actually storing the results of the query and not just the query itself. So as you can see, this might be a pretty important performance optimization, right? So if you have a complex query in your data warehouse on a large table, you can query that materialized view just like any other table or view, based on those saved results from a more complex query. So if you need to build a query on top of some more complicated query, you can store the results of that complicated query into a materialized view and then query those results repeatedly from other queries. So since you're using those pre-computed results and not accessing the base tables, that can be a very important performance optimization. Of course, it comes at the cost of having a synchronization problem, right? So if the results of your materialized view change because the underlying stuff that you're querying changes, that materialized view needs to be explicitly refreshed somehow. So an example of where you might want to use this is if you have a predictable and recurring query, like populating a dashboard from Amazon QuickSight or something like that. So if you know your dashboard is going to need the results of a given set of queries, maybe you can pre-compute those results using materialized views and then build your dashboard against that materialized view to make it more performing instead of running that query every time you want to look at your dashboard. 
+
 ![](/img/03/166.png)
 
+* Contain precomputed results based on SQL queries over one or more base tables.
+  * This differs from a “normal” view in that it actually stores the results of the query
+* Provide a way to speed up complex queries in a data warehouse environment, especially on large tables.
+* You can query materialized views just like any other tables or views.
+* Queries return results faster since they use precomputed results without accessing base tables.
+* They're particularity beneficial for predictable and recurring queries e.g. population dashboards like Amazon QuickSight
+
+#### Using Materialized Views
+
+How do I use them? They're pretty easy. So instead of create view, you just say create materialized view and that's it. So instead of a view that's based on the query, you're creating a snapshot of the results of that query and making a view out of it. How do I keep them refreshed? So like I said, there's a synchronization problem because I'm storing the results and not just the query itself. There might be a synchronization issue where the underlying data that I'm querying that materialized view from changes. So to keep the materialized view in sync with those changes, I can manually and explicitly refresh that when I need to by using the refresh materialized view command. You can also set the auto refresh option when you're creating it to just make that happen automatically. So it depends how much control you want over it. If you want to have control over how often it's being refreshed to maintain performance, maybe you only need to refresh it once a day because you're going to be using this for a dashboard that's queried once a day. Then maybe just refresh that materialized view once a day as opposed to automatically refreshing it every time something changes. Once you have a materialized view, you can query it just like any other table or view. It looks just like anything else. And you can also stack them on top of each other. So you can have materialized views that are built from other materialized views, which is pretty cool. An example of where that might be useful is if you have some expensive join operation among multiple tables, you could store the results of that join as a materialized view and then have other materialized views that have specific queries using that joined data. So you can stack them on top of each other as well, which can also be used to accelerate your query performance.
 
 ```sql
 CREATE MATERIALIZED VIEW tickets_mv AS
@@ -1814,15 +1829,307 @@ CREATE MATERIALIZED VIEW tickets_mv AS
     group by catgroup;
 ```
 
+* CREATE MATERIALIZED VIEW…
+* Keeping them refreshed
+  * REFRESH MATERIALIZED VIEW…
+  * Set AUTO REFRESH option on creation
+* Query them just like any other table or view
+* Materialized views can be built from other materialized views
+  * Useful for re-using expensive joins
+
 ### Redshift Data Sharing / Data Shares
+
+A cool feature of Redshift is data sharing. If you want to share data amongst Redshift clusters, that allows you to securely share live data across Redshift clusters for read purposes only. So if you want to publish your data to other Redshift clusters and let other people read your data, this is a very good way to do it. Why would you want to do that? Well, one is workload isolation. So if you're sharing your data to another cluster, if that other cluster gets bogged down, it's not going to affect the performance of the producer, the main cluster that you're sharing that data from. So if you want to make sure that some rogue department in your organization can't bring down the performance of your Redshift cluster, maybe you just share your data to their Redshift cluster. And if they have performance issues, well, it won't affect you. Cross-group collaboration like that is one use case of doing this. So if you do have another department or another organization that needs access to your data in a read manner, that's one way of sharing that data with them across groups within an organization. And also, it can be used for not just sharing data across groups, but also between environments. So a good application of data sharing is sharing data between development, test, and production environments. This would allow me to develop changes to an application or whatnot against the same data that's in production, but again, having that isolation so that my development traffic and what I'm doing in development can't affect what's going on in production. This assumes that what you're doing can be done with read-only data, of course. You might also want to do this for licensing access to your data through AWS Data Exchange. So if you want to publish your data and basically sell it to other AWS users, data sharing is how you would actually do that with AWS Data Exchange. What can you share? You can share entire databases. You can share schemas. You can share tables. You can share specific views and or user-defined functions. So you have fine-grained access control over who can see what, and it could be any or all of those things.
+
+![](/img/03/167.png)
+
+* Securely share live data across Redshift clusters for read purposes
+* Why?
+  * Workload isolation
+  * Cross-group collaboration
+  * Sharing data between dev/test/prod
+  * Licensing data access in AWS Data Exchange
+* Can share DB’s, schemas, tables, views, and/or UDFs.
+  * Fine-grained access control
+
+ I touched on it earlier, but data sharing relies on a producer-consumer architecture where all of that fine-grained security is being controlled by the producer, the person publishing that data. Again, we have isolation so that the performance of the producer cluster is unaffected by any consumers of that data using data sharing. However, data will be live and transactionally consistent, so those consumers are going to get a live view and a transactionally consistent view of what's happening in the producer cluster. In order for data sharing to work, both clusters must be encrypted and they must be using RA3 node types. If you are doing data sharing across regions, that may involve transfer charges, so keep an eye on your bill in that case. There are three different kinds of data shares. There's standard, which we've been talking about, just one cluster to another. Also, AWS Data Exchange, if you want to share data to the data exchange. And the third type of data share is managed by AWS League Formation.
+
+* Producer / consumer architecture
+  * Producer controls security
+  * Isolation to ensure producer performance unaffected by consumers
+  * Data is live and transactionally consistent
+* Both must be encrypted, must use RA3 nodes
+* Cross-region data sharing involves transfer charges
+* Types of data shares
+  * Standard
+  * AWS Data Exchange
+  * AWS Lake Formation - managed
 
 ### Redshift Lambda UDF
 
+Redshift Lambda UDFs, User Defined Functions, are something you need to know about, and it's a pretty amazing functionality. This allows you to use functions in AWS Lambda inside your SQL queries on Redshift. And that's powerful, right? Because Lambda functions can be written in pretty much any language you can dream up, and they can do pretty much anything you can dream up. So you could have a Lambda function that calls out to other services, maybe like hit some AI service, right? It can access other systems that might be external. It can also integrate with location services. These are just some examples of what you might do with an AWS Lambda function that's accessed from inside your SQL query. To use them, you just use Create External Function to register your Lambda UDFs that you use within your queries. And on the Redshift table itself, you need to grant usage on language XFUNC in order for this to work and everything to have the right permissions to talk to Lambda. An example of what this might look like, let's imagine that we have a Lambda underscore multiply UDF that we defined. So we could say select A, B from T1 where Lambda underscore multiply A comma B equals 64. So this could be used to say I want to select all the rows in my table where the product of columns A and B equals 64. And this is a very perhaps silly example here of overthinking things, but in this case, we would actually call out to AWS Lambda to perform that multiplication. Obviously, far more complicated things could be done there. Anything that AWS Lambda can do could be done within that Lambda underscore multiply function. So the idea here is that we're tying in Lambda with Redshift through UDFs. Pretty neat. Now to actually register that function, here's what the syntax would look like. So this is a different example here. We're going to create an XFUNC underscore sum UDF here that takes two integers and adds them together, presumably. So the syntax for defining that XFUNC underscore sum UDF would be create external function, the name of that function, and then a list of its parameters that it expects. What it returns, in this case, another integer. So it takes two integers and returns an integer. That's presumably the sum of them. Volatile Lambda and then the name of the Lambda function we're calling. And then finally, we have to pass in the IAM role associated with that Lambda function to give it the permissions it needs to access what it needs to access. 
+
+![](/img/03/168.png)
+
+* Use custom functions in AWS Lambda inside SQL queries
+  * Using any language you want!
+  * Do anything you want!
+    * Call other services (AI?)
+    * Access external systems
+    * Integrate with location service
+* Register with CREATE EXTERNAL FUNCTION
+* Must GRANT USAGE ON LANGUAGE EXFUNC for permissions
+
+A little more detail on that IAM role. So there is an AWS Lambda role IAM policy you can use to grant permissions to Lambda on your cluster's IAM role, or you could roll your own policy. Just make sure that you're allowing Lambda invoke function as part of that policy. So you need to create a role with that policy and then pass that in through that parameter on your create external function command like we saw previously. It's also possible to invoke functions in other accounts in the same region using IAM role chaining that way. So you could use somebody else's Lambda UDF using role chaining. So how does this all work? What happens when it actually goes to Lambda? So Redshift will be communicating with your Lambda function using JSON data. So here's what your Lambda function might see coming in. You'll see a request ID, the cluster it came from, the user of the database that it came from in Redshift, the name of the external function, and then a query ID, and finally the number of records that it wants you to compute. So in this case, I'm saying I want you to figure out four things. Here's the list of arguments for each of those four things. And then your Lambda function does something with that and gives back a response. That response might look like this. It will say success, true or false. If there was an error message, you can specify that as well. I'm going to say I'm returning four records here that you asked for, and here are the results. A list of the results for all four records that you asked for. So pretty straightforward, right? Basically Redshift says, okay, well, I'm calling out to Lambda. Here, Lambda, here's the parameters you want. Give me back a response, and I'll work that into my response in SQL. So that's Redshift Lambda UDS, user-defined functions that call out to Lambda in a nutshell. Pretty cool functionality.
+
+* Use AWSLambdaRole IAM policy to grant permissions to Lambda on your cluster’s IAM role
+  * Or roll your own policy, to allow lambda:InvokeFunction
+* You also need this IAM role in your CREATE EXTERNAL FUNCTION command
+  * Possible to invoke functions in other accounts in the same Region, using IAM role chaining
+* Redshift communicates with Lambda using JSON
+
+```sql
+{
+  "request_id" : "23FF1F97-F28A-44AA-AB67-266ED976BF40",
+  "cluster" : "arn:aws:redshift:xxxx",
+  "user" : "adminuser",
+  "database" : "db1",
+  "external_function": "public.foo",
+  "query_id" : 5678234,
+  "num_records" : 4,
+  "arguments" : [
+    [ 1, 2 ],
+    [ 3, null],
+    null,
+    [ 4, 6]
+  ]
+}
+--to--
+{
+  "success": true, // true indicates the call succeeded
+  "error_msg" : "my function isn't working", // shall only exist when success != true
+  "num_records": 4, // number of records in this payload
+  "results" : [
+    1,
+    4,
+    null,
+    7
+  ]
+}
+```
+
 ### Redshift Federated Queries
+
+![](/img/03/169.png)
+
+Let's talk about Redshift Federated Queries. This is a way to query and analyze across databases, across warehouses, and even across data lakes. Now let's specifically talk about the case of tying together Redshift with other databases, with RDS databases in particular. So what we can do is tie Redshift to Amazon RDS or Aurora for PostgreSQL and MySQL currently. Maybe that will expand in the future. But this is exciting because it means I can access live data from RDS and query that from Redshift. So this avoids the need for ETL, right? I don't need to worry about importing data from those relational databases from Aurora or RDS into Redshift itself. I can just query those databases in place directly and avoid the need for moving that data around. So that allows me to create a query in Redshift that hits tables that are in external relational databases like PostgreSQL and MySQL that are in RDS. So that's pretty cool. It offloads the computation as well to those remote databases. So that also reduces data movement further. It means that if I have some complex query, I can break that out and spread out that load to those RDS instances to take up some of that slack.
+
+
+* Query and analyze across databases, warehouses, and lakes
+* Ties Redshift to Amazon RDS or Aurora for PostgreSQL and MySQL
+  * Incorporate live data in RDS into your Redshift queries
+  * Avoids the need for ETL pipelines
+* Offloads computation to remote databases to reduce data movement
+
+
+How does it work? So first you need to make sure that you have connectivity between your Redshift cluster and the RDS or Aurora instances that you want to talk to. Now you need to make sure they're either in the same VPC subnet or use VPC peering to make them visible to each other. VPC peering again will only work if you don't have overlapping IP address ranges between the two. How to access it? So Redshift needs to know how to sign in and access those RDS or Aurora instances, right? So the credentials for doing so must be stored in AWS Secrets Manager for this to work. And then you include those secrets in the IAM role that you give to your Redshift cluster for accessing those external databases. To create an external table that is hitting those external RDS or Aurora tables, you can say create external schema. And you can also use that same syntax for connecting to S3 or to Redshift Spectrum as well. So remember earlier I said this wasn't just for federating to RDS and Aurora. You can also federate to data lakes this way. Same idea. Over on the right, by the way, is an example of the IAM role that includes the access to AWS Secrets Manager that's needed for accessing those external databases. And if you want to get a quick view of what external schemas are currently available and defined, the svv underscore external underscore schemas view will contain that list for you. 
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+    "Sid": "AccessSecret",
+    "Effect": "Allow",
+    "Action": [
+      "secretsmanager:GetResourcePolicy",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:ListSecretVersionIds"
+      ],
+    "Resource": "arn:aws:secretsmanager:us-west-2:123456789012:secret:my-rds-secret-VNenFy"
+    },
+    {
+    "Sid": "VisualEditor1",
+    "Effect": "Allow",
+    "Action": [
+      "secretsmanager:GetRandomPassword",
+      "secretsmanager:ListSecrets"
+      ],
+    "Resource": "*"
+    }
+  ]
+}
+```
+
+* Must establish connectivity between your Redshift cluster and RDS / Aurora
+  * Put them in the same VPC subnet
+  * Or use VPC peering
+* Credentials must be in AWS Secrets Manager
+* Include secrets in IAM role for your Redshift cluster
+* Connect using CREATE EXTERNAL SCHEMA
+  * Can also connect to S3 / Redshift Spectrum this way
+* The SVV_EXTERNAL_SCHEMAS view contains available external schemas
+
+
+Let's look at an example here. 
+
+```sql
+CREATE EXTERNAL SCHEMA apg
+FROM POSTGRES
+DATABASE 'database-1' SCHEMA 'myschema'
+URI 'endpoint to aurora hostname'
+IAM_ROLE 'arn:aws:iam::123456789012:role/Redshift-
+SecretsManager-RO'
+SECRET_ARN 'arn:aws:secretsmanager:us-west-
+2:123456789012:secret:federation/test/dataplane-apg-creds-
+YbVKQw';
+SELECT count(*) FROM apg.lineitem;
+count
+-------
+11760
+```
+
+Now remember, with federated queries, you only have read-only access to those external data sources. And you may incur additional costs on those external DBs based on the traffic and load that you're putting on them. So it doesn't come for free as part of Redshift. Any load you're putting on Aurora or RDS or the data lake will be in addition, right? So remember, you can query RDS and Aurora from Redshift, but it doesn't go the other way around. This is a one-way connection, and it's a read-only connection from Redshift to RDS and Aurora. Let's take a look at this example on the right here. So here we're saying create external schema APG. So we're going to be referring to this external table as APG within my Redshift queries here. From Postgres, that means I'm going to talk to a Postgres database out there in RDS or Aurora. The database name that I'm talking to is called database1. The table within that database I'm talking to is called my schema. However, I'm renaming it to APG here. Then we say URI with the endpoint to the Aurora hostname that I'm talking to. I pass in that IAM role that we saw on the previous slide. That includes all the secrets manager stuff that I need. And then the ARN of the secret itself that's needed to connect to that Postgres Aurora instance. Once I've done that, I can then access that external table just like any other table. I can say select count star from APG dot line item. APG again is referring to this external Postgres table, my schema under the database1 database in Postgres remotely. And it just works like any other table at that point. Pretty cool. So that's Redshift federated queries in a nutshell. Something the exam expects you to know.
+
+• Read-only access to external data sources
+• Costs will be incurred on external DB’s
+• You can query RDS/Aurora from Redshift, but not the other way around
+
+
 
 ### Redshift System Tables and System Views
 
+Just a few notes on Redshift system tables and views. As with most relational databases, you can get information about the system itself by querying its internally maintained tables and views that are just there for you automatically. So these contain information about how Redshift itself is functioning. So at a very high level, there are different types of system tables and views. And let's just go through that high level because there's far too many individual tables and views to go into here. You just need to kind of know what they are and what they're for, right? So there are system views that just start with SYS. Those are the Sys views, and they are used for monitoring query and workload usage primarily. There are also system tables that start with STV. These monitor transient data, containing snapshots of the current system data. And then there are SVV views that contain metadata about database objects that reference back to those STV tables. There are also STL views. These are generated from logs that are persisted to disk. And then there are SVCS views, which are details about queries on both main and concurrency scaling clusters. For specifically queries on main clusters, SVL views will have that information. And the specific tables and views that are available will vary based on whether you're using a provision instance or a serverless instance, but they do have a lot in common. Let's take a look at this example on the right here. So here's an example where we're analyzing execution time of recent queries. So if we kind of break it down here, we can see that we're getting this from STL query, right? So STL query is an STL view. That means that it's generated from logs persisted to disk. And we're joining that on SVL Qlog. So again, SVL is details about queries on main clusters. So SVL Qlog would probably be the query log, right? We're doing a join there between those two based on the query field there. So we're joining up SVL Qlog with STL query to get those recent queries. Specifically saying we're doing a WHERE clause to get it within the past one day, right? So by getting that information on recent queries, we can then select the attributes of those queries, like the start time, the end time, how long that time took. We're gonna compute that and compute the execution time using the big DIP command and the status of that at the end. So just an example of using system tables and system views for getting some information about how Redshift is performing for you. So just remember those are there for you and what they can be used for.
+
+```sql
+SELECT q.query, q.starttime, q.endtime,
+  datediff(seconds, q.starttime, q.endtime) as 
+  execution_time, 
+  q.aborted, 
+  qr.queue_time, 
+  qr.exec_time, 
+  qr.total_exec_time
+FROM stl_query q
+JOIN svl_qlog qr ON q.query = qr.query
+WHERE q.starttime > (GETDATE() - INTERVAL '1 day')
+ORDER BY q.starttime DESC;
+
+-- Example: analyze execution time of recent queries
+```
+
+* Contains info about how Redshift is functioning
+* Types of system tables / views
+  * SYS views: Monitor query & workload usage
+  * STV tables: Transient data containing snapshots of current system data
+  * SVV views: metadata about DB objects that reference STV tables
+  * STL views: Generated from logs persisted to disk
+  * SVCS views: Details about queries on main & concurrency scaling clusters
+  * SVL views: Details about queries on main clusters
+* Many system monitoring views & tables are only for provisioned clusters, not serveless.
+
 ### Redshift Data API
+
+Something that seems to be coming up more on the exam is the Redshift Data API, so let's spend a little bit of time talking about that in some detail. It is a secure HTTP endpoint for SQL statements to your Redshift cluster, and that can be a provisioned cluster or a serverless cluster, and that can handle both individual and batch queries. So it offers, among other things, a REST endpoint that you can integrate with your own applications, and that's what we're illustrating on the bottom of the screen here. So you can have users talking to some application that you've built. That application can then go through the AWS SDK and call the Amazon Redshift Data API through it, and through that API execute queries against your Redshift cluster, wherever it might be. So let's use that outside of AWS potentially. It is asynchronous, so you'll make a call to request a query, either in a batch or an individual query, and then you have to make another call with the identifier that it gives back to you to retrieve the results of that later on. It does not require managing connections like you would with a moral database, so you don't need to worry about having the right drivers installed in your application or anything like that. It's all abstracted away from you through the Data API. And from a security standpoint, you don't have to worry. Passwords are not sent through the API either. It uses either AWS Secrets Manager to manage credentials, or you can set up temporary credentials in Redshift for your application. Either way, the password is not sent across the wire as part of the API. And because it can be invoked by the AWS SDK, that means you can access Redshift through any language supported by the SDK. That includes C++, Go, Java, JavaScript, .NET, Node.js, PHP, Python, and Ruby. And as with most services, it integrates with CloudTrail, so if you need to monitor what's going on or archive what's being performed through that API, CloudTrail can capture those API calls for you and store them in S3 somewhere. And it's not just for application integration.
+
+![](/img/03/170.png)
+
+* Secure HTTP endpoint for SQL statements to Redshift clusters
+* Provisioned or serverless
+* Individual or batch queries
+* Asynchronous
+* Does not require managing connections
+* No drivers needed
+* Passwords not sent via API
+* Uses AWS Secrets Manager or temporary credentials
+* Can be invoked by AWS SDK
+* C++, Go, Java, JavaScript, .NET, Node.js, PHP, Python, Ruby
+* AWS CloudTrail captures API calls
+
+#### Redshift Data API: Other use cases
+
+![](/img/03/171.png)
+
+It also integrates with many other services within the AWS ecosystem, and they're all visualized here on the right here. So like I said, we can use the REST endpoint to integrate it with your own application. That's what we talked about. But you can also integrate it with a variety of other services. A very popular one would be using AWS Step Functions together with Redshift Data API to orchestrate a ETL process, extract, transform, and load. So if you want to set up a data processing workflow using Step Functions, you can call Redshift Data API as part of that workflow and set up an event-driven ETL pipeline using Data API. You can also access Redshift Data API through a SageMaker notebook. So if you need to hit Redshift from a SageMaker notebook, you can do that as well. And it also integrates with Amazon EventBridge, and this is an important one in the context of data engineering. So you can stream data from the Data API to someplace else using EventBridge by monitoring the data coming out of the Data API. So you could, for example, stream that data from an application to Lambda by streaming that data using EventBridge. And to do that, you would just set the withEvent parameter to true to accomplish that kind of streaming. You can also schedule Data API operations using EventBridge. So EventBridge can be used to schedule operations on a consistent schedule or in response to some sort of other event. So EventBridge plus Data API is something you should know about. 
+
+* Application integration
+  * REST endpoints
+* It can also integrate with a variety of other services
+  * ETL Orchestration with AWS Step Functions
+    * Serverless data processing workflows
+    * Event-driven ETL
+  * Access from SageMaker notebooks
+* Use with Amazon EventBridge
+  * Stream data from application to Lambda
+    * Set WithEvent parameter to true
+  * Schedule Data API operations
+
+#### Redshift Data API: Finer Points
+
+Some finer points on using the Data API. So there's a bunch of maximum limits on what you can do with it. And by default, the query duration can only last for 24 hours. You can only have 500 active queries at a time. The result size, which is gzipped, can only be up to 100 megabytes. The result will only be retained for 24 hours. So if you don't get it after a full day, it's going to be gone. Your query statement size can only be 100 kilobytes. And this next one's a little bit more important. The packet for query size, that's the amount of data per row in your results, is 64 kilobytes. So if you were to get back an error message from your Data API call saying that packet for query is too large, it's telling you that there's too much information per row in the data that you're retrieving. And that maximum limit is 64 kilobytes. Also, there's an eight-hour maximum retention time for client tokens for accessing the API. And there are various TPS quotas per API call. For example, for execute statement, you're limited to 30 transactions per statement. Speaking of API calls, these are the ones we have available to you. There's both execute statement for executing a single SQL statement or batch execute statement for executing multiple ones at once. And once you have that statement submitted, you can describe the statement or the table behind it. And again, this is asynchronous. So once you call an execute statement call or batch execute statement call, it's going to just give you back an identifier, not the actual result. So you then need to turn around and pass that identifier back into getStatementResult to later retrieve the result of that query. You can also cancel a statement that's in progress using cancelStatement using that same ID. And there is some security around making sure that you can't snoop in on other people's queries. So you do need to have the same IAM role or permission to operate on the given statement across execute and getStatementResult or what have you. So you can't go and get a statement result for somebody else's execute statement call, for example, obviously. Also, the cluster must be in a VPC. So unless your Redshift cluster is in a virtual private cloud, it won't work.
+
+* Maximum…
+  * Query duration: 24 hours
+  * Active queries: 500
+  * Query result size (gzip’ed): 100 MB
+  * Result retention time: 24 hours
+  * Query statement size: 100 KB
+  * Packet for query (data per row) : 64 KB
+  * Client token retention time: 8 hours
+  * Transaction per Second quotas per API (30 for ExecuteStatement)
+* API Calls
+  * ExecuteStatement, BatchExecuteStatement
+  * DescribeStatement, DescribeTable
+  * GetStatementResult, CancelStatement
+  * Users must have same IAM role or permissions to operate on a given statement
+* Cluster must be in a VPC
 
 ### Redshift - Hands On
 
+All right, let's get a little bit of hands-on experience using Redshift. What I'm going to do is load up a dataset of Amazon reviews from the magazine category. I don't think Amazon even sells magazines anymore, which is a shame. Give me paper over a screen any day, I say, but I digress. So, this does involve some real money. Now, Redshift, at this time, gives you a sort of a free credit if you're using it for the first time. So, odds are you can do this for free. Even if you don't, the charges that we're going to incur are going to be less than $1 if you do this all within one hour. However, big disclaimer here. If you mess up, if you do not follow the instructions here, if you select the wrong instance type for Redshift, or if you forget to shut it down when you're done, it could cost you thousands of dollars. So, if you are at all nervous about that, do not follow along hands-on. Just watch me do it. There are risks here, and I am not responsible if you don't follow the instructions and end up with a big bill at the end of the month. But if you do follow instructions and do follow along, it should be either free or under $1. First thing you want to do if you are following along is to get the course materials. If you haven't already downloaded them from earlier in the course, head on over to sundog-education.com slash aws-data-engineering. You'll find a handy link to the course materials there. Just download that to your computer and unzip them wherever you want. And when you're done with that, it should look like this. There should just be a magazine reviews folder in there. And that's where our data lives. So, what do we got here? Well, this citation.txt file is just a text file with the required credits here for the data set, where it came from, and the paper that they want you to cite whenever you use this data. So, there's that. There's two things here. One is the actual reviews data for these **`magazine subscriptions`**. These are people who came to Amazon.com and wrote a product review for each magazine. And this is a data dump from, well, 2019, I guess it is. Let's take a look at what that looks like. Open that up in my favorite text editor. And you can see this is in JSON format. And it's pretty wordy. So, we have the actual review test for every line here, along with the reviewer ID that identifies the individual reviewer. The ASIN is basically the primary key here. So, in the Amazon world, the ASIN represents the product identifier. So, this is a unique identifier for this magazine. So, that's an appropriate thing to use for our primary key, right? We also have the human readable name for this reviewer. And there could be more than one ID for each unique name, right? That's not like a one-to-one mapping there necessarily. And the other thing we care about here is the overall field. So, that is what the overall review score is for this magazine. So, basically, Ted really liked whatever B00005N7P0 is for a magazine and gave it five stars. All right. So, what we're left here is the problem of understanding what the heck B00005N7P0 is, right? And that's where this other file comes in, the metadata file, also in JSON format. Let's take a look at that as well. And this is where it gives you information about each individual ASIN. You can see there's a lot of stuff in here, including lists of recommended other magazines and things like that. But the actual name of the magazine is under the brand here, Reason Magazine. At least that's the brand of the publisher more consistently. And it gives you information about its main category. And there's its ASIN down there buried there. So, again, here is the primary key that we're going to use in the metadata as well. This is the unique identifier for this magazine. And this file contains all the metadata surrounding that magazine. So, you can probably guess where we're going with this. We're going to be doing some joins to marry these two datasets together, right? All right. 
+
+```shell
+├── dea-materials
+│   ├── AWSCertifiedDataEngineerSlides.pdf
+│   ├── AllSlides_v3.1.pdf
+│   ├── MagazineReviews
+│   │   ├── citation.txt
+│   │   ├── metadata
+│   │   │   └── meta_Magazine_Subscriptions.json
+│   │   └── reviews
+│   │       └── Magazine_Subscriptions.json
+```
+
+```json
+{
+  "overall": 5.0, 
+  "vote": "9", 
+  "verified": false, 
+  "reviewTime": "11 8, 2001", 
+  "reviewerID": "AH2IFH762VY5U", 
+  "asin": "B00005N7P0", 
+  "reviewerName": "ted sedlmayr", 
+  "reviewText": "for computer enthusiast, MaxPC is a welcome sight in your mailbox. i can remember for years savorying every page of \"boot\" (as it was called in beginning) as i was (and still am) obcessed with PC's. Anyone, from advanced users - to beginners looking for knowledge - can profit from every issue of MaxPC. the icing on the cake is the subscription that comes with a CD-ROM as it is packed with demos, utilities, and other useful apps (very helpful for those not blessed with broadband connections). Until I discovered the community of hardware enthusiast web sites, MaxPC, formerly \"boot\", was my only really informative source for computing news and articles. To this day, i consider my subscription to it worth more than 10 subscriptions to most other computing mags. I can't wait until they merge with DVD media and maybe end up offering more info on Divx codecs, encoding your own movies, and best bang for the buck audio and video equipment. Try a few issues (with CD)and you may get hooked...", "summary": "AVID READER SINCE \"boot\"  WAS THE NAME", 
+  "unixReviewTime": 1005177600
+}
+{
+  "overall": 5.0, 
+  "vote": "9", 
+  "verified": false, 
+  "reviewTime": "10 31, 2001", 
+  "reviewerID": "AOSFI0JEYU4XM", 
+  "asin": "B00005N7P0", 
+  "reviewerName": "Amazon Customer", 
+  "reviewText": "Thank god this is not a Ziff Davis publication.  MaxPC will actually tell you if a product is bad. They will print just what they think about something; no sugar coating. I would compare their style to Car and Driver. Technical, but they know how to have a good time.", 
+  "summary": "The straight scoop", 
+  "unixReviewTime": 1004486400
+}
+...
+
+```
+
+
+So, the first thing we need to do is put this somewhere where Redshift can get it. Now, it is possible to upload data directly from a local disk in Redshift, but it is limited to five megabytes. And this data is more than five megabytes. So, we've got to get it in there through some intermediate channel. S3 would be appropriate, right? So, let's go ahead and upload this into an S3 bucket. So, on to your AWS console here. Go on to S3. There's probably a link to it at your little top bar here, or you can just search for it if you need to. 
+
+
+5:53
