@@ -2086,7 +2086,13 @@ Some finer points on using the Data API. So there's a bunch of maximum limits on
 
 ### Redshift - Hands On
 
-All right, let's get a little bit of hands-on experience using Redshift. What I'm going to do is load up a dataset of Amazon reviews from the magazine category. I don't think Amazon even sells magazines anymore, which is a shame. Give me paper over a screen any day, I say, but I digress. So, this does involve some real money. Now, Redshift, at this time, gives you a sort of a free credit if you're using it for the first time. So, odds are you can do this for free. Even if you don't, the charges that we're going to incur are going to be less than $1 if you do this all within one hour. However, big disclaimer here. If you mess up, if you do not follow the instructions here, if you select the wrong instance type for Redshift, or if you forget to shut it down when you're done, it could cost you thousands of dollars. So, if you are at all nervous about that, do not follow along hands-on. Just watch me do it. There are risks here, and I am not responsible if you don't follow the instructions and end up with a big bill at the end of the month. But if you do follow instructions and do follow along, it should be either free or under $1. First thing you want to do if you are following along is to get the course materials. If you haven't already downloaded them from earlier in the course, head on over to sundog-education.com slash aws-data-engineering. You'll find a handy link to the course materials there. Just download that to your computer and unzip them wherever you want. And when you're done with that, it should look like this. There should just be a magazine reviews folder in there. And that's where our data lives. So, what do we got here? Well, this citation.txt file is just a text file with the required credits here for the data set, where it came from, and the paper that they want you to cite whenever you use this data. So, there's that. There's two things here. One is the actual reviews data for these **`magazine subscriptions`**. These are people who came to Amazon.com and wrote a product review for each magazine. And this is a data dump from, well, 2019, I guess it is. Let's take a look at what that looks like. Open that up in my favorite text editor. And you can see this is in JSON format. And it's pretty wordy. So, we have the actual review test for every line here, along with the reviewer ID that identifies the individual reviewer. The ASIN is basically the primary key here. So, in the Amazon world, the ASIN represents the product identifier. So, this is a unique identifier for this magazine. So, that's an appropriate thing to use for our primary key, right? We also have the human readable name for this reviewer. And there could be more than one ID for each unique name, right? That's not like a one-to-one mapping there necessarily. And the other thing we care about here is the overall field. So, that is what the overall review score is for this magazine. So, basically, Ted really liked whatever B00005N7P0 is for a magazine and gave it five stars. All right. So, what we're left here is the problem of understanding what the heck B00005N7P0 is, right? And that's where this other file comes in, the metadata file, also in JSON format. Let's take a look at that as well. And this is where it gives you information about each individual ASIN. You can see there's a lot of stuff in here, including lists of recommended other magazines and things like that. But the actual name of the magazine is under the brand here, Reason Magazine. At least that's the brand of the publisher more consistently. And it gives you information about its main category. And there's its ASIN down there buried there. So, again, here is the primary key that we're going to use in the metadata as well. This is the unique identifier for this magazine. And this file contains all the metadata surrounding that magazine. So, you can probably guess where we're going with this. We're going to be doing some joins to marry these two datasets together, right? All right. 
+All right, let's get a little bit of hands-on experience using Redshift. What I'm going to do is load up a dataset of Amazon reviews from the magazine category. I don't think Amazon even sells magazines anymore, which is a shame. Give me paper over a screen any day, I say, but I digress. So, this does involve some real money. Now, Redshift, at this time, gives you a sort of a free credit if you're using it for the first time. So, odds are you can do this for free. Even if you don't, the charges that we're going to incur are going to be less than `$`1 if you do this all within one hour. However, big disclaimer here. If you mess up, if you do not follow the instructions here, if you select the wrong instance type for Redshift, or if you forget to shut it down when you're done, it could cost you thousands of dollars. So, if you are at all nervous about that, do not follow along hands-on. Just watch me do it. There are risks here, and I am not responsible if you don't follow the instructions and end up with a big bill at the end of the month. But if you do follow instructions and do follow along, it should be either free or under $1. First thing you want to do if you are following along is to get the course materials. If you haven't already downloaded them from earlier in the course, head on over to sundog-education.com slash aws-data-engineering. You'll find a handy link to the course materials there. Just download that to your computer and unzip them wherever you want. And when you're done with that, it should look like this. There should just be a magazine reviews folder in there. And that's where our data lives. 
+
+So, what do we got here? Well, this `citation.txt` file is just a text file with the required credits here for the data set, where it came from, and the paper that they want you to cite whenever you use this data. So, there's that. There's two things here. One is the actual reviews data for these **`magazine subscriptions`**. These are people who came to Amazon.com and wrote a product review for each magazine. And this is a data dump from, well, 2019, I guess it is. Let's take a look at what that looks like. Open that up in my favorite text editor. And you can see this is in JSON format. And it's pretty wordy. So, we have the actual review test for every line here, along with the reviewer ID that identifies the individual reviewer. The ASIN is basically the primary key here. 
+
+So, in the Amazon world, the ASIN represents the product identifier. So, this is a unique identifier for this magazine. So, that's an appropriate thing to use for our primary key, right? We also have the human readable name for this reviewer. And there could be more than one ID for each unique name, right? That's not like a one-to-one mapping there necessarily. And the other thing we care about here is the overall field. So, that is what the overall review score is for this magazine. So, basically, Ted really liked whatever B00005N7P0 is for a magazine and gave it five stars. All right. 
+
+So, what we're left here is the problem of understanding what the heck B00005N7P0 is, right? And that's where this other file comes in, the metadata file, also in JSON format. Let's take a look at that as well. And this is where it gives you information about each individual ASIN. You can see there's a lot of stuff in here, including lists of recommended other magazines and things like that. But the actual name of the magazine is under the brand here, Reason Magazine. At least that's the brand of the publisher more consistently. And it gives you information about its main category. And there's its ASIN down there buried there. So, again, here is the primary key that we're going to use in the metadata as well. This is the unique identifier for this magazine. And this file contains all the metadata surrounding that magazine. So, you can probably guess where we're going with this. We're going to be doing some joins to marry these two datasets together, right? All right. 
 
 ```shell
 ├── dea-materials
@@ -2132,4 +2138,141 @@ All right, let's get a little bit of hands-on experience using Redshift. What I'
 So, the first thing we need to do is put this somewhere where Redshift can get it. Now, it is possible to upload data directly from a local disk in Redshift, but it is limited to five megabytes. And this data is more than five megabytes. So, we've got to get it in there through some intermediate channel. S3 would be appropriate, right? So, let's go ahead and upload this into an S3 bucket. So, on to your AWS console here. Go on to S3. There's probably a link to it at your little top bar here, or you can just search for it if you need to. 
 
 
-5:53
+And let's go ahead and create a `new bucket` for this activity. 
+
+![](/img/03/172.png)
+
+I'm going to call it DEA-C01-Sundog. Now, remember, bucket names need to be globally unique. So, if you try to use that bucket name, it's not going to work because I already took it. So, substitute Sundog with your own name, some unique identifier, that will make that bucket name unique to you. All right, we're going to leave ACLs disabled because I'm going to set the public access at the top level. 
+
+![](/img/03/173.png)
+
+So, let's talk about security here for a moment. So, the best practice would be if you were dealing with some sort of sensitive or proprietary or personally identifiable information here, obviously you would not want to make this data publicly accessible. I am, however, going to do that for this exercise just to make it easier and to avoid the need for you to watch me put all of my personal identifiers for my AWS account as we go. So, in the real world, you would probably not disable block all public access. But just to make things easier here, I am going to disable block all public access and actually make this entire bucket publicly accessible. 
+
+![](/img/03/174.png)
+
+Now, there are legitimate reasons for doing that. If you're making a static website, for example, and hosting the content from S3, that would be a legitimate reason to do this. But keep in mind, this is not something you would normally do in a security conscious environment. I'm just doing it to make this exercise a little bit simpler. And I will talk through how to do this correctly in a more secure way as we go through. All right, so we're going to go ahead and do that. We're going to disable bucket versioning because we're just playing around here. We don't need to have backups of any of this data. No tags. Default encryption is fine. And let's go ahead and `create our bucket`.
+
+![](/img/03/175.png)
+
+All right, so let's select the bucket we just made. There it is. Again, yours will be named differently. And we need to do a little bit more to make that data accessible to Redshift. So in order for Redshift to read data from S3, it needs permissions not only to get objects within this bucket, but also to list what's in this bucket. So let's go ahead and take care of those permissions first.
+
+![](/img/03/176.png)
+
+So let's go to permissions, and you can see that block all public access is off. However, we need to define a bucket policy to allow the permissions we want. Now I'm gonna cheat here and just copy it in. So rather than make you watch me type, what I'm gonna ask you to do is just hit pause here when we're ready. So let's hit edit on the bucket policy. 
+
+![](/img/03/177.png)
+
+And before you hit pause and start typing this in, make sure that you take care to replace the resource name here with your own bucket. So you can see that the bucket name that I just used is right there, and also again right here. So you will need to substitute that with your own bucket name.
+
+![](/img/03/178.png)
+
+![](/img/03/179.png)
+
+Also, if you want to actually do this in a secure manner and not open this up to the entire world, there are two things you would do differently there. Of course, first of all, you would not do what I did to enable public access **`"Principal": {},`**. And also, instead of opening up the principal field to star, which means everyone, you'd want to lock that down to a specific IAM user, right? Or maybe even to the to the Redshift service itself. So rather than star, you can lock that down to, you know, ARM colon AWS colon IAM colon colon, whatever your IAM identifier is, okay? So in the real world, in a secure setting, you would want a more secure bucket policy here. Remember, we want to follow what's called the principle of least privilege. So you want things locked down as tightly as possible and only provide the permissions that are needed for the task at hand. So this is a case of do as I say and not say as I do. But again, to make life easier, just go ahead and hit pause and copy this into your own bucket policy. Again, substituting that bucket name for your own bucket name. Come back when you're done. 
+
+```sql
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "Statement1",
+			"Principal": "*",
+			"Effect": "Allow",
+			"Action": [
+				"s3:ListBucket"
+			],
+			"Resource": "arn:aws:s3:::dea-sundog"
+		}
+	]
+}
+```
+
+All right, once you've typed all that in, we can go ahead and save it.
+
+![](/img/03/180.png)
+
+And it took it, so that means you at least passed some syntax checking at least. And let's go ahead and upload our data into this bucket.
+
+![](/img/03/181.png)
+
+ So back to objects, let's click on upload. And you can just drag and drop them here. So let's go back to our course materials and we're going to just move them in from this top level here. So I'm going to select the metadata and reviews folders and drag those in, like so.
+
+ ```shell
+├── dea-materials
+│   ├── AWSCertifiedDataEngineerSlides.pdf
+│   ├── AllSlides_v3.1.pdf
+│   ├── MagazineReviews
+│   │   ├── citation.txt
+│   │   ├── metadata
+│   │   │   └── meta_Magazine_Subscriptions.json
+│   │   └── reviews
+│   │       └── Magazine_Subscriptions.json
+ ```
+
+![](/img/03/182.png)
+
+![](/img/03/183.png)
+
+![](/img/03/184.png)
+
+And go ahead and hit upload when you're ready. It's a fair amount of data, so it might take a minute. And there we have it. All right, so if we go back to view that bucket, we should see that we now have a metadata folder and a reviews folder. And within each folder we have a single file.
+
+![](/img/03/185.png)
+
+All right, so now that our data is in S3 and in theory accessible to Redshift. And because I made it publicly accessible, it's accessible to everybody right now. Again, not the best practice, but remember to lock that down to the appropriate principle in the real world. Let's go ahead back to services and go to Amazon Redshift. 
+
+![](/img/03/186.png)
+
+Again, you can just search for it here. And let's go and make a Redshift cluster. Now, right now they're really pushing Redshift serverless. This is probably the future of Amazon Redshift, but it actually costs more than creating a single cluster with a single machine of a low-cost machine. So again, just to err on the side of caution here in case you forget to shut this down, we're going to go ahead and use a traditional cluster here where we're actually managing our own resources instead of using Redshift serverless. The process of actually importing data and querying it is going to be similar in both cases, but I just want more control. So yeah, I want more granular control. I'm going to create a cluster from scratch here.
+
+--- 
+
+All right, now be careful here. See this here? $4,759 per month? You don't want that. You do not want to select the default options here because I don't think you want to get that bill at the end of the month. But don't worry, we're going to get that down to something much more manageable. All right, so our cluster needs an identifier. What should we call it? How about AMZ reviews? 
+
+
+![](/img/03/189.png)
+
+And I am going to choose the node type. I do not want an RA3 4x large. This is what you might be using in the real world for an actual data warehouse, but we're just playing around here. So I'm going to select the cheapest one I can find. That's going to be DC2.large, and that only costs 25 cents per node per hour, which is a lot cheaper than \$3.26 per hour. And I only need one node. I don't care about redundancy because, again, we're just playing around here, right? And you can see we've already taken that down to $182 per month, which is a lot more manageable. And if you do the math, using this for an hour is going to be like less than a dollar. So this is more like it, right? But do be careful. Don't skip that step. Again, I'm not responsible if you choose the wrong setting there and end up with a big bill at the end of the day. And also remember to shut this cluster down before you're done. So if you don't watch this exercise to the end and forget to do that, again, not my fault, okay? 
+
+![](/img/03/200.png)
+
+All right, let's go on and continue setting up our cluster here. So our admin username needs a username. Let's leave it with AWS user. I'm going to go ahead and give it a password of my own here. So go ahead and type in a password and remember what it is.
+
+![](/img/03/201.png)
+
+Now the next thing we need to do is create an IAM role for this cluster to be able to do what it needs to do. And we need to go and create one right now.
+
+![](/img/03/202.png)
+
+It says here the key is to have it with the Amazon Redshift all commands full access policy attached. There's more to it than that, though. We can say create an IAM role under manage IAM roles here. 
+
+![](/img/03/203.png)
+
+So let's go ahead and select that. I have a lot of them. There it is. So select your own there, of course, and create IAM role as default. All right, so that automatically created one for me there. That's great, thank you. 
+
+![](/img/03/204.png)
+
+Let's go ahead through these other options here as well. So we do need to define a subnet group. We can't just leave this as is. So I'm gonna have to go ahead and choose a VPC that has a subnet. You can see that one already has one called Redshift subnet. If you need to create one, you might have to go to the VPC UI and go make one. Availability zone, I'm gonna choose the one that I'm currently in. Enhanced VPC routing. Don't need that right now.
+
+![](/img/03/205.png)
+
+That's network traffic between your cluster and data through a VPC instead of through the internet. So that would be more secure to turn that on, but again, since we're making everything publicly accessible anyhow, doesn't really do much good. The Redshift cluster itself, however, is not publicly accessible. Definitely don't want to do that because Redshift can get expensive real fast. Let's see what else is in here. 
+
+Database configuration. So our database name will be dev, remember that. Database port is the standard 5439. And encryption, note that that's disabled by default there. So if you were dealing with any sort of sensitive or personal information, obviously you'd want to change that. Let's go ahead and encrypt that just because we can. So I'll use KMS with the default key. It's better than nothing, which was the default there. 
+
+Maintenance. This isn't going to be running long enough to need a maintenance window, but we'll just go with the current defaults there. That's fine. Alarms. Again, in the real world, of course, you would want alarms. But things like disk usage and you could create an SNS topic to notify you and send an alarm if you exceed the disk usage of 70 percent there or whatever you want it to be. However, I don't care because we're just playing around. So I'll leave that to no alarms. 
+
+Backups. I'm going to set that to zero because, again, I'm just playing around. I don't care if I lose this data. It's not real data. Again, in the real world, of course, you'd want to think about this, right? So fortunately, it can automatically back up your data. However, that can get expensive. Also, note that you're saying, do I want to configure a cross-region snapshot? Something to think about here is where are you allowed to store your data? There could be regulations in place that restrict where your data can be, especially if it involves personally identifiable information. Different countries might have different laws surrounding that, and you might not want to be storing your data in a different country that has different laws you don't even know about. 
+
+![](/img/03/206.png)
+
+All right, so this all looks good. Let's say create cluster. 
+
+ And now we just wait for that to spin up. All right, after a few minutes, our cluster has spun up, so let's go ahead and connect to it and do stuff with it. So you can see here we have three very convenient ways of connecting to it. It will give you a link for connecting through a SQL client of your own, or if you have a JDBC or ODBC driver that you want to use, it can generate that for you as well. However, we're going to keep it easy and just use their console-based query editor here. So I'm going to click on **`query data`**.
+
+![](/img/03/207.png)
+
+
+![](/img/03/208.png)
+
+
