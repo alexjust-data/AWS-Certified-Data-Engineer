@@ -2273,6 +2273,93 @@ All right, so this all looks good. Let's say create cluster.
 ![](/img/03/207.png)
 
 
-![](/img/03/208.png)
+![](/img/03/209.png)
 
+![](/img/03/210.png)
+
+![](/img/03/211.png)
+
+![](/img/03/212.png)
+
+![](/img/03/213.png)
+
+So JSON is not necessarily structured data. It could be semi-structured. And you could have these weird nested structures within there that aren't really supported by Redshift. So this may or may not go well. Let's go ahead and see what happens, though. 
+
+![](/img/03/214.png)
+
+So this may or may not go well. Let's go ahead and see what happens, though. All right, so we're going to make a new table under the public schema. And let's give this table a name. Let's call it Reviews. We need to choose an IAM role, so let's just select the one we created earlier. And double-check the mapping here of our data. So it's trying to extract a schema from that JSON file itself. And for the most part, it did a pretty good job, right? So these all make more or less sense. However, it couldn't figure out this last one. There's no data type you see under Image. So presumably, that's some complex data structure that we just can't represent directly in Redshift. Now, if we had a proper ETL pipeline in place, maybe we could restructure that data in a way that would be more appropriate for a relational database. But we haven't got to that part of the course yet. So instead, I'm just going to delete that field because, well, I don't need it for what I'm doing here. So that's one easy solution. Everything else looks like it should be okay. So the other thing we can do is make a primary key while we're at it. So like we said, the ASIN is the unique identifier for each individual item being reviewed. So that seems like a reasonable thing to use for something to join these tables together by. So let's go ahead and select that ASIN column and make that our primary key. And now we should be able to create a table. 
+
+
+![](/img/03/215.png)
+
+![](/img/03/216.png)
+
+![](/img/03/217.png)
+
+![](/img/03/218.png)
+
+And now we should be able to create a table. One last check of everything. Looks good to me. Go for it. Off it goes. So as we speak, it's copying that data from that JSON file in S3 and loading that into a new table that we call reviews. And it succeeded. Very good. 
+
+Let's do the same thing for the metadata. So back to load data from a S3 bucket. And this time we'll select our metadata file. Under your bucket name, then metadata, then meta **`magazine subscriptions`**.
+
+And this data is a little bit more messy. So one problem is that some of the fields are longer than 255 characters. So when we try to put that into a VARCHAR 255, it's not going to work. So let's go to data conversion parameters here. 
+
+![](/img/03/220.png)
+
+And say that we're going to truncate data to fit the column specification.
+
+So if we have a column that is too wide for our data type, we'll just cut it off. That's fine for our purposes here. We'll choose an IAM role again. Again, we'll select the public schema. And we will make a new table. With the following table name. We'll call it metadata. All right. 
+
+So again, we have some issues with structures that it couldn't deal with. So wherever you see a blank data type, that means that we just couldn't force JSON data into a relational database column. So it turns out the only thing I actually care about in this is the brand column and the async column. Those are the only things I'm going to be actually working with for my use case. So everything else I don't really care about. 
+
+![](/img/03/224.png)
+
+![](/img/03/223.png)
+
+Let's go ahead and delete this async colon field here. Because async is the actual primary key. This is under the details. And I don't want to get any confusion between these two different asyncs. So that's going to go. And additionally, anything that does not have a data type is going to go. Because presumably, most of these are arrays. They can be lists of things. So for example, every individual item can have more than one category. But there's no good way of representing that in this database. Same thing with description. Also by, that's a list of recommendations that go along that feature. Also view, same kind of idea. And again, the image is something that I can't seem to handle. But I do not care. Because again, for my use case, all I'm going to be looking at are the asyncs and the brands. 
+
+![](/img/03/221.png)
+
+So before I forget, let's make the async the primary key as well. 
+
+![](/img/03/225.png)
+
+![](/img/03/226.png)
+
+And we should be good to go. Create table. Double check everything. Load data. And it worked. All right, so if we refresh this little panel here, we should be able to see those two new columns that we created. Those two new tables, rather. Under dev, public, tables. And there they are, metadata and reviews. Very cool. All right, so let's see if it works.
+
+All right, so let's see if it works. All right, so we're going to be working within the Amazon Reviews dev database here. And let's just run some SQL, shall we? Let's start with something basic like SELECT STAR FROM METADATA, LIMIT 10. And we have data. As you can see, there's a lot of missing data as well. So if we were actually building an ETL pipeline, there'd be a lot of missing data to deal with and figure out what we want to do about that. But importantly, the ASINs came through that we care about, and the brands also came through that we care about. Those are basically the publishers of the magazines in question. 
+
+![](/img/03/227.png)
+
+Let's do the same thing for the Reviews data and make sure that looks okay. So let's start from Reviews, LIMIT 10, and run that. Looks good. So we have the overall review score, 1 to 5 stars, and the ASINs, those are all we really care about here. Again, lots of nulls here, lots of missing data. So in a real pipeline, we want to dig into why that is and maybe deal with that better. But for our use case, we don't care.
+
+![](/img/03/228.png)
+
+So let's do something more interesting. Let's write a query that sorts the highest rated brands. So how about a little bit of a challenge for you? Let's see if you can write a SQL query that joins these two tables together and gives me back what brands have the highest average ratings. So we have these ASINs here in the Reviews table and the overall ratings for each, and we can join that with the metadata table to figure out the brand of that magazine in each case. So your challenge, should you choose to accept it, is to write a query that sorts the highest rated brands based on their average overall score. And go ahead and hit pause if you want to try that on your own, but if you don't, I'll just give you the answer here. Looks like this. So we're going to select... First of all, we have some aliases here. So the metadata table is being abbreviated to M, Reviews has an alias of R. So we're going to select M.brand, the brand name, the average of the overall from the Reviews table. We're going to label that as average review score from the Reviews table. We're doing a inner join, metadata M on R.ASIN equals M.ASIN. So we're joining these two tables together based on the ASIN field, grouping them by brand so that we're looking at every brand together and computing the average score for each brand, and then finally sorting the final results by average review score, which is that average result up here. Let's run that and see what happens. And there you have it. So this looks a little bit suspicious. So there's an awful lot of magazines with an average review score of five. And I got to wonder if maybe they just don't have a lot of data, like maybe there's only one review for each of these brands and that one review was five stars, right? 
+
+![](/img/03/229.png)
+
+So let's get a little bit more context around this. Your next challenge, if you are up to it, is to extend this query to restrict this to only brands that have 10 or more reviews and actually print out how many reviews each result has. So that will filter out those ones where we just don't have enough data to really say definitively what that average score really means. So if you want to take a crack at that yourself, hit pause and have a go at it. If not, I will just paste in the answer here. So you see here I threw in a having clause here, having countR.asin greater than 10. So we're going to restrict this query only to brands that have more than 10 ratings. And we're also going to print countR.asin as an additional column in our results so we can get that added context about how many reviews actually went into that average calculation. So let's run that. And that's a little bit more meaningful now. So we see we still have a few that have an average review score of 5.0. And coming from more than 10 reviews, I guess that's meaningful. So people really like the publications coming from KMT Communications, KBS Communications, Clay & Clay, and Canadian Home Publishers, and Historical Enterprises, LLC. But down here we get a little bit more real. 
+
+![](/img/03/230.png)
+
+So, you know, these things that are slightly less than 5, I don't know, they feel more authentic to me because, you know, it's unlikely that everybody loves something. But we can see here that genuinely, you know, Prehistoric Times and Maker Media, oh, yeah, Make Magazine, I like that one. That is a good magazine. These are all very well received by the reviewers in this data set. So that's a fun little example of using Redshift with some real-world data. And if you want to play around with this some more, you can, but just remember the clock is ticking here. You are being charged by the hour that this cluster is running. So in order to save your pennies, I would recommend closing out of this and shutting down your cluster. So do not forget this next step because if you leave this cluster running, you will be billed for it forever, constantly, whether you're using it or not. You don't want that, right?
+
+![](/img/03/231.png)
+
+So let's go back to Services and go back to Redshift. Go back to the cluster we just made, AMC Reviews. And I'm going to go to Actions and say Delete. And to make sure that I really want to delete this, I'm going to say Delete because this does in fact delete all the data in there.
+
+
+![](/img/03/232.png)
+
+However, it's still going to exist in S3. We just copied it over from S3, right? So quick note there, by the way, we could have used Redshift Spectrum to query that directly in S3 in place, but doing so would have required me to create a data catalog first, and we haven't covered that yet in this course, so that's why I didn't do it that way. 
+
+Let's go ahead and delete our copy of that in this cluster and make sure that deletion happens because if not, you will continue to be billed for this cluster forever. You don't want that. I'm going to wait for that to go from Status Modifying to Status Something Else. 
+
+![](/img/03/233.png)
+
+Let's go back to our Clusters view here and keep an eye on it. Still wait for that to delete. Oddly, it's taking longer to delete this cluster than it did to create it, but let's wait another minute here. We'll come back when that's done for good. All right, about five minutes later, it finally says it successfully deleted AMC Reviews. Let's go ahead and refresh this to make sure. Sure enough, my cluster's gone, so I'm not going to get billed for that anymore. All right, so that is Redshift in action, hands-on. We copied in some data from S3 into a Redshift cluster, as opposed to accessing it in place. We'll do that later in the course. But yeah, that's Redshift, and I'm not going to have you delete the S3 bucket that we made We're going to reuse that data later on in the course, and S3 doesn't cost too much. When you're done with the course, you can delete that bucket, but for now, if you're going to continue on, keep it there for now. Moving on.
+
+![](/img/03/234.png)
 
