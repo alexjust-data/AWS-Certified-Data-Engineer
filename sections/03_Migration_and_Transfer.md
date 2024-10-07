@@ -20,7 +20,10 @@ This next section is pretty quick. Migrating and transferring data is, of course
 - [AWS Transfer Family](#aws-transfer-family)
 - [Compute](#compute)
   - [EC2 in Big Data](#ec2-in-big-data)
-  - [EC2 Graviton-based](#ec2-graviton-based)
+  - [EC2 Graviton-based instances](#ec2-graviton-based-instances)
+- [AWS Lambda](#aws-lambda)
+  - [What is Lambda?](#what-is-lambda)
+  - [Lambda Integration - Part 1](#lambda-integration---part-1)
 
 
 ### Application Discovery Service & Application Migration Service
@@ -298,8 +301,119 @@ Now let's talk about the AWS Transfer Family. So the idea is that you want to se
 
 ### Compute
 
+An important part of data processing is the computing resources allocated to it. Although data processing is going to be covered in the context of other sections in this course as well, understanding the basics of Amazon EC2, AWS Lambda, AWS Serverless Application Model, and AWS Batch are things you need to know. Stefan and I will be switching off on different topics within this section. I'm going to assume that you know the basics of EC2 already and just focus on how it fits into data engineering here. Although the data engineering exam is associate-level, it's definitely a more advanced associate-level exam, and I'm assuming you at least have cloud practitioner-level knowledge coming into this. So, let's dive into the computing services you need to know about for the exam.
 
 #### EC2 in Big Data
 
-#### EC2 Graviton-based
+So there's one service we've been using without really knowing it is EC2. And EC2 has a good role in big data, especially behind the launch modes. So we know that on-demand, spot, and reserved instances. So let's do a quick review again. So spot means that it's going to be a very, very cheap instance, but AWS can take it away from you at any time. So you need to be able to tolerate lots of instances. That means usually if you do big data with spot instances, there needs to be some sort of checkpointing features. So machine learning algorithm, Spark, Hive, all these things are meant to tolerate loss, so they would be great candidates to run your big data processing jobs or your machine learning jobs on spot instances. Similarly, if you have a very long-running cluster or database, like an EMR cluster running for over a year or RDS database running for over a year, then you need to start reserving your instances because by reserving your instances ahead of time, you're going to get a tremendous discount. So this is for stuff that's going to be very stable over time.
 
+* On demand, Spot & Reserved instances:
+  * Spot: can tolerate loss, low cost => checkpointing feature (ML, etc)
+  * Reserved: long running clusters, databases (over a year)
+  * On demand: remaining workloads
+* Auto Scaling:
+  * Leverage for EMR, etc
+  * Automated for DynamoDB, Auto Scaling Groups, etc…
+* EC2 is behind EMR
+
+
+#### EC2 Graviton-based instances 
+
+Quick note about AWS Graviton, kind of a big deal within Amazon, because it's their own processor, their own family of processors that they came up with. And this powers several EC2 instance types that you might want to know about. There are general-purpose, compute-optimized, memory-optimized, storage-optimized, and even an accelerated computing family that's used for Android game streaming in particular, and also for machine learning inference. I wouldn't worry too much about the specific letters and numbers here. It wouldn't hurt to know them, but I wouldn't worry about it too much. But they do brag about this offering the best price-performance ratio. Of course, this does come at the expense of running on a proprietary processor type, and you need special software that will run on it, right? So it can't just run anything. However, a lot of the data engineering services that are covered in this course can run on AWS Graviton instances. So internally, their own services can run on it, and Graviton can be a very cost-effective choice for what kind of instance type to run it on. For example, MSK, RDS, MemoryDB, ElastiCache, OpenSearch, EMR, Lambda, and Fargate are all available to be deployed on AWS Graviton-based instances, the ones listed above. So just keep in mind, Graviton is Amazon's own family of processors. It offers very good price-performance ratios, and a lot of the data engineering services that we've listed here can run on top of them with no extra effort on your part.
+
+* Amazon’s own family of processors, powers several EC2 instance types
+  * General purpose: M7, T4
+  * Compute optimized: C7, C6
+  * Memory optimized: R7, X2
+  * Storage optimized: Im4, Is4
+  * Accelerated computing (game streaming, ML inference): G5
+* Offers best price performance
+* Option for many data engineering services
+  * MSK, RDS, MemoryDB, ElastiCache, OpenSearch, EMR, Lambda, Fargate
+
+### AWS Lambda
+
+**Serverless data processing**
+
+#### What is Lambda?
+
+* A way to run code snippets “in the cloud”
+  * Serverless
+  * Continuous scaling
+* Often used to process data as it’s moved around
+  
+
+AWS Lambda. Lambda is a serverless data processing tool that you can use. Let's talk about what that means. So what is Lambda? Basically, it's a way to run little snippets of code in the cloud. So if you have a little bit of code in pretty much any language you can imagine, Lambda can run that for you without you having to worry about what servers to run it on. So you don't have to go and provision a bunch of EC2 servers to run your code. Lambda does that for you. It thinks about the actual execution of your code. You just think about what the code itself does. So it is a serverless method of actually running little bits of code that will scale out continuously without you having to do anything. Lambda will automatically scale out the hardware that it's running on as needed, depending on how much data is coming into it. So you can see how this fits into a big data world. If you have a lot of data flowing in, Lambda will automatically scale itself up and down to handle the processing of that data dynamically. In the context of big data, it's often used to process data as it's moved around from one service to another. So some services don't talk directly to other services in AWS, but Lambda can be used as a glue between anything pretty much. So it can sit there and get triggered by some other service sending data into it, like a Kinesis data stream, reformat that information into a format required by some other service, send that data to another service for further processing, and maybe retrieve that data and send it back. So Lambda is just a way of running little stateless bits of code in the cloud that is often used to just glue different services together in big data. 
+
+**Example: Serverless Website**
+
+![](/img/04/29.png)
+
+Let's look at an example. It's not always used for big data. A very common use of Lambda is in use of a serverless website. And it's actually possible to build a website without having any servers that you manage at all. This is called a serverless website, and you can do this with AWS Lambda. Now you normally can't do this with a really dynamic website, but if you can build your website by just having static HTML and AJAX calls embedded within that HTML, well, you can serve that from S3 or something, right? And then the AJAX calls are all you need to deal with. So maybe you have an API gateway in Amazon that sort of serves as the wall between the outside clients and you, the interior of your system there. So let's say, for example, you have a website where someone needs to log in. That login request might go through the API gateway, which in turn would then get sent off to AWS Lambda. Lambda would say, okay, the website wants this person to log in. It could turn around and craft a request to Amazon Cognito to say, do you authenticate this user or not? Amazon Cognito will come back and say, sure, here's your token. Lambda can then format that result and send it back to the website. So Lambda is sort of the glue there between the website API and Cognito on the back end. Similarly, let's say that we're building like a chat application on our front end there. Maybe we need to retrieve the chat history for that user ID once they've logged in. So again, the API gateway would receive that request. Lambda would be triggered by that API request and say, okay, I need to go get the chat history for this user ID. How do I craft that request to DynamoDB? It would then turn around, craft that request to DynamoDB for that chat history, talk to DynamoDB to get that, and then send it back through the API gateway back to the website. So here you see Lambda often fills a role as sort of the glue between different services. 
+
+**Example: Order history app**
+
+![](/img/04/30.png)
+
+That's exactly how we're going to use it in our own application here. Very soon we're going to build this out. You'll recall that in our order history app, previously we used a Kinesis consumer application running on an EC2 host. This would serve as the glue between Kinesis data streams and Amazon DynamoDB. Now we don't want to have to manage EC2 servers for such a simple task as that. We can use Lambda instead. That's a much better choice. So we're going to build a Lambda function that actually sits between our data stream that you see in server logs coming in and between DynamoDB where we want to store that data longer term. Lambda's just going to sit there waiting for triggers of events from the data stream, and each trigger event will actually have a batch of events that needs to go through and extract each individual record and then turn around and write that into DynamoDB. So again, Lambda is just the glue between the data stream and some other service, in this case DynamoDB.
+
+**Example: Transaction rate alarm**
+
+![](/img/04/31.png)
+
+Later in the course we'll build out a transaction rate alarm. Its only purpose is to notify us when something unusual is happening on our system. So in this case we have a Kinesis data stream that's receiving events that says something weird is going on that requires someone's attention. Lambda's going to be triggered by those data stream events, and it will then turn around and craft an SMS request to actually send out a message to your cell phone notifying you that something requires your attention. So yet again, Lambda's the glue between two different services that don't talk directly to each other, but because Lambda's just code, it can do anything. It can transform that data in any way, it can talk to any service on the backend you can imagine, it can do whatever you want. So it's sort of the magic glue that enables you to put different components together in creative ways, and this is just one example of that.
+
+
+#### Lambda Integration - Part 1
+
+
+**Why not just run a server?**
+* Server management (patches, monitoring, hardware failures, etc.)
+* Servers can be cheap, but scaling gets expensive really fast
+* You don’t pay for processing time you don’t use
+* Easier to split up development between front-end and back-end
+
+So what's the big deal about serverless processing of your code? Why not just run it on a server? Well, I mean, even though Lambda is still running on servers under the hood, they're not servers that you manage, and that's a big deal. So Amazon has people at pagers to keep those servers working and dealing with all the patches and monitoring and hardware failures and stuff, so you don't have to. You don't think about that at all when you're running AWS Lambda. All you think about is the code that you have running on it. And yes, even though individual servers can be cheap, scaling those servers out can get very expensive very fast. And if you scale out a fleet to run your function to manage your peak capacity, you're going to end up paying for a lot of processing time that you're not even using when you're off peak. With Lambda, you only pay for the processing time that you're actually consuming, so that can be huge from a cost-saving standpoint. And although it's not so big of a deal in the big data world, if you're dealing with something like a serverless website, it does make it easier to split up your development between front-end development and back-end development. So all the back-end work can happen in your Lambda functions while your front-end developers worry about all the static stuff on the front-end client website. 
+
+**Main uses of Lambda**
+* Real-time file processing
+* Real-time stream processing
+* ETL
+* Cron replacement
+* Process AWS events
+
+So there are several main uses of Lambda. One is real-time file processing. So as new data is coming into S3 or some other destination within AWS, Lambda can be triggered and actually process that file however you want to. And that can include doing some rudimentary ETL, that's extract, transform, and load. So Lambda is just code. You can do whatever you want in there, and that includes doing ETL on incoming data. You can also do real-time stream processing, as we discussed, just listening for new events coming in on a Kinesis stream or a Kinesis Firehose stream. You can also use Lambda as a cron replacement. This is interesting. You can use time as a trigger for a Lambda function as well. So just like you can trigger events using cron on a Linux system, you can trigger off Lambda events on some fixed schedule as well. So if you need something to happen once a day or once an hour or once a minute or whatever schedule you want, you can actually set that up to call your Lambda function periodically. And that might come in handy for kicking off daily batch jobs or something like that. And also it can process arbitrary events from AWS services. As we'll see, there's a very long list of AWS services that can generate triggers to Lambda. 
+
+**Supported languages**
+* Node.js
+* Python
+* Java
+* C#
+* Go
+* Powershell
+* Ruby
+
+Pretty much any language you want to develop in is supported by Lambda, which is great. Node.js, Python, Java, C Sharp, Go, PowerShell, Ruby. So you can process data and do whatever you want with it in pretty much whatever language you want. And this is huge because it means that any system that has an interface in any of these languages is fair game for your Lambda code. So remember, Lambda's code. And with code, anything is possible. So you don't have to just limit yourself to serving as a glue or a transformation between different AWS services. You can actually talk to other services outside of AWS if you want or other libraries even that might enable you to perform more interesting transformations on that data. So really you can use your imagination when you're using Lambda to do a lot of different stuff. It really makes a lot of things possible all without managing servers in the process, which is awesome.
+
+**Lambda triggers**
+
+![](/img/04/32.png)
+
+Now if you are using Lambda to serve as sort of the glue between AWS services, there's a long list of services here that actually trigger Lambda events for you. So any of these services can fire off triggers to Lambda functions whenever something interesting happens from these services. And this is just a partial list of them, guys. So also Alexa, and there's also a manual indication you can do with Lambda functions as well. Let's call out a few of the more common ones that are relevant to big data, though. And that would be S3, Kinesis, DynoDB, SMS and SQS, and IoT. So you can integrate Lambda with S3. So whenever a predefined thing happens to an object within S3, that can act as an event data that will invoke a Lambda function. So for example, a new object is created in S3. You might have a Lambda trigger that picks up the creation of that object, turns around, parses out that information, and sticks it in Redshift or something. Same story with DynoDB. Every time something is changed in a DynoDB table, that can trigger event data that invokes a Lambda function as well. And that allows for real-time event-driven data processing for the data arriving in DynoDB tables. You can integrate Lambda with Kinesis streams, and then the Lambda function can read records from a stream and be processed accordingly. Now under the hood, Lambda is actually polling the Kinesis stream. The stream is not pushing data into Lambda. That can be an important distinction in some contexts there. So remember, when you have Kinesis streams talking to Lambda, Kinesis isn't actually pushing that data into Lambda, as the architectural diagrams might suggest. Lambda actually polls that stream periodically and collects information from it in a batch manner. You can also integrate Lambda with IoT. So when some device starts sending data to the IoT service, that can then invoke Lambda and process it accordingly, as defined in your Lambda function. And it integrates with Kinesis spirals. In that case, Lambda can transform the data and deliver that transformed data to S3 or Redshift or Elasticsearch or whatever you want. It can output to pretty much anything, because you can write code to do what you want in response to these triggers. All AWS services have APIs you can call, so really the sky's the limit as to what you can call downstream from your Lambda function. You can do anything you want. These are just ones that can trigger a Lambda function for you automatically. Now, as long as these services are all under the same account, you can set up IAM roles to allow Lambda to access them. So as long as all the services you're using are under that same account, pretty much Lambda can talk to them if you set up their proper IAM role.
+
+
+**Lambda and Amazon Opensearch Service**
+
+![](/img/04/33.png)
+
+**Lambda and Data Pipeline**
+
+![](/img/04/34.png)
+
+**Lambda and Redshift**
+
+![](/img/04/35.png)
+
+**Lambda + Kinesis**
+
+![](/img/04/36.png)
